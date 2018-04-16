@@ -24,6 +24,7 @@
 #include <chrono>
 #include <algorithm>
 #include <mutex>
+#include <atomic>
 using namespace std;
 #define BUFFER_SIZE 1024
 #define WORKER_NUM 4
@@ -47,6 +48,7 @@ struct Block
     int data_age;
     int sta_idx;
     int height; //height
+    int ele_num;
     vector<double> eles;
     Block()
     {
@@ -76,6 +78,7 @@ struct Updates
 {
     int block_id;
     int clock_t;
+    int ele_num;
     vector<double> eles;
     Updates()
     {
@@ -101,10 +104,12 @@ struct Updates
         printf("\n");
     }
 };
-int head_ptrs_P[WORKER_NUM];
-int tail_ptrs_P[WORKER_NUM];
-int head_ptrs_Q[WORKER_NUM];
-int tail_ptrs_Q[WORKER_NUM];
+struct Block Pblocks[WORKER_NUM];
+struct Block Qblocks[WORKER_NUM];
+struct Updates Pupdts[WORKER_NUM];
+struct Updates Qupdts[WORKER_NUM];
+
+
 
 
 int wait4connection(char*local_ip, int local_port);
@@ -115,10 +120,19 @@ double CalcRMSE();
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 
+atomic_int recvCount(0);
+bool canSend = false;
+int worker_pidx[WORKER_NUM];
+int worker_qidx[WORKER_NUM];
+
 int main(int argc, const char * argv[])
 {
     //int connfd = wait4connection(ips[0], ports[0]);
     //printf("connfd=%d\n", connfd);
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        worker_pidx[i] = worker_qidx[i] = i;
+    }
     for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
     {
         std::thread send_thread(sendTd, send_thread_id);
@@ -132,6 +146,59 @@ int main(int argc, const char * argv[])
     while (1 == 1)
     {
 
+        partitionP(WORKER_NUM, Pblocks);
+        partitionQ(WORKER_NUM, Qblocks);
+
+        srand(time(0));
+        bool ret = false;
+        if (rand() % 2 == 0)
+        {
+            ret =  next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
+            if (!ret)
+            {
+                prev_permutation(worker_pidx, worker_pidx + WORKER_NUM);
+            }
+        }
+        else
+        {
+            ret =  prev_permutation(worker_pidx, worker_pidx + WORKER_NUM);
+            if (!ret)
+            {
+                next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
+            }
+        }
+        canSend = true;
+
+        while (recvCount != WORKER_NUM)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+        if (recvCount == WORKER_NUM)
+        {
+            printf("Collect All, Can Update\n");
+            int idx = 0;
+            for (int kk = 0; kk < WORKER_NUM; kk++)
+            {
+                //Update P [N*K]
+                for (int ii = 0; ii < Pupdts[kk].eles.size(); ii++)
+                {
+                    int row_idx = (ii + idx) / K;
+                    int col_idx = (ii + idx) % K;
+                    P[row_idx][col_idx] += Pupdts[kk].eles[ii];
+                }
+            }
+            for (int kk = 0; kk < WORKER_NUM; kk++)
+            {
+                //Update Q[K*M]
+                for (int ii = 0; ii < Qupdts[kk].eles.size(); ii++)
+                {
+                    int col_idx = (ii + idx) / K;
+                    int row_idx = (ii + idx) % K;
+                    Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
+                }
+            }
+            printf("Update Finish, Can Distribute\n");
+        }
     }
 
     return 0;
@@ -166,16 +233,42 @@ void sendTd(int send_thread_id)
 
     assert(check_ret >= 0);
     printf("connected %s  %d\n", remote_ip, remote_port );
-    //发送数据
-    const char* normal_data = "my boy!";
-
-    int ret = send(fd, normal_data, strlen(normal_data), 0);
-    if (ret >= 0 )
+    while (1 == 1)
     {
-        printf("send success \n");
+        if (!canSend)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+        else
+        {
+            size_t struct_sz = sizeof( Pblocks[send_thread_id]);
+            size_t data_sz = sizeof(double) * Pblocks[send_thread_id].eles.size();
+            char* buf = (char*)malloc(struct_sz + data_sz);
+            memcpy(buf, &(Pblocks[send_thread_id]), struct_sz);
+            memcpy(buf + struct_sz, (char*) & (Pblocks[send_thread_id].eles[0]), data_sz);
+            int ret = send(fd, buf, (struct_sz + data_sz), 0);
+            if (ret >= 0 )
+            {
+                printf("send success \n");
+            }
+            free(buf);
+
+            struct_sz = sizeof( Qblocks[send_thread_id]);
+            data_sz = sizeof(double) * Qblocks[send_thread_id].eles.size();
+            buf = (char*)malloc(struct_sz + data_sz);
+            memcpy(buf, &(Qblocks[send_thread_id]), struct_sz);
+            memcpy(buf + struct_sz , (char*) & (Qblocks[send_thread_id].eles[0]), data_sz);
+            ret = send(fd, buf, (struct_sz + data_sz), 0);
+            if (ret >= 0 )
+            {
+                printf("send success \n");
+            }
+            free(buf);
+        }
     }
 
 }
+
 void recvTd(int recv_thread_id)
 {
     printf("recv_thread_id=%d\n", recv_thread_id);
@@ -183,13 +276,96 @@ void recvTd(int recv_thread_id)
 
     while (1 == 1)
     {
-        int expected_len = 15;
+        size_t expected_len = sizeof(Updates);
         char* sockBuf = (char*)malloc(expected_len);
-        int ret = recv(connfd, sockBuf, expected_len, 0);
-        if (ret > 0)
+        size_t cur_len = 0;
+        int ret = 0;
+        while (cur_len < expected_len)
         {
-            printf("sockBuf=%s\n", sockBuf);
+            ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
+            if (ret < 0)
+            {
+                printf("Mimatch!\n");
+            }
+            cur_len += ret;
         }
+        struct Updates* updt = (struct Updates*)(void*)sockBuf;
+        int block_id = updt->block_id;
+        Pupdts[block_id].block_id = block_id;
+        Pupdts[block_id].clock_t = updt->clock_t;
+        Pupdts[block_id].ele_num = updt->ele_num;
+        Pupdts[block_id].eles.resize(updt->ele_num);
+        free(sockBuf);
+
+        size_t data_sz = sizeof(double) * (updt->ele_num);
+        sockBuf = (char*)malloc(data_sz);
+
+        cur_len = 0;
+        ret = 0;
+        while (cur_len < data_sz)
+        {
+            ret = recv(connfd, sockBuf + cur_len, data_sz - cur_len, 0);
+            if (ret < 0)
+            {
+                printf("Mimatch!\n");
+            }
+            cur_len += ret;
+        }
+
+        double* data_eles = (double*)(void*)sockBuf;
+        for (int i = 0; i < updt->ele_num; i++)
+        {
+            Pupdts[block_id].eles[i] = data_eles[i];
+        }
+        free(data_eles);
+
+
+        expected_len = sizeof(Updates);
+        sockBuf = (char*)malloc(expected_len);
+        cur_len = 0;
+        ret = 0;
+        while (cur_len < expected_len)
+        {
+            ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
+            if (ret < 0)
+            {
+                printf("Mimatch!\n");
+            }
+            cur_len += ret;
+        }
+        updt = (struct Updates*)(void*)sockBuf;
+        block_id = updt->block_id;
+        Qupdts[block_id].block_id = block_id;
+        Qupdts[block_id].clock_t = updt->clock_t;
+        Qupdts[block_id].ele_num = updt->ele_num;
+        Qupdts[block_id].eles.resize(updt->ele_num);
+        free(sockBuf);
+
+        data_sz = sizeof(double) * (updt->ele_num);
+        sockBuf = (char*)malloc(data_sz);
+
+        cur_len = 0;
+        ret = 0;
+        while (cur_len < data_sz)
+        {
+            ret = recv(connfd, sockBuf + cur_len, data_sz - cur_len, 0);
+            if (ret < 0)
+            {
+                printf("Mimatch!\n");
+            }
+            cur_len += ret;
+        }
+
+        data_eles = (double*)(void*)sockBuf;
+        for (int i = 0; i < updt->ele_num; i++)
+        {
+            Qupdts[block_id].eles[i] = data_eles[i];
+        }
+        free(data_eles);
+
+
+
+        recvCount++;
     }
 }
 int wait4connection(char*local_ip, int local_port)

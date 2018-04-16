@@ -198,6 +198,7 @@ int main(int argc, const char * argv[])
                 }
             }
             printf("Update Finish, Can Distribute\n");
+            recvCount = 0;
         }
     }
 
@@ -264,6 +265,7 @@ void sendTd(int send_thread_id)
                 printf("send success \n");
             }
             free(buf);
+            canSend = false;
         }
     }
 
@@ -362,8 +364,6 @@ void recvTd(int recv_thread_id)
             Qupdts[block_id].eles[i] = data_eles[i];
         }
         free(data_eles);
-
-
 
         recvCount++;
     }

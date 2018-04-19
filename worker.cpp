@@ -69,6 +69,7 @@ struct Block
     }
     void printBlock()
     {
+
         printf("block_id  %d\n", block_id);
         printf("data_age  %d\n", data_age);
         printf("ele_num  %d\n", ele_num);
@@ -77,6 +78,7 @@ struct Block
             printf("%lf\t", eles[i]);
         }
         printf("\n");
+
     }
 };
 struct Updates
@@ -100,6 +102,7 @@ struct Updates
 
     void printUpdates()
     {
+
         printf("update block_id %d\n", block_id );
         printf("clock_t  %d\n", clock_t);
         printf("ele size %ld\n", ele_num);
@@ -108,6 +111,7 @@ struct Updates
             printf("%lf\t", eles[i]);
         }
         printf("\n");
+
     }
 };
 struct Block Pblock;
@@ -121,7 +125,7 @@ bool hasRecved = false;
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
-void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ, int minN, int minM, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
+void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 int thread_id = -1;
@@ -134,7 +138,7 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
-
+    //double* minR = (double*)malloc(sizeof(double) * 1000);
     while (1 == 1)
     {
         if (hasRecved)
@@ -145,16 +149,32 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblock.sta_idx;
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
+            //printf("ele_num = %d   size = %ld\n", ele_num, sizeof(double) * ele_num);
+            //getchar();
             double* minR = (double*)malloc(sizeof(double) * ele_num);
+            for (int i = 0; i < ele_num; i++)
+            {
+                minR[i] = 0;
+            }
+            //printf("okkkk minR=%p\n", minR);
             getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-            submf(minR, Pblock, Qblock, Pupdt, Qupdt, N, M, K);
+            /*
+            for (int i = 0; i < ele_num; i++)
+            {
+                printf("%lf\t", minR[i] );
+            }
+            **/
+            //printf("fin  before minR  %p\n", minR);
+            submf(minR, Pblock, Qblock, Pupdt, Qupdt, K);
+            //printf("minR = %p\n", minR);
+            free(minR);
 
             canSend = true;
             hasRecved = false;
         }
         else
         {
-            printf("[Id:%d] has not received...\n", thread_id );
+            //printf("[Id:%d] has not received...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
@@ -180,6 +200,8 @@ int main(int argc, const char * argv[])
 
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
 {
+    //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
+
     ifstream ifs(FILE_NAME);
     string temp;
     for (int i = 0; i < row_sta_idx; i++)
@@ -187,10 +209,13 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
         getline(ifs, temp);
         //cout << "temp:\t" << temp << endl;
     }
+    //printf("check cc 1\n");
     int line_no = row_sta_idx;
     double temp_db;
     int total_num = row_len * col_len;
     int cnt = 0;
+    //printf("check cc 2\n");
+
     for (int i = row_sta_idx; i < row_sta_idx + row_len; i++)
     {
         for (int j = 0 ; j < col_sta_idx; j++)
@@ -215,15 +240,19 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
         }
         //getchar();
     }
+    //printf("Returned  \n");
 }
 
-void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minN, int minM, int minK, int steps, float alpha , float beta)
+void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
 {
-    printf("begin submf\n");
-
+    //printf("begin submf\n");
     double error = 0;
+    int minN = minP.height;
+    int minM = minQ.height;
+
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
+    //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
     updateP.eles.resize(Psz);
     updateP.ele_num = Psz;
     updateQ.eles.resize(Qsz);
@@ -240,6 +269,7 @@ void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates
 
     //for (int step = 0; step < steps; ++step)
     {
+
         for (int i = 0; i < minN; ++i)
         {
             for (int j = 0; j < minM; ++j)
@@ -247,28 +277,33 @@ void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates
 
                 if (minR[i * minM + j] > 0)
                 {
+
                     //printf("idx = %d\n", i * minM + j );
                     //这里面的error 就是公式6里面的e(i,j)
                     error = minR[i * minM + j];
+
                     //printf("error = %lf\n", error );
                     for (int k = 0; k < minK; ++k)
                     {
                         //error_m -= P[i * minK + k] * Q[k * minM + j];
                         error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
                     }
+
                     //更新公式6
                     for (int k = 0; k < minK; ++k)
                     {
+                        //printf("minP sz = %ld minQ sz =%ld updt sz %ld updt sz %ld\n i*minK+k=%d  j*minK+k=%d\n", minP.eles.size(), minQ.eles.size(), updateP.eles.size(), updateQ.eles.size(), i * minK + k, j * minK + k );
                         updateP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
                         updateQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
 
                     }
 
+
                 }
             }
         }
 
-        printf("end submf\n");
+        //printf("end submf  minR=%p\n", minR);
     }
 
 
@@ -342,17 +377,17 @@ void sendTd(int send_thread_id)
     while (check_ret < 0);
     assert(check_ret >= 0);
     //发送数据
-
+    printf("connect to %s %d\n", remote_ip, remote_port);
     while (1 == 1)
     {
         if (!canSend)
         {
-            printf("Td %d cannotSend...\n", thread_id );
+            //printf("Td %d cannotSend...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         else
         {
-            printf("Td:%d cansend\n", thread_id );
+            //printf("Td:%d cansend\n", thread_id );
             size_t struct_sz = sizeof(Pupdt);
             size_t data_sz = sizeof(double) * Pupdt.eles.size();
             char* buf = (char*)malloc(struct_sz + data_sz);
@@ -387,24 +422,31 @@ void recvTd(int recv_thread_id)
 {
     printf("recv_thread_id=%d\n", recv_thread_id);
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
+
+    printf("[Td:%d] worker get connection\n", recv_thread_id);
     while (1 == 1)
     {
-        printf("check 0\n");
+        //printf("check 0\n");
         size_t expected_len = sizeof(Pblock);
-        char* sockBuf = (char*)malloc(expected_len);
+        char* sockBuf = (char*)malloc(expected_len + 100);
         size_t cur_len = 0;
         int ret = 0;
-        printf("check 1\n");
+        //printf("check 1  expected_len=%ld sockBuf=%p\n", expected_len, sockBuf);
+
         while (cur_len < expected_len)
         {
+            //printf("cur_len = %ld  expected_len = %ld\n", cur_len, expected_len);
             ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
+            //printf("check 1.5\n");
             if (ret < 0)
             {
                 printf("Mimatch!\n");
             }
             cur_len += ret;
         }
-        printf("check 2\n");
+
+        //ret = recv(connfd, sockBuf, expected_len, 0);
+        //printf("check 2\n");
         struct Block* pb = (struct Block*)(void*)sockBuf;
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
@@ -412,12 +454,12 @@ void recvTd(int recv_thread_id)
         Pblock.height = pb->height;
         Pblock.ele_num = pb->ele_num;
         Pblock.eles.resize(pb->ele_num);
-        printf("check 3\n");
-        free(sockBuf);
+        //printf("check 3\n");
+        //free(sockBuf);
 
         size_t data_sz = sizeof(double) * (Pblock.ele_num);
         sockBuf = (char*)malloc(data_sz);
-        printf("check 4\n");
+        //printf("check 4\n");
         cur_len = 0;
         ret = 0;
         while (cur_len < data_sz)
@@ -429,16 +471,18 @@ void recvTd(int recv_thread_id)
             }
             cur_len += ret;
         }
-        printf("check 5\n");
+        //printf("check 5\n");
         double* data_eles = (double*)(void*)sockBuf;
         for (int i = 0; i < Pblock.ele_num; i++)
         {
             Pblock.eles[i] = data_eles[i];
         }
         free(data_eles);
-        printf("[ID:%d] get Pblock %d\n", thread_id, Pblock.block_id);
-        Pblock.printBlock();
+        //printf("[ID:%d] get Pblock %d\n", thread_id, Pblock.block_id);
+        //Pblock.printBlock();
 
+        //printf("Here recv pause...\n");
+        //getchar();
 
         expected_len = sizeof(Pblock);
         sockBuf = (char*)malloc(expected_len);
@@ -484,12 +528,11 @@ void recvTd(int recv_thread_id)
         }
         free(data_eles);
 
-        printf("[ID:%d] get Qblock %d\n", thread_id, Qblock.block_id);
-        Qblock.printBlock();
+        //printf("[ID:%d] get Qblock %d\n", thread_id, Qblock.block_id);
+        //Qblock.printBlock();
 
         hasRecved = true;
-        printf("Here recv pause...\n");
-        getchar();
+
 
 
 

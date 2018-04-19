@@ -25,15 +25,16 @@
 #include <algorithm>
 #include <mutex>
 #include <atomic>
+#include <fstream>
 using namespace std;
 #define BUFFER_SIZE 1024
-#define WORKER_NUM 1
+#define CAP 10
 #define FILE_NAME "./mtx.txt"
-
-char* local_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
-int local_ports[10] = {4411, 4412, 4413, 4414};
-char* remote_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
-int remote_ports[10] = {5511, 5512, 5513, 5514};
+int WORKER_NUM = 1;
+char* local_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
+int local_ports[CAP] = {4411, 4412, 4413, 4414};
+char* remote_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
+int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
 #define N  16 //用户数
 #define M  16 //物品数
@@ -110,10 +111,10 @@ struct Updates
         printf("\n");
     }
 };
-struct Block Pblocks[WORKER_NUM];
-struct Block Qblocks[WORKER_NUM];
-struct Updates Pupdts[WORKER_NUM];
-struct Updates Qupdts[WORKER_NUM];
+struct Block Pblocks[CAP];
+struct Block Qblocks[CAP];
+struct Updates Pupdts[CAP];
+struct Updates Qupdts[CAP];
 
 
 
@@ -125,18 +126,39 @@ void printBlockPair(Block& pb, Block& qb, int minK);
 double CalcRMSE();
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
+void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 
 atomic_int recvCount(0);
-bool canSend[WORKER_NUM] = {false};
-int worker_pidx[WORKER_NUM];
-int worker_qidx[WORKER_NUM];
+bool canSend[CAP] = {false};
+int worker_pidx[CAP];
+int worker_qidx[CAP];
 
 int main(int argc, const char * argv[])
 {
     //int connfd = wait4connection(ips[0], ports[0]);
     //printf("connfd=%d\n", connfd);
     //gen P and Q
+    if (argc == 2)
+    {
+        WORKER_NUM = atoi(argv[1]) ;
+    }
     srand(1);
+    ofstream log_ofs("./rmse.txt", ios::trunc);
+    for (int i = 0; i < N; i++)
+    {
+        getMinR(R[i], i, 1, 0, M);
+    }
+    /*
+    for (int i = 0 ; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            printf("%lf\t", R[i][j] );
+        }
+        printf("\n");
+    }
+    **/
+    printf("Load Complete\n");
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < K; j++)
@@ -170,6 +192,7 @@ int main(int argc, const char * argv[])
         std::thread recv_thread(recvTd, recv_thread_id);
         recv_thread.detach();
     }
+    int iter_t = 0;
     while (1 == 1)
     {
         partitionP(WORKER_NUM, Pblocks);
@@ -182,6 +205,8 @@ int main(int argc, const char * argv[])
         //getchar();
         srand(time(0));
         bool ret = false;
+
+        /*
         if (rand() % 2 == 0)
         {
             ret =  next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
@@ -198,7 +223,29 @@ int main(int argc, const char * argv[])
                 next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
             }
         }
+        **/
+        int per_num = 1;
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            worker_pidx[i] = worker_qidx[i] = i;
+            per_num = per_num * (i + 1);
+        }
+        int rand_round = rand() % per_num;
+        for (int i = 0; i < rand_round; i++)
+        {
+            next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
+        }
+        rand_round = rand() % per_num;
+        for (int i = 0; i < rand_round; i++)
+        {
+            next_permutation(worker_qidx, worker_qidx + WORKER_NUM);
+        }
 
+
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            printf("%d:[%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+        }
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
@@ -234,8 +281,14 @@ int main(int argc, const char * argv[])
                 }
             }
             printf("Update Finish, Can Distribute\n");
+            //if (iter_t%10 == 0){
+            double rmse = CalcRMSE();
+            printf("rmse=%lf\n", rmse);
+            log_ofs << rmse << endl;
+            //}
             recvCount = 0;
         }
+        iter_t++;
     }
 
     return 0;
@@ -278,27 +331,29 @@ void sendTd(int send_thread_id)
         }
         else
         {
-            size_t struct_sz = sizeof( Pblocks[send_thread_id]);
-            size_t data_sz = sizeof(double) * Pblocks[send_thread_id].eles.size();
+            int pbid = worker_pidx[send_thread_id];
+            int qbid = worker_qidx[send_thread_id];
+            size_t struct_sz = sizeof( Pblocks[pbid]);
+            size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             char* buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Pblocks[send_thread_id]), struct_sz);
-            memcpy(buf + struct_sz, (char*) & (Pblocks[send_thread_id].eles[0]), data_sz);
+            memcpy(buf, &(Pblocks[pbid]), struct_sz);
+            memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success \n", send_thread_id);
+                printf("[Td:%d] send success pbid =%d\n", send_thread_id, pbid );
             }
             free(buf);
 
-            struct_sz = sizeof( Qblocks[send_thread_id]);
-            data_sz = sizeof(double) * Qblocks[send_thread_id].eles.size();
+            struct_sz = sizeof( Qblocks[qbid]);
+            data_sz = sizeof(double) * Qblocks[qbid].eles.size();
             buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Qblocks[send_thread_id]), struct_sz);
-            memcpy(buf + struct_sz , (char*) & (Qblocks[send_thread_id].eles[0]), data_sz);
+            memcpy(buf, &(Qblocks[qbid]), struct_sz);
+            memcpy(buf + struct_sz , (char*) & (Qblocks[qbid].eles[0]), data_sz);
             ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success \n", send_thread_id);
+                printf("[Td:%d] send success qbid=%d\n", send_thread_id, qbid);
             }
             free(buf);
             canSend[send_thread_id] = false;
@@ -313,7 +368,7 @@ void recvTd(int recv_thread_id)
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
     while (1 == 1)
     {
-        printf("Loop recving...\n");
+        //printf("Loop recving...\n");
         size_t expected_len = sizeof(Updates);
         char* sockBuf = (char*)malloc(expected_len);
         size_t cur_len = 0;
@@ -366,8 +421,8 @@ void recvTd(int recv_thread_id)
         }
         free(data_eles);
 
-        printf("getPupdates block_id = %ld\n", block_id);
-        Pupdts[block_id].printUpdates();
+        //printf("getPupdates block_id = %ld\n", block_id);
+        //Pupdts[block_id].printUpdates();
 
         expected_len = sizeof(Updates);
         sockBuf = (char*)malloc(expected_len);
@@ -419,8 +474,8 @@ void recvTd(int recv_thread_id)
             Qupdts[block_id].eles[i] = data_eles[i];
         }
         free(data_eles);
-        printf("get Qupdts\n");
-        Qupdts[block_id].printUpdates();
+        //printf("get Qupdts\n");
+        //Qupdts[block_id].printUpdates();
         recvCount++;
     }
 }
@@ -528,9 +583,56 @@ void printBlockPair(Block& pb, Block& qb, int minK)
 
 }
 
+
+void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
+{
+    //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
+
+    ifstream ifs(FILE_NAME);
+    string temp;
+    for (int i = 0; i < row_sta_idx; i++)
+    {
+        getline(ifs, temp);
+        //cout << "temp:\t" << temp << endl;
+    }
+    //printf("check cc 1\n");
+    int line_no = row_sta_idx;
+    double temp_db;
+    int total_num = row_len * col_len;
+    int cnt = 0;
+    //printf("check cc 2\n");
+
+    for (int i = row_sta_idx; i < row_sta_idx + row_len; i++)
+    {
+        for (int j = 0 ; j < col_sta_idx; j++)
+        {
+            ifs >> temp_db;
+            //cout << "tf " << temp_db << endl;
+        }
+        //cout << endl;
+        for (int j = col_sta_idx; j < col_sta_idx + col_len; j++)
+        {
+            ifs >> minR[cnt];
+            //cout << "minR " << minR[cnt] << endl;
+            cnt++;
+        }
+        //cout << endl;
+        //getchar();
+        for (int j = col_sta_idx + col_len; j < M; j++)
+        {
+            ifs >> temp_db;
+            //cout << "tfb " << temp_db << endl;
+            //getchar();
+        }
+        //getchar();
+    }
+    //printf("Returned  \n");
+}
+
 double CalcRMSE()
 {
     double rmse = 0;
+    int cnt = 0;
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < M; j++)
@@ -540,10 +642,16 @@ double CalcRMSE()
             {
                 sum += P[i][k] * Q[k][j];
             }
-            rmse += (sum - R[i][j]) * (sum - R[i][j]);
+            if (R[i][j] > 0)
+            {
+                rmse += (sum - R[i][j]) * (sum - R[i][j]);
+                cnt++;
+            }
+
         }
     }
-    rmse /= (N * M);
+    //rmse /= (N * M);
+    rmse /= cnt;
     rmse = sqrt(rmse);
     return rmse;
 }

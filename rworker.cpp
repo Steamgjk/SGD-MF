@@ -25,6 +25,7 @@
 #include <chrono>
 #include <algorithm>
 #include <mutex>
+#include <atomic>
 #include <iostream>
 #include <fstream>
 
@@ -34,17 +35,17 @@ using namespace std;
 
 #define FILE_NAME "./mtx.txt"
 
-#define WORKER_NUM 1
-char* remote_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
-int remote_ports[10] = {4411, 4412, 4413, 4414};
 
 char* local_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
-#define N  10000 //用户数
-#define M  10000 //物品数
-#define K  20 //主题个数
 
+#define N  16 //用户数
+#define M  16 //物品数
+#define K  2 //主题个数
+#define CAP 10
+#define PERIOD 4
+int WORKER_NUM = 2;
 struct Block
 {
     int block_id;
@@ -116,61 +117,103 @@ struct Updates
 };
 struct Block Pblock;
 struct Block Qblock;
-struct Updates Pupdt;
-struct Updates Qupdt;
+struct Block Pblocks[CAP];
+struct Block Qblocks[CAP];
 
-bool canSend = false;
-bool hasRecved = false;
-
+atomic_int recvedCount(0);
+atomic_int toSendCount(0);
+int worker_pidx[CAP];
+int worker_qidx[CAP];
+int send_pidx;
+int send_qidx;
+int recv_pidx;
+int recv_qidx;
+int directions[4] = {1, 1, 0, 0};
+// i is right and 0 is up
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
-void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
+void partitionP(int portion_num,  Block* Pblocks);
+void partitionQ(int portion_num,  Block* Qblocks);
+void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 int thread_id = -1;
 int main(int argc, const char * argv[])
 {
-
+    srand(time(0));
     thread_id = atoi(argv[1]);
+    WORKER_NUM = atoi(argv[2]);
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
 
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
-    //double* minR = (double*)malloc(sizeof(double) * 1000);
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        worker_pidx[i] =  i;
+        worker_qidx[i] = WORKER_NUM - 1 - i ;
+        //p->up
+        //q->right
+    }
+    send_pidx = worker_pidx[thread_id];
+    send_qidx = worker_qidx[thread_id];
+    recv_pidx = worker_pidx[(thread_id + WORKER_NUM - 1) % WORKER_NUM];
+    recv_qidx = worker_qidx[(thread_id + WORKER_NUM - 1) % WORKER_NUM];
+
+    partitionP(WORKER_NUM, Pblocks);
+    partitionQ(WORKER_NUM, Qblocks);
+
+    for (int i = 0; i < Pblock.ele_num; i++)
+    {
+        Pblocks[worker_pidx[thread_id]].eles[i] = rand() % 5;
+    }
+    for (int j = 0; j < Qblock.ele_num; j++)
+    {
+        Qblocks[worker_qidx[thread_id]].eles[j] = rand() % 5;
+    }
+    recvedCount++;
+    int cnt = 0;
     while (1 == 1)
     {
-        if (hasRecved)
+        if (recvedCount > 0)
         {
             //SGD
-            int row_sta_idx = Pblock.sta_idx;
-            int row_len = Pblock.height;
-            int col_sta_idx = Qblock.sta_idx;
-            int col_len = Qblock.height;
+            int pidx = worker_pidx[thread_id];
+            int qidx = worker_qidx[thread_id];
+            recvedCount--;
+            int row_sta_idx = Pblocks[pidx].sta_idx;
+            int row_len = Pblocks[pidx].height;
+            int col_sta_idx = Qblocks[qidx].sta_idx;
+            int col_len = Qblocks[qidx].height;
             int ele_num = row_len * col_len;
-            //printf("ele_num = %d   size = %ld\n", ele_num, sizeof(double) * ele_num);
-            //getchar();
             double* minR = (double*)malloc(sizeof(double) * ele_num);
             for (int i = 0; i < ele_num; i++)
             {
                 minR[i] = 0;
             }
-            //printf("okkkk minR=%p\n", minR);
             getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-            /*
-            for (int i = 0; i < ele_num; i++)
+            submf(minR, Pblock, Qblock, K);
+            int direct = directions[cnt % PERIOD];
+            if (direct == 1)
             {
-                printf("%lf\t", minR[i] );
+                //I will go right
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    worker_qidx[i] = (worker_qidx[i] + 1) % WORKER_NUM;
+                }
             }
-            **/
-            //printf("fin  before minR  %p\n", minR);
-            submf(minR, Pblock, Qblock, Pupdt, Qupdt, K);
-            //printf("minR = %p\n", minR);
+            else
+            {
+                //I will go up
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    worker_pidx[i] = (worker_pidx[i] + WORKER_NUM - 1) % WORKER_NUM;
+                }
+            }
             free(minR);
+            toSendCount++;
 
-            canSend = true;
-            hasRecved = false;
         }
         else
         {
@@ -178,24 +221,7 @@ int main(int argc, const char * argv[])
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
-    /** Test
-    int row_sta_idx = 13;
-    int row_len = 3;
-    int col_sta_idx = 1;
-    int col_len = 4;
-    int ele_num = row_len * col_len;
-    double* minR = (double*)malloc(sizeof(double) * ele_num);
-    getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-    for (int i = 0 ; i < row_len; i++)
-    {
-    for (int j = 0; j < col_len; j++)
-    {
-    printf("%lf ", minR[i * col_len + j] );
-    }
-    printf("\n");
-    }
-    return 0;
-    **/
+
 }
 
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
@@ -243,100 +269,43 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
     //printf("Returned  \n");
 }
 
-void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
+void submf(double * minR, Block & minP, Block & minQ,  int minK, int steps, float alpha , float beta)
 {
     //printf("begin submf\n");
     double error = 0;
     int minN = minP.height;
     int minM = minQ.height;
-
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
-    //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
-    updateP.eles.resize(Psz);
-    updateP.ele_num = Psz;
-    updateQ.eles.resize(Qsz);
-    updateQ.ele_num = Qsz;
-    int ii = 0;
-    for (ii = 0; ii < Psz; ii++)
-    {
-        updateP.eles[ii] = 0;
-    }
-    for ( ii = 0; ii < Qsz; ii++)
-    {
-        updateQ.eles[ii] = 0;
-    }
-    vector<double> originalP = minP.eles;
-    vector<double> originalQ = minQ.eles;
     vector<int> vshuf(minM * minN);
     for (int i = 0; i < minM * minN; i++)
     {
         vshuf[i] = i;
     }
     random_shuffle(vshuf.begin(), vshuf.end());//迭代器
-    /*
+
     for (int ii = 0; ii < minN * minM; ii++)
     {
-        printf("%d ", vshuf[ii] );
-    }
-    printf("\n");
-    **/
-    //for (int step = 0; step < steps; ++step)
-    {
-
-// should be updated one by one
-        //for (int i = 0; i < minN; ++i)
+        int idx = vshuf[ii];
+        int i = idx / minM;
+        int j = idx % minM;
+        if (minR[i * minM + j] > 0)
         {
-            //for (int j = 0; j < minM; ++j)
-            for (int ii = 0; ii < minN * minM; ii++)
+            //这里面的error 就是公式6里面的e(i,j)
+            error = minR[i * minM + j];
+            for (int k = 0; k < minK; ++k)
             {
-                int idx = vshuf[ii];
-                int i = idx / minM;
-                int j = idx % minM;
-                if (minR[i * minM + j] > 0)
-                {
-
-                    //printf("idx = %d\n", i * minM + j );
-                    //这里面的error 就是公式6里面的e(i,j)
-                    error = minR[i * minM + j];
-
-                    //printf("error = %lf\n", error );
-                    for (int k = 0; k < minK; ++k)
-                    {
-                        //error_m -= P[i * minK + k] * Q[k * minM + j];
-                        error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
-                    }
-
-                    //更新公式6
-                    for (int k = 0; k < minK; ++k)
-                    {
-                        //printf("minP sz = %ld minQ sz =%ld updt sz %ld updt sz %ld\n i*minK+k=%d  j*minK+k=%d\n", minP.eles.size(), minQ.eles.size(), updateP.eles.size(), updateQ.eles.size(), i * minK + k, j * minK + k );
-                        //updateP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                        //updateQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
-                        minP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                        minQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
-                    }
-
-
-                }
+                //error_m -= P[i * minK + k] * Q[k * minM + j];
+                error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
             }
-            for (int i = 0; i < originalP.size(); i++)
+            //更新公式6
+            for (int k = 0; k < minK; ++k)
             {
-                updateP.eles[i] = minP.eles[i] - originalP[i];
+                minP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
+                minQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
             }
-            for (int j = 0; j < originalQ.size(); j++)
-            {
-                updateQ.eles[j] = minQ.eles[j] - originalQ[j];
-            }
-
         }
-
-        //printf("end submf  minR=%p\n", minR);
     }
-
-
-
-
 }
 int wait4connection(char*local_ip, int local_port)
 {
@@ -348,12 +317,7 @@ int wait4connection(char*local_ip, int local_port)
     address.sin_family = AF_INET;
     //地址转换
     inet_pton(AF_INET, local_ip, &address.sin_addr);
-    //设置socket buffer大小
-    //int recvbuf = 4096;
-    //int len = sizeof( recvbuf );
-    //setsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, sizeof( recvbuf ) );
-    //getsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, ( socklen_t* )&len );
-    //printf( "the receive buffer size after settting is %d\n", recvbuf );
+
     //绑定ip和端口
     int check_ret = -1;
     do
@@ -380,8 +344,9 @@ int wait4connection(char*local_ip, int local_port)
 void sendTd(int send_thread_id)
 {
     printf("send_thread_id=%d\n", send_thread_id);
-    char* remote_ip = remote_ips[send_thread_id];
-    int remote_port = remote_ports[send_thread_id];
+    int right_idx = (send_thread_id + 1) % WORKER_NUM;
+    char* remote_ip = local_ips[right_idx];
+    int remote_port = local_ports[right_idx];
 
     int fd;
     int check_ret;
@@ -406,42 +371,50 @@ void sendTd(int send_thread_id)
     assert(check_ret >= 0);
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
+    int send_cnt = 0;
     while (1 == 1)
     {
-        if (!canSend)
+        if (toSendCount == 0)
         {
             //printf("Td %d cannotSend...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         else
         {
-            //printf("Td:%d cansend\n", thread_id );
-            size_t struct_sz = sizeof(Pupdt);
-            size_t data_sz = sizeof(double) * Pupdt.eles.size();
-            char* buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Pupdt), struct_sz);
-            memcpy(buf + struct_sz, (char*) & (Pupdt.eles[0]), data_sz);
+            int direct = directions[send_cnt % PERIOD];
+            size_t struct_sz = sizeof(Block);
+            Block* tosend_block = NULL;
+            size_t data_sz = 0;
+            char*buf = NULL;
+            if (direct == 1)
+            {
+                // 1 is right,
+                //I will go right and the pre node will come to this column from left, so I need to send him my Qblock
+                data_sz = sizeof(double) * Qblocks[send_qidx].eles.size();
+                buf = (char*)malloc(struct_sz + data_sz);
+                memcpy(buf, &(Qblocks[send_qidx]), struct_sz);
+                memcpy(buf + struct_sz, (char*) & (Qblocks[send_qidx].eles[0]), data_sz);
+                //updat send_qidx to right
+                send_qidx = (send_qidx + 1) % WORKER_NUM;
+            }
+            else
+            {
+                data_sz = sizeof(double) * Pblocks[send_pidx].eles.size();
+                buf = (char*)malloc(struct_sz + data_sz);
+                memcpy(buf, &(Pblocks[send_pidx]), struct_sz);
+                memcpy(buf + struct_sz, (char*) & (Pblocks[send_pidx].eles[0]), data_sz);
+                //update send_pidx to up
+                send_pidx = (send_pidx + WORKER_NUM - 1) % WORKER_NUM;
+            }
+
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
                 printf("[Id:%d] send success \n", thread_id);
             }
             free(buf);
-
-            struct_sz = sizeof(Qupdt);
-            data_sz = sizeof(double) * Qupdt.eles.size();
-            buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Qupdt), struct_sz);
-            memcpy(buf + struct_sz , (char*) & (Qupdt.eles[0]), data_sz);
-            ret = send(fd, buf, (struct_sz + data_sz), 0);
-            if (ret >= 0 )
-            {
-                printf("[Id:%d] send success \n", thread_id);
-            }
-            free(buf);
-            //printf("Here we pause...\n");
-            //getchar();
-            canSend = false;
+            send_cnt++;
+            toSendCount--;
         }
     }
 
@@ -452,15 +425,29 @@ void recvTd(int recv_thread_id)
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
 
     printf("[Td:%d] worker get connection\n", recv_thread_id);
+    int cnt = 0;
     while (1 == 1)
     {
-        //printf("check 0\n");
-        size_t expected_len = sizeof(Pblock);
-        char* sockBuf = (char*)malloc(expected_len + 100);
+        int direct = directions[cnt % PERIOD];
+        size_t expected_len = sizeof(Block);
+        char* sockBuf = NULL;
+        if (direct == 1)
+        {
+            // I will go right, so I send my Qblock to the right neighbor,
+            //similarly, I also receive a Qblock from my left neighbor
+            sockBuf = (char*)(void*)(&(Qblocks[recv_qidx]));
+            //I will go right, update recv_qidx
+            recv_qidx = (recv_qidx + 1) % WORKER_NUM;
+
+        }
+        else
+        {
+            sockBuf = (char*)(void*)(&(Pblocks[recv_pidx]));
+            // I will go up, update recv_pidx
+            recv_pidx = (recv_pidx + WORKER_NUM - 1) % WORKER_NUM;
+        }
         size_t cur_len = 0;
         int ret = 0;
-        //printf("check 1  expected_len=%ld sockBuf=%p\n", expected_len, sockBuf);
-
         while (cur_len < expected_len)
         {
             //printf("cur_len = %ld  expected_len = %ld\n", cur_len, expected_len);
@@ -473,17 +460,8 @@ void recvTd(int recv_thread_id)
             cur_len += ret;
         }
 
-        //ret = recv(connfd, sockBuf, expected_len, 0);
-        //printf("check 2\n");
         struct Block* pb = (struct Block*)(void*)sockBuf;
-        Pblock.block_id = pb->block_id;
-        Pblock.data_age = pb->data_age;
-        Pblock.sta_idx = pb->sta_idx;
-        Pblock.height = pb->height;
-        Pblock.ele_num = pb->ele_num;
-        Pblock.eles.resize(pb->ele_num);
-        //printf("check 3\n");
-        //free(sockBuf);
+        pb->eles.resize(pb->ele_num);
 
         size_t data_sz = sizeof(double) * (Pblock.ele_num);
         sockBuf = (char*)malloc(data_sz);
@@ -503,68 +481,76 @@ void recvTd(int recv_thread_id)
         double* data_eles = (double*)(void*)sockBuf;
         for (int i = 0; i < Pblock.ele_num; i++)
         {
-            Pblock.eles[i] = data_eles[i];
+            pb->eles[i] = data_eles[i];
         }
         free(data_eles);
-        //printf("[ID:%d] get Pblock %d\n", thread_id, Pblock.block_id);
-        //Pblock.printBlock();
-
-        //printf("Here recv pause...\n");
-        //getchar();
-
-        expected_len = sizeof(Pblock);
-        sockBuf = (char*)malloc(expected_len);
-        cur_len = 0;
-        ret = 0;
-        while (cur_len < expected_len)
-        {
-            ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
-            if (ret < 0)
-            {
-                printf("Mimatch!\n");
-            }
-            cur_len += ret;
-        }
-        struct Block* qb = (struct Block*)(void*)sockBuf;
-        Qblock.block_id = qb->block_id;
-        Qblock.data_age = qb->data_age;
-        Qblock.sta_idx = qb->sta_idx;
-        Qblock.height = qb->height;
-        Qblock.ele_num = qb-> ele_num;
-        Qblock.eles.resize(qb->ele_num);
-        free(sockBuf);
-
-        data_sz = sizeof(double) * (Qblock.ele_num);
-        sockBuf = (char*)malloc(data_sz);
-
-        cur_len = 0;
-        ret = 0;
-        while (cur_len < data_sz)
-        {
-            ret = recv(connfd, sockBuf + cur_len, data_sz - cur_len, 0);
-            if (ret < 0)
-            {
-                printf("Mimatch!\n");
-            }
-            cur_len += ret;
-        }
-
-        data_eles = (double*)(void*)sockBuf;
-        for (int i = 0; i < Qblock.ele_num; i++)
-        {
-            Qblock.eles[i] = data_eles[i];
-        }
-        free(data_eles);
-
-        //printf("[ID:%d] get Qblock %d\n", thread_id, Qblock.block_id);
-        //Qblock.printBlock();
-
-        hasRecved = true;
-
-
-
 
     }
 }
 
+void partitionP(int portion_num,  Block* Pblocks)
+{
+    int i = 0;
+    int height = N / portion_num;
+    int last_height = N - (portion_num - 1) * height;
 
+    for (i = 0; i < portion_num; i++)
+    {
+        Pblocks[i].block_id = i;
+        Pblocks[i].data_age = 0;
+        Pblocks[i].eles.clear();
+        Pblocks[i].height = height;
+        int sta_idx = i * height;
+        if ( i == portion_num - 1)
+        {
+            Pblocks[i].height = last_height;
+        }
+        Pblocks[i].sta_idx = sta_idx;
+        /*
+                for (int h = 0; h < Pblocks[i].height; h++)
+                {
+                    for (int j = 0; j < K; j++)
+                    {
+                        Pblocks[i].eles.push_back(P[h][j]);
+                    }
+                }
+                **/
+        Pblocks[i].ele_num = Pblocks[i].height * K;
+        Pblocks[i].eles.resize(Pblocks[i].ele_num);
+    }
+
+}
+
+void partitionQ(int portion_num,  Block* Qblocks)
+{
+    int i = 0;
+    int height = M / portion_num;
+    int last_height = M - (portion_num - 1) * height;
+
+    for (i = 0; i < portion_num; i++)
+    {
+        Qblocks[i].block_id = i;
+        Qblocks[i].data_age = 0;
+        Qblocks[i].eles.clear();
+        Qblocks[i].height = height;
+        int sta_idx = i * height;
+        if ( i == portion_num - 1)
+        {
+            Qblocks[i].height = last_height;
+        }
+        Qblocks[i].sta_idx = sta_idx;
+        /*
+                for (int h = 0; h < Qblocks[i].height; h++)
+                {
+                    for (int j = 0; j < K; j++)
+                    {
+                        Qblocks[i].eles.push_back(Q[j][h]);
+                    }
+                }
+                **/
+        Qblocks[i].ele_num = Qblocks[i].height * K;
+        Qblocks[i].eles.resize(Qblocks[i].ele_num);
+
+    }
+
+}

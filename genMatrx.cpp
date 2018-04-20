@@ -4,8 +4,8 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
-#define N 16
-#define M 16
+#define N 10000
+#define M 10000
 #define K 2
 double R[N][M];
 double P[N][K];
@@ -42,6 +42,7 @@ int main()
 			for (int k = 0; k < K; k++)
 			{
 				R[i][j] += P[i][k] * Q[k][j];
+				R[i][j] =  (int)(R[i][j]) % 5;
 			}
 		}
 	}

@@ -36,9 +36,9 @@ int local_ports[CAP] = {4411, 4412, 4413, 4414};
 char* remote_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
 int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
-#define N  16 //用户数
-#define M  16 //物品数
-#define K  2 //主题个数
+#define N  10000 //用户数
+#define M  10000 //物品数
+#define K  20 //主题个数
 
 double R[N][M];
 double P[N][K];
@@ -147,6 +147,7 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < N; i++)
     {
         getMinR(R[i], i, 1, 0, M);
+        printf("Load %d line\n", i);
     }
     /*
     for (int i = 0 ; i < N; i++)
@@ -206,30 +207,13 @@ int main(int argc, const char * argv[])
         srand(time(0));
         bool ret = false;
 
-        /*
-        if (rand() % 2 == 0)
-        {
-            ret =  next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
-            if (!ret)
-            {
-                prev_permutation(worker_pidx, worker_pidx + WORKER_NUM);
-            }
-        }
-        else
-        {
-            ret =  prev_permutation(worker_pidx, worker_pidx + WORKER_NUM);
-            if (!ret)
-            {
-                next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
-            }
-        }
-        **/
         int per_num = 1;
         for (int i = 0; i < WORKER_NUM; i++)
         {
             worker_pidx[i] = worker_qidx[i] = i;
             per_num = per_num * (i + 1);
         }
+        /*
         int rand_round = rand() % per_num;
         for (int i = 0; i < rand_round; i++)
         {
@@ -240,6 +224,9 @@ int main(int argc, const char * argv[])
         {
             next_permutation(worker_qidx, worker_qidx + WORKER_NUM);
         }
+        **/
+        random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
+        random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
 
         for (int i = 0; i < WORKER_NUM; i++)

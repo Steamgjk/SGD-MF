@@ -33,7 +33,7 @@ using namespace std;
 
 #define BUFFER_SIZE 1024
 
-#define FILE_NAME "./mtx.txt"
+#define FILE_NAME "./mtx-small.txt"
 
 
 char* local_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
@@ -115,8 +115,8 @@ struct Updates
 
     }
 };
-struct Block Pblock;
-struct Block Qblock;
+//struct Block Pblock;
+//struct Block Qblock;
 struct Block Pblocks[CAP];
 struct Block Qblocks[CAP];
 
@@ -164,11 +164,11 @@ int main(int argc, const char * argv[])
     partitionP(WORKER_NUM, Pblocks);
     partitionQ(WORKER_NUM, Qblocks);
 
-    for (int i = 0; i < Pblock.ele_num; i++)
+    for (int i = 0; i < Pblocks[worker_pidx[thread_id]].ele_num; i++)
     {
         Pblocks[worker_pidx[thread_id]].eles[i] = rand() % 5;
     }
-    for (int j = 0; j < Qblock.ele_num; j++)
+    for (int j = 0; j < Qblocks[worker_qidx[thread_id]].ele_num; j++)
     {
         Qblocks[worker_qidx[thread_id]].eles[j] = rand() % 5;
     }
@@ -187,14 +187,19 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblocks[qidx].sta_idx;
             int col_len = Qblocks[qidx].height;
             int ele_num = row_len * col_len;
+            //printf("begin getMinR\n");
             double* minR = (double*)malloc(sizeof(double) * ele_num);
             for (int i = 0; i < ele_num; i++)
             {
                 minR[i] = 0;
             }
             getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-            submf(minR, Pblock, Qblock, K);
+            //printf("endMinR\n");
+
+            submf(minR, Pblocks[pidx], Qblocks[qidx], K);
+
             int direct = directions[cnt % PERIOD];
+
             if (direct == 1)
             {
                 //I will go right
@@ -364,11 +369,11 @@ void sendTd(int send_thread_id)
     inet_pton(AF_INET, remote_ip, &address.sin_addr);
     do
     {
+        printf("Trying to connect to %s %d\n", remote_ip, remote_port);
         check_ret = connect(fd, (struct sockaddr*) &address, sizeof(address));
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (check_ret < 0);
-    assert(check_ret >= 0);
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
     int send_cnt = 0;
@@ -390,15 +395,30 @@ void sendTd(int send_thread_id)
             {
                 // 1 is right,
                 //I will go right and the pre node will come to this column from left, so I need to send him my Qblock
+                //printf("SendTd direct=1\n");
                 data_sz = sizeof(double) * Qblocks[send_qidx].eles.size();
                 buf = (char*)malloc(struct_sz + data_sz);
+                //printf("SendTd direct=1 ch1... eles=%ld\n", Qblocks[send_qidx].eles.size() );
                 memcpy(buf, &(Qblocks[send_qidx]), struct_sz);
+                /*
+                char* temp = (char*)malloc(data_sz);
+                memcpy(temp, (char*) & (Qblocks[send_qidx].eles[0]), data_sz );
+                double* dbtemp = (double*)(void*)temp;
+                for (int i = 0; i < Qblocks[send_qidx].eles.size(); i++ )
+                {
+                    printf("%lf\t", dbtemp[i] );
+                }
+                printf("\n");
+                **/
                 memcpy(buf + struct_sz, (char*) & (Qblocks[send_qidx].eles[0]), data_sz);
+                //printf("SendTd direct=1 ch2\n");
                 //updat send_qidx to right
                 send_qidx = (send_qidx + 1) % WORKER_NUM;
+                //printf("SendTd direct=1 ch3\n");
             }
             else
             {
+                //printf("SendTd direct=0\n");
                 data_sz = sizeof(double) * Pblocks[send_pidx].eles.size();
                 buf = (char*)malloc(struct_sz + data_sz);
                 memcpy(buf, &(Pblocks[send_pidx]), struct_sz);
@@ -406,7 +426,7 @@ void sendTd(int send_thread_id)
                 //update send_pidx to up
                 send_pidx = (send_pidx + WORKER_NUM - 1) % WORKER_NUM;
             }
-
+            //printf("SendTd  check point 1\n");
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
@@ -415,6 +435,8 @@ void sendTd(int send_thread_id)
             free(buf);
             send_cnt++;
             toSendCount--;
+            //printf("Send return loop...\n");
+            //getchar();
         }
     }
 
@@ -433,6 +455,7 @@ void recvTd(int recv_thread_id)
         char* sockBuf = NULL;
         if (direct == 1)
         {
+            //printf("recv direct=1\n");
             // I will go right, so I send my Qblock to the right neighbor,
             //similarly, I also receive a Qblock from my left neighbor
             sockBuf = (char*)(void*)(&(Qblocks[recv_qidx]));
@@ -442,12 +465,14 @@ void recvTd(int recv_thread_id)
         }
         else
         {
+            //printf("recv direct =0\n");
             sockBuf = (char*)(void*)(&(Pblocks[recv_pidx]));
             // I will go up, update recv_pidx
             recv_pidx = (recv_pidx + WORKER_NUM - 1) % WORKER_NUM;
         }
         size_t cur_len = 0;
         int ret = 0;
+        //printf("recv Check 1\n");
         while (cur_len < expected_len)
         {
             //printf("cur_len = %ld  expected_len = %ld\n", cur_len, expected_len);
@@ -463,9 +488,9 @@ void recvTd(int recv_thread_id)
         struct Block* pb = (struct Block*)(void*)sockBuf;
         pb->eles.resize(pb->ele_num);
 
-        size_t data_sz = sizeof(double) * (Pblock.ele_num);
+        size_t data_sz = sizeof(double) * (pb->ele_num);
         sockBuf = (char*)malloc(data_sz);
-        //printf("check 4\n");
+        //printf("recv check 4\n");
         cur_len = 0;
         ret = 0;
         while (cur_len < data_sz)
@@ -479,12 +504,14 @@ void recvTd(int recv_thread_id)
         }
         //printf("check 5\n");
         double* data_eles = (double*)(void*)sockBuf;
-        for (int i = 0; i < Pblock.ele_num; i++)
+        for (int i = 0; i < pb->ele_num; i++)
         {
             pb->eles[i] = data_eles[i];
         }
         free(data_eles);
-
+        recvedCount++;
+        //printf("recv pausing..\n");
+        //getchar();
     }
 }
 

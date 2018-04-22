@@ -27,12 +27,12 @@
 #include <mutex>
 #include <iostream>
 #include <fstream>
+#include <sys/time.h>
 
 using namespace std;
 
-#define BUFFER_SIZE 1024
 
-#define FILE_NAME "./mtx.txt"
+#define FILE_NAME "./netflix_mtx.txt"
 
 #define WORKER_NUM 1
 char* remote_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
@@ -41,9 +41,12 @@ int remote_ports[10] = {4411, 4412, 4413, 4414};
 char* local_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
-#define N  10000 //用户数
-#define M  10000 //物品数
-#define K  20 //主题个数
+#define N  17770 // row number
+#define M  2649429 //col number
+#define K  40 //主题个数
+
+#define ThreshIter 100
+#define SEQ_LEN 5000
 
 struct Block
 {
@@ -122,27 +125,50 @@ struct Updates Qupdt;
 bool canSend = false;
 bool hasRecved = false;
 
+int block_seq[SEQ_LEN];
+
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 
+void LoadConfig(char*filename);
+void WriteLog(Block&Pb, Block&Qb);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 int thread_id = -1;
+
+struct timeval start, stop, diff;
+
+
+
 int main(int argc, const char * argv[])
 {
 
     thread_id = atoi(argv[1]);
+
+    memset(&start, 0, sizeof(struct timeval));
+    memset(&stop, 0, sizeof(struct timeval));
+    memset(&diff, 0, sizeof(struct timeval));
+
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
 
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
     //double* minR = (double*)malloc(sizeof(double) * 1000);
+    int iter_cnt = 0;
+    bool isstart = false;
     while (1 == 1)
     {
+
         if (hasRecved)
         {
+            if (!isstart)
+            {
+                isstart = true;
+                gettimeofday(&start, 0);
+            }
+
             //SGD
             int row_sta_idx = Pblock.sta_idx;
             int row_len = Pblock.height;
@@ -166,11 +192,22 @@ int main(int argc, const char * argv[])
             **/
             //printf("fin  before minR  %p\n", minR);
             submf(minR, Pblock, Qblock, Pupdt, Qupdt, K);
+            iter_cnt++;
+            if (iter_cnt == ThreshIter)
+            {
+                gettimeofday(&stop, 0);
+
+                long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
+                printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
+                WriteLog(Pblock, Qblock);
+                exit(0);
+            }
             //printf("minR = %p\n", minR);
             free(minR);
 
             canSend = true;
             hasRecved = false;
+
         }
         else
         {
@@ -198,6 +235,34 @@ int main(int argc, const char * argv[])
     **/
 }
 
+void LoadConfig(char*filename)
+{
+
+}
+void WriteLog(Block&Pb, Block&Qb)
+{
+    char fn[100];
+    sprintf(fn, "Pblock-%d", Pb.block_id);
+    ofstream pofs(fn, ios::trunc);
+    for (int h = 0; h < Pb.height; h++)
+    {
+        for (int j = 0; j < K; j++)
+        {
+            pofs << Pb.eles[h * K + j] << " ";
+        }
+        pofs << endl;
+    }
+    sprintf(fn, "Qblock-%d", Qb.block_id);
+    ofstream qofs(fn, ios::trunc);
+    for (int h = 0; h < Qb.height; h++)
+    {
+        for (int j = 0; j < K; j++)
+        {
+            qofs << Qb.eles[h * K + j] << " ";
+        }
+        qofs << endl;
+    }
+}
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
 {
     //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);

@@ -27,20 +27,20 @@
 #include <atomic>
 #include <fstream>
 using namespace std;
-#define BUFFER_SIZE 1024
-#define CAP 10
-#define FILE_NAME "./mtx.txt"
+#define CAP 30
+#define FILE_NAME "./netflix_mtx.txt"
 int WORKER_NUM = 1;
 char* local_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
 char* remote_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
 int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
-#define N  10000 //用户数
-#define M  10000 //物品数
-#define K  20 //主题个数
+#define N  17770 // row number
+#define M  2649429 //col number
+#define K  40 //主题个数
 
-double R[N][M];
+//double R[N][M];
+double Rline[M];
 double P[N][K];
 double Q[K][M];
 bool worker_debug = false;
@@ -144,12 +144,12 @@ int main(int argc, const char * argv[])
     }
     srand(1);
     ofstream log_ofs("./rmse.txt", ios::trunc);
+    /*
     for (int i = 0; i < N; i++)
     {
         getMinR(R[i], i, 1, 0, M);
         printf("Load %d line\n", i);
     }
-    /*
     for (int i = 0 ; i < N; i++)
     {
         for (int j = 0; j < M; j++)
@@ -164,14 +164,14 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < K; j++)
         {
-            P[i][j] =  ((double)(rand() % 1000)) / 100;
+            P[i][j] =  ((double)(rand() % 5));
         }
     }
     for (int i = 0; i < K; i++)
     {
         for (int j = 0; j < M; j++)
         {
-            Q[i][j] = ((double)(rand() % 1000)) / 100;
+            Q[i][j] = ((double)(rand() % 5));
         }
     }
     for (int i = 0; i < WORKER_NUM; i++)
@@ -510,6 +510,7 @@ int wait4connection(char*local_ip, int local_port)
 
 void printBlockPair(Block& pb, Block& qb, int minK)
 {
+    /*
     double rmse = 0.0;
     printf("\n********Below P[%d]*************\n", pb.block_id);
     for (int i = 0 ; i < pb.height; i++)
@@ -567,6 +568,7 @@ void printBlockPair(Block& pb, Block& qb, int minK)
     }
     printf("\n***************************\n");
     printf("rmse=%lf\n", rmse);
+    **/
 
 }
 
@@ -622,6 +624,7 @@ double CalcRMSE()
     int cnt = 0;
     for (int i = 0; i < N; i++)
     {
+        getMinR(Rline, i, 1, 0, M);
         for (int j = 0; j < M; j++)
         {
             double sum = 0;
@@ -629,9 +632,16 @@ double CalcRMSE()
             {
                 sum += P[i][k] * Q[k][j];
             }
+            /*
             if (R[i][j] > 0)
             {
                 rmse += (sum - R[i][j]) * (sum - R[i][j]);
+                cnt++;
+            }
+            **/
+            if (Rline[j] > 0)
+            {
+                rmse += (sum - Rline[j]) * (sum - Rline[j]);
                 cnt++;
             }
 

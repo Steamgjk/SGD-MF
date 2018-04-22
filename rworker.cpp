@@ -28,6 +28,7 @@
 #include <atomic>
 #include <iostream>
 #include <fstream>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -43,9 +44,12 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 #define N  16 //用户数
 #define M  16 //物品数
 #define K  2 //主题个数
-#define CAP 10
+#define CAP 30
 #define PERIOD 4
 int WORKER_NUM = 2;
+#define ThreshIter 100
+#define SEQ_LEN 5000
+
 struct Block
 {
     int block_id;
@@ -120,6 +124,8 @@ struct Updates
 struct Block Pblocks[CAP];
 struct Block Qblocks[CAP];
 
+struct timeval start, stop, diff;
+
 atomic_int recvedCount(0);
 atomic_int toSendCount(0);
 int worker_pidx[CAP];
@@ -129,6 +135,8 @@ int send_qidx;
 int recv_pidx;
 int recv_qidx;
 int directions[4] = {1, 1, 0, 0};
+
+int block_seq[SEQ_LEN];
 // i is right and 0 is up
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
@@ -136,8 +144,12 @@ void recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-
+void WriteLog(Block&Pb, Block&Qb);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
+void LoadConfig(char*filename);
+
+
+
 int thread_id = -1;
 int main(int argc, const char * argv[])
 {
@@ -174,10 +186,17 @@ int main(int argc, const char * argv[])
     }
     recvedCount++;
     int cnt = 0;
+    int iter_cnt = 0;
+    bool isstart = false;
     while (1 == 1)
     {
         if (recvedCount > 0)
         {
+            if (!isstart)
+            {
+                isstart = true;
+                gettimeofday(&start, 0);
+            }
             //SGD
             int pidx = worker_pidx[thread_id];
             int qidx = worker_qidx[thread_id];
@@ -197,6 +216,18 @@ int main(int argc, const char * argv[])
             //printf("endMinR\n");
 
             submf(minR, Pblocks[pidx], Qblocks[qidx], K);
+
+            iter_cnt++;
+            if (iter_cnt == ThreshIter)
+            {
+                gettimeofday(&stop, 0);
+
+                long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
+                printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
+                WriteLog(Pblocks[pidx], Qblocks[qidx]);
+                exit(0);
+            }
+
 
             int direct = directions[cnt % PERIOD];
 
@@ -226,6 +257,11 @@ int main(int argc, const char * argv[])
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
+
+}
+
+void LoadConfig(char*filename)
+{
 
 }
 
@@ -272,6 +308,31 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
         //getchar();
     }
     //printf("Returned  \n");
+}
+
+void WriteLog(Block&Pb, Block&Qb)
+{
+    char fn[100];
+    sprintf(fn, "Pblock-%d", Pb.block_id);
+    ofstream pofs(fn, ios::trunc);
+    for (int h = 0; h < Pb.height; h++)
+    {
+        for (int j = 0; j < K; j++)
+        {
+            pofs << Pb.eles[h * K + j] << " ";
+        }
+        pofs << endl;
+    }
+    sprintf(fn, "Qblock-%d", Qb.block_id);
+    ofstream qofs(fn, ios::trunc);
+    for (int h = 0; h < Qb.height; h++)
+    {
+        for (int j = 0; j < K; j++)
+        {
+            qofs << Qb.eles[h * K + j] << " ";
+        }
+        qofs << endl;
+    }
 }
 
 void submf(double * minR, Block & minP, Block & minQ,  int minK, int steps, float alpha , float beta)

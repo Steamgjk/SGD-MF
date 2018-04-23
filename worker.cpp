@@ -278,7 +278,7 @@ void LoadRating()
         RMap.insert(pair<long, double>(hash_idx, ra));
         //KeyVec.insert(hash_idx);
         cnt++;
-        if (cnt % 10000 == 0)
+        if (cnt % 1000000 == 0)
         {
             printf("cnt=%d\n", cnt );
         }
@@ -430,7 +430,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         random_shuffle(KeyVec.begin(), KeyVec.end());//迭代器
     }
 
-
+    printf("Begin Calc sz = %ld\n", KeyVec.size() );
     //for (int step = 0; step < steps; ++step)
 
     {
@@ -439,6 +439,10 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             //for (int j = 0; j < minM; ++j)
             for (int ii = 0; ii < KeyVec.size(); ii++)
             {
+                if (ii % 1000000 == 0)
+                {
+                    printf("ii=%d\n", ii);
+                }
                 int real_hash_idx = KeyVec[ii];
                 long real_row_idx = real_hash_idx / M;
                 long real_col_idx = real_hash_idx % M;
@@ -485,7 +489,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
         }
 
-        //printf("end submf  minR=%p\n", minR);
+        printf("end sumbmf\n");
     }
 
 
@@ -564,7 +568,7 @@ void sendTd(int send_thread_id)
     {
         if (!canSend)
         {
-            printf("Td %d cannotSend...\n", thread_id );
+            //printf("Td %d cannotSend...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         else

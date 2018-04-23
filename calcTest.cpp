@@ -50,6 +50,7 @@ int main()
 	long hash_id = 0;
 	map<long, double>::iterator iter;
 	ofstream ofs(TEST_OUT, ios::trunc);
+	printf("Haha\n");
 	while (!ifs2.eof())
 	{
 		ifs2 >> cus_id >> tp;

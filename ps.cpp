@@ -30,9 +30,9 @@ using namespace std;
 #define CAP 30
 #define FILE_NAME "./netflix_mtx.txt"
 int WORKER_NUM = 1;
-char* local_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
+char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
-char* remote_ips[CAP] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
+char* remote_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
 #define N  17770 // row number

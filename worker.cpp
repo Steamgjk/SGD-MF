@@ -35,10 +35,10 @@ using namespace std;
 #define FILE_NAME "./netflix_mtx.txt"
 
 #define WORKER_NUM 1
-char* remote_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
+char* remote_ips[10] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[10] = {4411, 4412, 4413, 4414};
 
-char* local_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
+char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define N  17770 // row number

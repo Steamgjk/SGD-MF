@@ -167,14 +167,14 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < K; j++)
         {
-            P[i][j] =  ((double)(rand() / RANDOM_MAX));
+            P[i][j] =  ((double)rand() / RAND_MAX);
         }
     }
     for (int i = 0; i < K; i++)
     {
         for (int j = 0; j < M; j++)
         {
-            Q[i][j] = ((double)(rand() / RANDOM_MAX));
+            Q[i][j] = ((double)rand() / RAND_MAX);
         }
     }
     for (int i = 0; i < WORKER_NUM; i++)

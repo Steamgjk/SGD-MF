@@ -48,11 +48,11 @@ int main()
 	while (!ifs2.eof())
 	{
 		ifs2 >> cus_id >> tp;
-		if (tp == ":")
+		if (tp == ':')
 		{
 			mov_id = cus_id;
 		}
-		else if (tp == ",")
+		else if (tp == ',')
 		{
 			ifs2 >> tmst;
 			hash_id = mov_id * M + cus_id;
@@ -60,12 +60,10 @@ int main()
 			if (iter != mm.end())
 			{
 				ofs << iter->first << " " << iter->second << endl;
-
 			}
 			else
 			{
 				ofs << iter->first << " " << 0 << endl;
-
 			}
 		}
 		else

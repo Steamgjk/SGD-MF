@@ -66,7 +66,7 @@ int main()
 			if (iter != mm.end())
 			{
 				ofs << iter->first << " " << iter->second << endl;
-				printf("oof %ld  %ld\n", iter->first, iter->second);
+				//printf("oof %ld  %ld\n", iter->first, iter->second);
 			}
 			else
 			{

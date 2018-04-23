@@ -58,7 +58,7 @@ int main()
 	{
 		getline(ifs2, line);
 		stringstream ss(line);
-		if (line[line.length - 1] == ':')
+		if (line[line.length() - 1] == ':')
 		{
 			ss >> mov_id;
 		}

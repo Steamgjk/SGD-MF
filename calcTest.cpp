@@ -12,7 +12,7 @@ using namespace std;
 #define M  2649429 //col number
 
 #define ROW_NAME "./netflix_row.txt"
-#define TEST_NAME "./qualifying.txt"
+#define TEST_NAME "./probe.txt"
 #define TEST_OUT "./test_out.txt"
 map<long, double> mm;
 int main()
@@ -50,7 +50,7 @@ int main()
 	long hash_id = 0;
 	map<long, double>::iterator iter;
 	ofstream ofs(TEST_OUT, ios::trunc);
-	printf("Haha\n");
+	printf("Haha  sz = %ld\n", mm.size());
 	while (!ifs2.eof())
 	{
 		ifs2 >> cus_id >> tp;
@@ -66,6 +66,7 @@ int main()
 			if (iter != mm.end())
 			{
 				ofs << iter->first << " " << iter->second << endl;
+				printf("oof %ld  %ld\n", iter->first, iter->second);
 			}
 			else
 			{

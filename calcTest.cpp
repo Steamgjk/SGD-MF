@@ -77,6 +77,10 @@ int main()
 			{
 				ofs << iter->first << " " << 0 << endl;
 			}
+			if (lcnt % 1000 == 0)
+			{
+				cout << lcnt << endl;
+			}
 		}
 		lcnt++;
 

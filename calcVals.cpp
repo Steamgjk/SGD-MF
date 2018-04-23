@@ -24,9 +24,9 @@ int main()
 	}
 	int cnt = 0;
 	double temp = 0;
-	for (int i = 0; i < N; i++)
+	for (long int i = 0; i < N; i++)
 	{
-		for (int j = 0; j < M; j++)
+		for (long int j = 0; j < M; j++)
 		{
 			ifs >> temp;
 			if (temp > 0)
@@ -34,6 +34,11 @@ int main()
 				long hash_idx = i * M + j;
 				ofs << hash_idx << " " << temp << endl;
 				cnt++;
+				if (hash_idx < 0)
+				{
+					printf("err  hash_idx=%ld\n", hash_idx );
+					getchar();
+				}
 			}
 		}
 		if (i % 1000 == 0)

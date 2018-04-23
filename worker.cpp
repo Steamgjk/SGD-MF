@@ -490,6 +490,16 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                     for (int k = 0; k < minK; ++k)
                     {
                         //error_m -= P[i * minK + k] * Q[k * minM + j];
+                        if (i * minK + k >= minP.eles.size() || i * minK + k < 0 )
+                        {
+                            printf("i=%d minK=%d k=%d sz=%ld\n", i, minK, k, minP.eles.size() );
+                            getchar();
+                        }
+                        if (j * minK + k >= minQ.eles.size() || j * minK + k < 0 )
+                        {
+                            printf("j=%d minK=%d k=%d sz=%ld\n", j, minK, k, minQ.eles.size() );
+                            getchar();
+                        }
                         error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
                     }
 

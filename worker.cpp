@@ -420,7 +420,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             iter = RMap.find(real_hash_idx);
             if (iter != RMap.end())
             {
-                KeyVec.insert(iter->second);
+                KeyVec.insert(real_hash_idx);
             }
         }
     }

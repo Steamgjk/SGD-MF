@@ -28,11 +28,11 @@
 #include <iostream>
 #include <fstream>
 #include <sys/time.h>
-
+#include <map>
 using namespace std;
 
-
-#define FILE_NAME "./netflix_mtx.txt"
+//cnt=15454227 sizeof(long)=8
+#define FILE_NAME "./netflix_row.txt"
 
 #define WORKER_NUM 1
 char* remote_ips[10] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
@@ -44,6 +44,9 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 #define N  17770 // row number
 #define M  2649429 //col number
 #define K  40 //主题个数
+
+#define Bsz (100*1000)
+#define Rsz (17770 * Bsz)
 
 #define ThreshIter 100
 #define SEQ_LEN 5000
@@ -130,21 +133,36 @@ int block_seq[SEQ_LEN];
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
-void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
+//void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
+void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 
 void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
+void LoadRating();
 int thread_id = -1;
 
 struct timeval start, stop, diff;
 
 
-
+//double* minR = (double*)malloc(sizeof(double) * Rsz);
+map<long, double> RMap;
 int main(int argc, const char * argv[])
 {
 
+    //printf("minR = %p sz = %lld\n", minR, (sizeof(double) * Rsz / 1000000000) );
+    //getchar();
+    /*
+        for (int i = 0; i < Rsz; i++)
+    {
+        minR[i] = 0;
+    }
+
+    **/
     thread_id = atoi(argv[1]);
+    LoadRating();
+    printf("Load Rating Success\n");
+
 
     memset(&start, 0, sizeof(struct timeval));
     memset(&stop, 0, sizeof(struct timeval));
@@ -163,6 +181,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
+            printf("has Received\n");
             if (!isstart)
             {
                 isstart = true;
@@ -177,13 +196,14 @@ int main(int argc, const char * argv[])
             int ele_num = row_len * col_len;
             //printf("ele_num = %d   size = %ld\n", ele_num, sizeof(double) * ele_num);
             //getchar();
-            double* minR = (double*)malloc(sizeof(double) * ele_num);
-            for (int i = 0; i < ele_num; i++)
-            {
-                minR[i] = 0;
-            }
+            //double* minR = (double*)malloc(sizeof(double) * col_len);
+            //double* minR = (double*)malloc(sizeof(double) * col_len);
+            //printf("minR=%p sizeof(double) * M=%lld\n", minR, M );
+            //getchar();
+
+
             //printf("okkkk minR=%p\n", minR);
-            getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
+            //getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
             /*
             for (int i = 0; i < ele_num; i++)
             {
@@ -191,7 +211,7 @@ int main(int argc, const char * argv[])
             }
             **/
             //printf("fin  before minR  %p\n", minR);
-            submf(minR, Pblock, Qblock, Pupdt, Qupdt, K);
+            submf(Pblock, Qblock, Pupdt, Qupdt, K);
             iter_cnt++;
             if (iter_cnt == ThreshIter)
             {
@@ -202,8 +222,8 @@ int main(int argc, const char * argv[])
                 WriteLog(Pblock, Qblock);
                 exit(0);
             }
-            //printf("minR = %p\n", minR);
-            free(minR);
+
+            //free(minR);
 
             canSend = true;
             hasRecved = false;
@@ -239,6 +259,27 @@ void LoadConfig(char*filename)
 {
 
 }
+void LoadRating()
+{
+    ifstream ifs(FILE_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", FILE_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        RMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+    }
+
+    printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
+}
 void WriteLog(Block&Pb, Block&Qb)
 {
     char fn[100];
@@ -265,7 +306,7 @@ void WriteLog(Block&Pb, Block&Qb)
 }
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
 {
-    printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
+    //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
 
 
     ifstream ifs(FILE_NAME);
@@ -289,7 +330,10 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 
     for (int i = row_sta_idx; i < row_sta_idx + row_len; i++)
     {
-        printf("i=%d\n", row_sta_idx );
+        if (i % 100 == 0)
+        {
+            printf("getMinR i = %d\n", i );
+        }
         for (int j = 0 ; j < col_sta_idx; j++)
         {
             ifs >> temp_db;
@@ -298,18 +342,18 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
         //cout << endl;
         for (int j = col_sta_idx; j < col_sta_idx + col_len; j++)
         {
-            printf("j=%d cnt=%d minR=%p\n", j, cnt, minR);
-            ifs >> temp_db;
-            minR[cnt] = temp_db;
-            printf("temp_db=%lf\n", temp_db );
-            //ifs >> minR[cnt];
+            //printf("j=%d cnt=%d minR=%p\n", j, cnt, minR);
+            //ifs >> temp_db;
+            //minR[cnt] = temp_db;
+            //printf("temp_db=%lf\n", temp_db );
+            ifs >> minR[cnt];
             //cout << "minR " << minR[cnt] << endl;
             cnt++;
         }
         //cout << endl;
         //getchar();
-        printf("com here\n");
-        getchar();
+        //printf("com here\n");
+        //getchar();
         for (int j = col_sta_idx + col_len; j < M; j++)
         {
             ifs >> temp_db;
@@ -321,12 +365,15 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
     //printf("Returned  \n");
 }
 
-void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
+void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
 {
-    //printf("begin submf\n");
+    printf("begin submf\n");
     double error = 0;
     int minN = minP.height;
     int minM = minQ.height;
+
+    int row_sta_idx = minP.sta_idx;
+    int col_sta_idx = minQ.sta_idx;
 
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
@@ -346,23 +393,18 @@ void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates
     }
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
+
     vector<int> vshuf(minM * minN);
     for (int i = 0; i < minM * minN; i++)
     {
         vshuf[i] = i;
     }
     random_shuffle(vshuf.begin(), vshuf.end());//迭代器
-    /*
-    for (int ii = 0; ii < minN * minM; ii++)
-    {
-        printf("%d ", vshuf[ii] );
-    }
-    printf("\n");
-    **/
-    //for (int step = 0; step < steps; ++step)
-    {
 
-// should be updated one by one
+
+    //for (int step = 0; step < steps; ++step)
+
+    {
         //for (int i = 0; i < minN; ++i)
         {
             //for (int j = 0; j < minM; ++j)
@@ -371,13 +413,23 @@ void submf(double * minR, Block & minP, Block & minQ, Updates & updateP, Updates
                 int idx = vshuf[ii];
                 int i = idx / minM;
                 int j = idx % minM;
-                if (minR[i * minM + j] > 0)
+                //if (minR[i * minM + j] > 0)
+                //int row_idx = i % Bsz;
+                //if (minR[row_idx * minM + j] > 0)
+                //if (minR[j] > 0)
+                long real_row_idx = i + row_sta_idx;
+                long real_col_idx = j + col_sta_idx;
+                map<long, double>::iterator iter;
+                long real_hash_idx = real_row_idx * M + real_col_idx;
+                iter = RMap.find(real_hash_idx);
+                if (iter != RMap.end())
                 {
 
                     //printf("idx = %d\n", i * minM + j );
                     //这里面的error 就是公式6里面的e(i,j)
-                    error = minR[i * minM + j];
-
+                    //error = minR[i * minM + j];
+                    //error = minR[j];
+                    error = iter->second;
                     //printf("error = %lf\n", error );
                     for (int k = 0; k < minK; ++k)
                     {
@@ -488,7 +540,7 @@ void sendTd(int send_thread_id)
     {
         if (!canSend)
         {
-            //printf("Td %d cannotSend...\n", thread_id );
+            printf("Td %d cannotSend...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         else

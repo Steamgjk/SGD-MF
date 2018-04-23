@@ -26,9 +26,10 @@
 #include <mutex>
 #include <atomic>
 #include <fstream>
+#include <map>
 using namespace std;
 #define CAP 30
-#define FILE_NAME "./netflix_mtx.txt"
+#define FILE_NAME "./netflix_row.txt"
 int WORKER_NUM = 1;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
@@ -40,7 +41,8 @@ int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 #define K  40 //主题个数
 
 //double R[N][M];
-double Rline[M];
+//double Rline[M];
+map<long, double> RMap;
 double P[N][K];
 double Q[K][M];
 bool worker_debug = false;
@@ -127,7 +129,7 @@ double CalcRMSE();
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
-
+void LoadRating();
 atomic_int recvCount(0);
 bool canSend[CAP] = {false};
 int worker_pidx[CAP];
@@ -159,6 +161,7 @@ int main(int argc, const char * argv[])
         printf("\n");
     }
     **/
+    LoadRating();
     printf("Load Complete\n");
     for (int i = 0; i < N; i++)
     {
@@ -279,6 +282,27 @@ int main(int argc, const char * argv[])
     }
 
     return 0;
+}
+void LoadRating()
+{
+    ifstream ifs(FILE_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", FILE_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        RMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+    }
+
+    printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
 }
 void sendTd(int send_thread_id)
 {
@@ -624,7 +648,7 @@ double CalcRMSE()
     int cnt = 0;
     for (int i = 0; i < N; i++)
     {
-        getMinR(Rline, i, 1, 0, M);
+        //getMinR(Rline, i, 1, 0, M);
         for (int j = 0; j < M; j++)
         {
             double sum = 0;
@@ -638,10 +662,18 @@ double CalcRMSE()
                 rmse += (sum - R[i][j]) * (sum - R[i][j]);
                 cnt++;
             }
-            **/
+
             if (Rline[j] > 0)
             {
                 rmse += (sum - Rline[j]) * (sum - Rline[j]);
+                cnt++;
+            }
+            **/
+            map<long, double>::iterator iter;
+            iter = RMap.find(i * M + j);
+            if (iter != RMap.end())
+            {
+                rmse += (sum - iter->second) * (sum - iter->second);
                 cnt++;
             }
 

@@ -51,8 +51,10 @@ int main()
 	map<long, double>::iterator iter;
 	ofstream ofs(TEST_OUT, ios::trunc);
 	printf("Haha  sz = %ld\n", mm.size());
+	int lcnt = 0;
 	while (!ifs2.eof())
 	{
+
 		ifs2 >> cus_id >> tp;
 		if (tp == ':')
 		{
@@ -77,5 +79,7 @@ int main()
 		{
 			cout << cus_id << "\t" << tp << endl;
 		}
+		lcnt++;
+		printf("lcnt=%d\n", lcnt );
 	}
 }

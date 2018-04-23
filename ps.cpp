@@ -644,42 +644,24 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 
 double CalcRMSE()
 {
+    printf("calc RMSE...\n");
     double rmse = 0;
     int cnt = 0;
-    for (int i = 0; i < N; i++)
+    map<long, double>::iterator iter;
+    for (iter = RMap.begin(); iter != RMap.end(); iter++)
     {
-        //getMinR(Rline, i, 1, 0, M);
-        for (int j = 0; j < M; j++)
+        long real_hash_idx = iter->first;
+        long row_idx = real_hash_idx / M;
+        long col_idx = real_hash_idx % M;
+        double sum = 0;
+        for (int k = 0; k < K; k++)
         {
-            double sum = 0;
-            for (int k = 0; k < K; k++)
-            {
-                sum += P[i][k] * Q[k][j];
-            }
-            /*
-            if (R[i][j] > 0)
-            {
-                rmse += (sum - R[i][j]) * (sum - R[i][j]);
-                cnt++;
-            }
-
-            if (Rline[j] > 0)
-            {
-                rmse += (sum - Rline[j]) * (sum - Rline[j]);
-                cnt++;
-            }
-            **/
-            map<long, double>::iterator iter;
-            iter = RMap.find(i * M + j);
-            if (iter != RMap.end())
-            {
-                rmse += (sum - iter->second) * (sum - iter->second);
-                cnt++;
-            }
-
+            sum += P[row_idx][k] * Q[k][col_idx];
         }
+        rmse += (sum - iter->second) * (sum - iter->second);
+        cnt++;
     }
-    //rmse /= (N * M);
+
     rmse /= cnt;
     rmse = sqrt(rmse);
     return rmse;

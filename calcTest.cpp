@@ -78,8 +78,10 @@ int main()
 		else
 		{
 			cout << cus_id << "\t" << tp << endl;
+			printf("lcnt=%d\n", lcnt );
+			getchar();
 		}
 		lcnt++;
-		printf("lcnt=%d\n", lcnt );
+
 	}
 }

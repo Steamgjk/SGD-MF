@@ -471,11 +471,11 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 {
                     printf("ii=%d\n", ii);
                 }
-                int real_hash_idx = KeyVec[ii];
+                long real_hash_idx = KeyVec[ii];
                 long real_row_idx = real_hash_idx / M;
                 long real_col_idx = real_hash_idx % M;
-                int i = real_row_idx - row_sta_idx;
-                int j = real_col_idx - col_sta_idx;
+                long i = real_row_idx - row_sta_idx;
+                long j = real_col_idx - col_sta_idx;
                 map<long, double>::iterator iter;
                 iter = RMap.find(real_hash_idx);
                 if (iter != RMap.end())
@@ -492,12 +492,12 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                         //error_m -= P[i * minK + k] * Q[k * minM + j];
                         if (i * minK + k >= minP.eles.size() || i * minK + k < 0 )
                         {
-                            printf("i=%d minK=%d k=%d sz=%ld\n", i, minK, k, minP.eles.size() );
+                            printf("i=%ld minK=%d k=%d sz=%ld\n", i, minK, k, minP.eles.size() );
                             getchar();
                         }
                         if (j * minK + k >= minQ.eles.size() || j * minK + k < 0 )
                         {
-                            printf("j=%d minK=%d k=%d sz=%ld\n", j, minK, k, minQ.eles.size() );
+                            printf("j=%ld minK=%d k=%d sz=%ld\n", j, minK, k, minQ.eles.size() );
                             getchar();
                         }
                         error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];

@@ -70,14 +70,14 @@ int main()
 			cus_id--;
 
 			hash_id = mov_id * M + cus_id;
-			printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
+			//printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
 			//getchar();
 			iter = mm.find(hash_id);
 			if (iter != mm.end())
 			{
 				ofs << iter->first << " " << iter->second << endl;
-				printf("oof %ld  %lf\n", iter->first, iter->second);
-				getchar();
+				//printf("oof %ld  %lf\n", iter->first, iter->second);
+				//getchar();
 			}
 			else
 			{

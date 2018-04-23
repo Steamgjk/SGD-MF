@@ -61,11 +61,14 @@ int main()
 		if (line[line.length() - 1] == ':')
 		{
 			ss >> mov_id;
+			mov_id--;
 		}
 		else
 		{
 			//cout << line << endl;
 			ss >> cus_id;
+			cus_id--;
+
 			hash_id = mov_id * M + cus_id;
 			printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
 			//getchar();
@@ -73,7 +76,7 @@ int main()
 			if (iter != mm.end())
 			{
 				ofs << iter->first << " " << iter->second << endl;
-				printf("oof %ld  %ld\n", iter->first, iter->second);
+				printf("oof %ld  %lf\n", iter->first, iter->second);
 				getchar();
 			}
 			else

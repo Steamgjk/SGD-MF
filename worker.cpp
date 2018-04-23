@@ -48,7 +48,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 #define Bsz (100*1000)
 #define Rsz (17770 * Bsz)
 
-#define ThreshIter 100
+#define ThreshIter 10
 #define SEQ_LEN 5000
 
 struct Block
@@ -182,7 +182,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
-            printf("has Received\n");
+            //printf("has Received\n");
             if (!isstart)
             {
                 isstart = true;
@@ -236,24 +236,7 @@ int main(int argc, const char * argv[])
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
-    /** Test
-    int row_sta_idx = 13;
-    int row_len = 3;
-    int col_sta_idx = 1;
-    int col_len = 4;
-    int ele_num = row_len * col_len;
-    double* minR = (double*)malloc(sizeof(double) * ele_num);
-    getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-    for (int i = 0 ; i < row_len; i++)
-    {
-    for (int j = 0; j < col_len; j++)
-    {
-    printf("%lf ", minR[i * col_len + j] );
-    }
-    printf("\n");
-    }
-    return 0;
-    **/
+
 }
 
 void LoadConfig(char*filename)

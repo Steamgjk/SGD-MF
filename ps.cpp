@@ -243,8 +243,8 @@ int main(int argc, const char * argv[])
 
         while (recvCount != WORKER_NUM)
         {
-            cout << "RecvCount\t" << recvCount << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //cout << "RecvCount\t" << recvCount << endl;
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         if (recvCount == WORKER_NUM)
         {
@@ -271,10 +271,12 @@ int main(int argc, const char * argv[])
                 }
             }
             printf("Update Finish, Can Distribute\n");
-            //if (iter_t%10 == 0){
-            double rmse = CalcRMSE();
-            printf("rmse=%lf\n", rmse);
-            log_ofs << rmse << endl;
+            //if (iter_t % 10 == 0)
+            //{
+            //double rmse = CalcRMSE();
+            //printf("rmse=%lf\n", rmse);
+            //log_ofs << rmse << endl;
+
             //}
             recvCount = 0;
         }

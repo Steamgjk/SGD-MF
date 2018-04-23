@@ -415,9 +415,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     KeyVec.clear();
     for (iter = RMap.begin(); iter != RMap.end(); iter++)
     {
-        int real_hash_idx = iter->first;
-        int real_row_idx = real_hash_idx / M;
-        int real_col_idx = real_hash_idx % M;
+        long real_hash_idx = iter->first;
+        long real_row_idx = real_hash_idx / M;
+        long real_col_idx = real_hash_idx % M;
         if (row_sta_idx <= real_row_idx && real_row_idx < row_sta_idx + row_len \
                 && col_sta_idx <= real_col_idx && real_col_idx < col_sta_idx + col_len )
         {

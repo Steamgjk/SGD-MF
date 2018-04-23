@@ -147,6 +147,7 @@ struct timeval start, stop, diff;
 
 //double* minR = (double*)malloc(sizeof(double) * Rsz);
 map<long, double> RMap;
+vector<long> KeyVec;
 int main(int argc, const char * argv[])
 {
 
@@ -275,6 +276,7 @@ void LoadRating()
     {
         ifs >> hash_idx >> ra;
         RMap.insert(pair<long, double>(hash_idx, ra));
+        //KeyVec.insert(hash_idx);
         cnt++;
         if (cnt % 10000 == 0)
         {
@@ -397,13 +399,36 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     }
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
+    /*
+        vector<int> vshuf(minM * minN);
+        for (int i = 0; i < minM * minN; i++)
+        {
+            vshuf[i] = i;
+        }
+        random_shuffle(vshuf.begin(), vshuf.end());//迭代器
 
-    vector<int> vshuf(minM * minN);
-    for (int i = 0; i < minM * minN; i++)
+    **/
+    map<long, double>::iterator iter;
+    KeyVec.clear();
+    for (int i = 0; i < minN; ++i)
     {
-        vshuf[i] = i;
+        for (int j = 0; j < minM; ++j)
+        {
+            long real_row_idx = i + row_sta_idx;
+            long real_col_idx = j + col_sta_idx;
+            long real_hash_idx = real_row_idx * M + real_col_idx;
+            iter = RMap.find(real_hash_idx);
+            if (iter != RMap.end())
+            {
+                KeyVec.insert(iter->second);
+            }
+        }
     }
-    random_shuffle(vshuf.begin(), vshuf.end());//迭代器
+    int tm = rand() % 10;
+    for (int i = 0 ; i < tm; i++)
+    {
+        random_shuffle(KeyVec.begin(), KeyVec.end());//迭代器
+    }
 
 
     //for (int step = 0; step < steps; ++step)
@@ -412,17 +437,13 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         //for (int i = 0; i < minN; ++i)
         {
             //for (int j = 0; j < minM; ++j)
-            for (int ii = 0; ii < minN * minM; ii++)
+            for (int ii = 0; ii < KeyVec.size(); ii++)
             {
-                int idx = vshuf[ii];
-                int i = idx / minM;
-                int j = idx % minM;
-                //if (minR[i * minM + j] > 0)
-                //int row_idx = i % Bsz;
-                //if (minR[row_idx * minM + j] > 0)
-                //if (minR[j] > 0)
-                long real_row_idx = i + row_sta_idx;
-                long real_col_idx = j + col_sta_idx;
+                int real_hash_idx = KeyVec[ii];
+                long real_row_idx = real_hash_idx / M;
+                long real_col_idx = real_hash_idx % M;
+                int i = real_row_idx - row_sta_idx;
+                int j = real_col_idx - col_sta_idx;
                 map<long, double>::iterator iter;
                 long real_hash_idx = real_row_idx * M + real_col_idx;
                 iter = RMap.find(real_hash_idx);

@@ -269,6 +269,11 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
     getchar();
 
     ifstream ifs(FILE_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", FILE_NAME);
+        exit(-1);
+    }
     string temp;
     for (int i = 0; i < row_sta_idx; i++)
     {

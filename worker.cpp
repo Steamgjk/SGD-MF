@@ -298,8 +298,9 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
         //cout << endl;
         for (int j = col_sta_idx; j < col_sta_idx + col_len; j++)
         {
-            printf("j=%d\n", j);
+            printf("j=%d cnt=%d minR=%p\n", j, cnt, minR);
             ifs >> temp_db;
+            minR[cnt] = temp_db;
             printf("temp_db=%lf\n", temp_db );
             //ifs >> minR[cnt];
             //cout << "minR " << minR[cnt] << endl;

@@ -410,6 +410,22 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     **/
     map<long, double>::iterator iter;
     KeyVec.clear();
+    for (iter = RMap.begin(); iter != RMap.end(); iter++)
+    {
+        int real_hash_idx = iter->first;
+        int real_row_idx = real_hash_idx / M;
+        int real_col_idx = real_hash_idx % M;
+        if (row_sta_idx <= real_row_idx && real_row_idx < row_sta_idx + row_len \
+                && col_sta_idx <= real_col_idx && real_col_idx < col_sta_idx + col_len )
+        {
+            KeyVec.push_back(real_hash_idx);
+        }
+        if (KeyVec.size() % 1000000 == 0)
+        {
+            printf("sz = %ld\n", KeyVec.size() );
+        }
+    }
+    /*
     for (int i = 0; i < minN; ++i)
     {
         for (int j = 0; j < minM; ++j)
@@ -424,6 +440,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             }
         }
     }
+    **/
     int tm = rand() % 10;
     for (int i = 0 ; i < tm; i++)
     {

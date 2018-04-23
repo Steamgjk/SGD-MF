@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <sstream>
 using namespace std;
 
 #define FILE_NAME "./netflix_mtx.txt"
@@ -52,17 +53,19 @@ int main()
 	ofstream ofs(TEST_OUT, ios::trunc);
 	printf("Haha  sz = %ld\n", mm.size());
 	int lcnt = 0;
+	stirng line;
 	while (!ifs2.eof())
 	{
-
-		ifs2 >> cus_id >> tp;
-		if (tp == ':')
+		getline(ifs2, line);
+		stringstream ss(line);
+		if (line[line.length - 1] == ':')
 		{
-			mov_id = cus_id;
+			ss >> mov_id;
 		}
-		else if (tp == ',')
+		else
 		{
-			ifs2 >> tmst;
+			cout << line << endl;
+			ss >> cus_id;
 			hash_id = mov_id * M + cus_id;
 			iter = mm.find(hash_id);
 			if (iter != mm.end())
@@ -74,12 +77,6 @@ int main()
 			{
 				ofs << iter->first << " " << 0 << endl;
 			}
-		}
-		else
-		{
-			cout << cus_id << "\t" << tp << endl;
-			printf("lcnt=%d\n", lcnt );
-			getchar();
 		}
 		lcnt++;
 

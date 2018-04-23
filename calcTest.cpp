@@ -38,6 +38,11 @@ int main()
 		}
 	}
 	ifstream ifs2(TEST_NAME);
+	if (!ifs2.is_open())
+	{
+		printf("fail to open the file %s\n", TEST_NAME);
+		exit(-1);
+	}
 	long mov_id = 0;
 	long cus_id = 0;
 	char tp;

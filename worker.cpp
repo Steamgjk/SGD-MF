@@ -299,13 +299,16 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
         for (int j = col_sta_idx; j < col_sta_idx + col_len; j++)
         {
             printf("j=%d\n", j);
-            ifs >> minR[cnt];
+            ifs >> temp_db;
+            printf("temp_db=%lf\n", temp_db );
+            //ifs >> minR[cnt];
             //cout << "minR " << minR[cnt] << endl;
             cnt++;
         }
         //cout << endl;
         //getchar();
         printf("com here\n");
+        getchar();
         for (int j = col_sta_idx + col_len; j < M; j++)
         {
             ifs >> temp_db;

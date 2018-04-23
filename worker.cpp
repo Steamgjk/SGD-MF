@@ -421,11 +421,12 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 && col_sta_idx <= real_col_idx && real_col_idx < col_sta_idx + col_len )
         {
             KeyVec.push_back(real_hash_idx);
+            if (KeyVec.size() % 100000 == 0)
+            {
+                printf("sz = %ld\n", KeyVec.size() );
+            }
         }
-        if (KeyVec.size() % 100000 == 0)
-        {
-            printf("sz = %ld\n", KeyVec.size() );
-        }
+
     }
     /*
     for (int i = 0; i < minN; ++i)

@@ -276,6 +276,10 @@ void LoadRating()
         ifs >> hash_idx >> ra;
         RMap.insert(pair<long, double>(hash_idx, ra));
         cnt++;
+        if (cnt % 10000 == 0)
+        {
+            printf("cnt=%d\n", cnt );
+        }
     }
 
     printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));

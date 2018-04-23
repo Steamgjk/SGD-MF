@@ -427,11 +427,13 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 printf("sz = %ld\n", KeyVec.size() );
             }
         }
+        /*
         else
         {
             printf("real_hash_idx=%ld row_idx=%ld col_idx=%ld  row_sta_idx=%ld col_sta_idx=%ld\n", real_hash_idx, real_row_idx, real_col_idx, row_sta_idx, col_sta_idx );
             getchar();
         }
+        **/
 
     }
     /*

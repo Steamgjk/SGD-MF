@@ -67,6 +67,8 @@ int main()
 			//cout << line << endl;
 			ss >> cus_id;
 			hash_id = mov_id * M + cus_id;
+			printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
+			getchar();
 			iter = mm.find(hash_id);
 			if (iter != mm.end())
 			{

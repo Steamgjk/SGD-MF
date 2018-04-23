@@ -486,7 +486,7 @@ int wait4connection(char*local_ip, int local_port)
     int check_ret = -1;
     do
     {
-        printf("binding...\n");
+        printf("binding... %s  %d\n", local_ip, local_port);
         check_ret = bind(fd, (struct sockaddr*)&address, sizeof(address));
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
@@ -495,7 +495,7 @@ int wait4connection(char*local_ip, int local_port)
     //创建监听队列，用来存放待处理的客户连接
     check_ret = listen(fd, 5);
     assert(check_ret >= 0);
-
+    printf("listening... %s  %d\n", local_ip, local_port);
     struct sockaddr_in addressClient;
     socklen_t clientLen = sizeof(addressClient);
     //接受连接，阻塞函数

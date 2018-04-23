@@ -81,6 +81,8 @@ int main()
 			}
 			else
 			{
+				printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
+				getchar();
 				ofs << iter->first << " " << 0 << endl;
 			}
 			if (lcnt % 1000 == 0)

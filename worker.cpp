@@ -380,6 +380,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     int row_sta_idx = minP.sta_idx;
     int col_sta_idx = minQ.sta_idx;
+    int row_len = minP.height;
+    int col_len = minQ.height;
 
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
@@ -420,7 +422,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         {
             KeyVec.push_back(real_hash_idx);
         }
-        if (KeyVec.size() % 1000 == 0)
+        if (KeyVec.size() % 100000 == 0)
         {
             printf("sz = %ld\n", KeyVec.size() );
         }

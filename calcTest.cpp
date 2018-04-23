@@ -53,7 +53,7 @@ int main()
 	ofstream ofs(TEST_OUT, ios::trunc);
 	printf("Haha  sz = %ld\n", mm.size());
 	int lcnt = 0;
-	stirng line;
+	string line;
 	while (!ifs2.eof())
 	{
 		getline(ifs2, line);

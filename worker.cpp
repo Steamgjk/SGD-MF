@@ -265,7 +265,8 @@ void WriteLog(Block&Pb, Block&Qb)
 }
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
 {
-    //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
+    printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
+    getchar();
 
     ifstream ifs(FILE_NAME);
     string temp;
@@ -283,6 +284,7 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 
     for (int i = row_sta_idx; i < row_sta_idx + row_len; i++)
     {
+        printf("i=%d\n", row_sta_idx );
         for (int j = 0 ; j < col_sta_idx; j++)
         {
             ifs >> temp_db;

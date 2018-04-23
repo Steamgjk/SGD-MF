@@ -410,6 +410,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         random_shuffle(vshuf.begin(), vshuf.end());//迭代器
 
     **/
+    printf("row_len=%ld col_len=%ld\n", row_len, col_len );
     map<long, double>::iterator iter;
     KeyVec.clear();
     for (iter = RMap.begin(); iter != RMap.end(); iter++)
@@ -421,10 +422,15 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 && col_sta_idx <= real_col_idx && real_col_idx < col_sta_idx + col_len )
         {
             KeyVec.push_back(real_hash_idx);
-            if (KeyVec.size() % 100000 == 0)
+            if (KeyVec.size() % 1000000 == 0)
             {
                 printf("sz = %ld\n", KeyVec.size() );
             }
+        }
+        else
+        {
+            printf("real_hash_idx=%ld row_idx=%ld col_idx=%ld  row_sta_idx=%ld col_sta_idx=%ld\n", real_hash_idx, real_row_idx, real_col_idx, row_sta_idx, col_sta_idx );
+            getchar();
         }
 
     }

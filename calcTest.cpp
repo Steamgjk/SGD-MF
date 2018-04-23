@@ -64,7 +64,7 @@ int main()
 		}
 		else
 		{
-			cout << line << endl;
+			//cout << line << endl;
 			ss >> cus_id;
 			hash_id = mov_id * M + cus_id;
 			iter = mm.find(hash_id);

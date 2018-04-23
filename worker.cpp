@@ -420,7 +420,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         {
             KeyVec.push_back(real_hash_idx);
         }
-        if (KeyVec.size() % 1000000 == 0)
+        if (KeyVec.size() % 1000 == 0)
         {
             printf("sz = %ld\n", KeyVec.size() );
         }

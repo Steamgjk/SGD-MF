@@ -39,7 +39,11 @@ int main()
 			cout << "Error opening file"; exit (1);
 		}
 		ifs >> movie_id >> comma;
-		printf("filename=%s movie_id=%d\n", filename, movie_id);
+		if (i % 100 == 0)
+		{
+			printf("filename=%s movie_id=%d\n", filename, movie_id);
+		}
+
 		while (!ifs.eof())
 		{
 			ifs >> customer_id >> comma >> rate >> comma >> datetime;

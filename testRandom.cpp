@@ -129,3 +129,6 @@ int main(int argc, const char * argv[])
     printf("randavg=%lf\n", (psum / N ) / K );
 
 }
+
+
+//1.7

@@ -50,7 +50,11 @@ int main()
 		for (long j = 1; j <= CUSTOMER_NUM; j++ )
 		{
 			//ofs << user_rates[j] << " ";
-			ofs << (i - 1)*CUSTOMER_NUM + j - 1 << " " << user_rates[j] << endl;
+			if (user_rates[j] > 0)
+			{
+				ofs << (i - 1)*CUSTOMER_NUM + j - 1 << " " << user_rates[j] << endl;
+			}
+
 		}
 		ofs << endl;
 	}

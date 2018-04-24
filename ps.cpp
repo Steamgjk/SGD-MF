@@ -172,7 +172,7 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < K; j++)
         {
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
-            P[i][j] = drand48();
+            P[i][j] = drand48() / sqrt(K);
         }
     }
     for (int i = 0; i < K; i++)
@@ -180,7 +180,7 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < M; j++)
         {
             //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
-            Q[i][j] = drand48();
+            Q[i][j] = drand48() / sqrt(K);
         }
     }
     for (int i = 0; i < WORKER_NUM; i++)
@@ -203,6 +203,7 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     }
     int iter_t = 0;
+
     while (1 == 1)
     {
         partitionP(WORKER_NUM, Pblocks);
@@ -683,6 +684,8 @@ double CalcRMSE()
     double rmse = 0;
     int cnt = 0;
     map<long, double>::iterator iter;
+    int positve_cnt = 0;
+    int negative_cnt = 0;
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
@@ -693,12 +696,21 @@ double CalcRMSE()
         {
             sum += P[row_idx][k] * Q[k][col_idx];
         }
+        if (positve_cnt > iter->second)
+        {
+            positve_cnt++;
+        }
+        else
+        {
+            negative_cnt++;
+        }
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
 
     rmse /= cnt;
     rmse = sqrt(rmse);
+    printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
     return rmse;
 }
 void partitionP(int portion_num,  Block* Pblocks)

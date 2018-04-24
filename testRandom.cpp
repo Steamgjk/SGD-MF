@@ -33,7 +33,9 @@ int main()
     {
         for (int j = 0; j < K; j++)
         {
-            printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
+            // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
+            printf("%lf ", drand48() );
+
         }
         printf("\n");
     }

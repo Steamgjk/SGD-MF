@@ -92,8 +92,13 @@ double CalcRMSE()
     printf("positve_cnt=%d negative_cnt=%d sss=%lf\n", positve_cnt, negative_cnt, sss );
     return rmse;
 }
-int main()
+int main(int argc, const char * argv[])
 {
+    int NUM = 100;
+    if (argc >= 2)
+    {
+        NUM = atoi(argv[1]);
+    }
     LoadTestRating();
     srand(1);
     double psum = 0;
@@ -103,7 +108,7 @@ int main()
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            P[i][j] = (rand() % 100) / 500;
+            P[i][j] = ((double)(rand() % 100) ) / NUM ;
             psum += P[i][j];
 
         }
@@ -115,7 +120,7 @@ int main()
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            Q[j][i] = (rand() % 100) / 500;
+            Q[j][i] = ((double)(rand() % 100) ) / NUM ;
         }
         //printf("\n");
     }

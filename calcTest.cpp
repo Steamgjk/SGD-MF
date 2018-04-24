@@ -81,6 +81,7 @@ int main()
 			}
 			else
 			{
+				//mov_id=10000 cus_id=200206 hash_id=26491840776
 				printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
 				getchar();
 				ofs << iter->first << " " << 0 << endl;

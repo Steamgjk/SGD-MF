@@ -29,10 +29,27 @@ int main()
 		for (long int j = 0; j < M; j++)
 		{
 			ifs >> temp;
+			if (i == 9999 && j == 200205)
+			{
+				printf("i=%ld j=%ld temp = %lf  hash_id = %ld\n", i, j, temp, i * M + j);
+			}
+			if (i == 9999 && j == 200206)
+			{
+				printf("i=%ld j=%ld temp = %lf  hash_id = %ld\n", i, j, temp, i * M + j);
+			}
+			if (i == 10000 && j == 200206)
+			{
+				printf("i=%ld j=%ld temp = %lf  hash_id = %ld\n", i, j, temp, i * M + j);
+			}
+			if (i == 10000 && j == 200206)
+			{
+				printf("i=%ld j=%ld temp = %lf  hash_id = %ld\n", i, j, temp, i * M + j);
+			}
 			if (temp > 0)
 			{
 				long hash_idx = i * M + j;
-				ofs << hash_idx << " " << temp << endl;
+				//ofs << hash_idx << " " << temp << endl;
+
 				cnt++;
 				if (hash_idx < 0)
 				{

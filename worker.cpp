@@ -48,7 +48,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 #define Bsz (100*1000)
 #define Rsz (17770 * Bsz)
 
-#define ThreshIter 10
+#define ThreshIter 1000
 #define SEQ_LEN 5000
 
 struct Block

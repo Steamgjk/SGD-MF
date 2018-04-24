@@ -167,14 +167,14 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < K; j++)
         {
-            P[i][j] =  ((double)rand() / RAND_MAX);
+            P[i][j] =  ((double)rand() / RAND_MAX / 10.0);
         }
     }
     for (int i = 0; i < K; i++)
     {
         for (int j = 0; j < M; j++)
         {
-            Q[i][j] = ((double)rand() / RAND_MAX);
+            Q[i][j] = ((double)rand() / RAND_MAX / 10.0);
         }
     }
     for (int i = 0; i < WORKER_NUM; i++)
@@ -271,13 +271,13 @@ int main(int argc, const char * argv[])
                 }
             }
             printf("Update Finish, Can Distribute\n");
-            //if (iter_t % 10 == 0)
-            //{
-            //double rmse = CalcRMSE();
-            //printf("rmse=%lf\n", rmse);
-            //log_ofs << rmse << endl;
+            if (iter_t % 10 == 0)
+            {
+                double rmse = CalcRMSE();
+                printf("rmse=%lf\n", rmse);
+                log_ofs << rmse << endl;
 
-            //}
+            }
             recvCount = 0;
         }
         iter_t++;

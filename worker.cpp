@@ -384,15 +384,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     }
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
-    /*
-        vector<int> vshuf(minM * minN);
-        for (int i = 0; i < minM * minN; i++)
-        {
-            vshuf[i] = i;
-        }
-        random_shuffle(vshuf.begin(), vshuf.end());//迭代器
 
-    **/
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
     map<long, double>::iterator iter;
     KeyVec.clear();
@@ -410,31 +402,10 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 printf("sz = %ld\n", KeyVec.size() );
             }
         }
-        /*
-        else
-        {
-            printf("real_hash_idx=%ld row_idx=%ld col_idx=%ld  row_sta_idx=%ld col_sta_idx=%ld\n", real_hash_idx, real_row_idx, real_col_idx, row_sta_idx, col_sta_idx );
-            getchar();
-        }
-        **/
+
 
     }
-    /*
-    for (int i = 0; i < minN; ++i)
-    {
-        for (int j = 0; j < minM; ++j)
-        {
-            long real_row_idx = i + row_sta_idx;
-            long real_col_idx = j + col_sta_idx;
-            long real_hash_idx = real_row_idx * M + real_col_idx;
-            iter = RMap.find(real_hash_idx);
-            if (iter != RMap.end())
-            {
-                KeyVec.push_back(real_hash_idx);
-            }
-        }
-    }
-    **/
+
     int tm = rand() % 10;
     for (int i = 0 ; i < tm; i++)
     {
@@ -443,82 +414,48 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     printf("Begin Calc sz = %ld\n", KeyVec.size() );
     //for (int step = 0; step < steps; ++step)
-
+    for (int sp = 0; sp < 50; sp++)
     {
-        //for (int i = 0; i < minN; ++i)
+        long real_hash_idx = KeyVec[sp];
+        long real_row_idx = real_hash_idx / M;
+        long real_col_idx = real_hash_idx % M;
+        long i = real_row_idx - row_sta_idx;
+        long j = real_col_idx - col_sta_idx;
+        map<long, double>::iterator iter;
+        iter = RMap.find(real_hash_idx);
+        if (iter != RMap.end())
         {
-            //for (int j = 0; j < minM; ++j)
-            for (int ii = 0; ii < KeyVec.size(); ii++)
+            error = iter->second;
+            for (int k = 0; k < minK; ++k)
             {
-                if (ii % 1000000 == 0)
-                {
-                    printf("ii=%d\n", ii);
-                }
-                long real_hash_idx = KeyVec[ii];
-                long real_row_idx = real_hash_idx / M;
-                long real_col_idx = real_hash_idx % M;
-                long i = real_row_idx - row_sta_idx;
-                long j = real_col_idx - col_sta_idx;
-                map<long, double>::iterator iter;
-                iter = RMap.find(real_hash_idx);
-                if (iter != RMap.end())
-                {
-
-                    //printf("idx = %d\n", i * minM + j );
-                    //这里面的error 就是公式6里面的e(i,j)
-                    //error = minR[i * minM + j];
-                    //error = minR[j];
-                    error = iter->second;
-                    //printf("error = %lf\n", error );
-                    for (int k = 0; k < minK; ++k)
-                    {
-                        //error_m -= P[i * minK + k] * Q[k * minM + j];
-                        /*
-                        if (i * minK + k >= minP.eles.size() || i * minK + k < 0 )
-                        {
-                            printf("i=%ld minK=%d k=%d sz=%ld\n", i, minK, k, minP.eles.size() );
-                            getchar();
-                        }
-                        if (j * minK + k >= minQ.eles.size() || j * minK + k < 0 )
-                        {
-                            printf("j=%ld minK=%d k=%d sz=%ld\n", j, minK, k, minQ.eles.size() );
-                            getchar();
-                        }
-                        **/
-                        error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
-                    }
-
-                    //更新公式6
-                    for (int k = 0; k < minK; ++k)
-                    {
-                        //printf("minP sz = %ld minQ sz =%ld updt sz %ld updt sz %ld\n i*minK+k=%d  j*minK+k=%d\n", minP.eles.size(), minQ.eles.size(), updateP.eles.size(), updateQ.eles.size(), i * minK + k, j * minK + k );
-                        //updateP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                        //updateQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
-                        minP.eles[i * minK + k] += alpha * (error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                        minQ.eles[j * minK + k] += alpha * (error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
-                    }
-
-
-                }
+                error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
             }
-            for (int i = 0; i < originalP.size(); i++)
+
+            //更新公式6
+            for (int k = 0; k < minK; ++k)
             {
-                updateP.eles[i] = minP.eles[i] - originalP[i];
+                updateP.eles[i * minK + k] = alpha * (error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
+                updateQ.eles[j * minK + k] = alpha * (error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
             }
-            for (int j = 0; j < originalQ.size(); j++)
-            {
-                updateQ.eles[j] = minQ.eles[j] - originalQ[j];
-            }
+
 
         }
 
-        printf("end sumbmf\n");
+        for (int i = 0; i < originalP.size(); i++)
+        {
+            updateP.eles[i] = minP.eles[i] - originalP[i];
+        }
+        for (int j = 0; j < originalQ.size(); j++)
+        {
+            updateQ.eles[j] = minQ.eles[j] - originalQ[j];
+        }
+
     }
 
-
-
-
+    printf("end sumbmf\n");
 }
+
+
 int wait4connection(char*local_ip, int local_port)
 {
     int fd = socket(PF_INET, SOCK_STREAM , 0);

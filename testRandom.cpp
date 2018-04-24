@@ -94,10 +94,10 @@ double CalcRMSE()
 }
 int main(int argc, const char * argv[])
 {
-    int NUM = 100;
+    double NUM = 100;
     if (argc >= 2)
     {
-        NUM = atoi(argv[1]);
+        NUM = atof(argv[1]);
     }
     LoadTestRating();
     srand(time(0));

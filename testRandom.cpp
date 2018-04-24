@@ -21,6 +21,9 @@
 #include <fstream>
 #include <sys/time.h>
 #include <map>
+#define N  17770 // row number
+#define M  2649429 //col number
+#define K  40 //主题个数
 using namespace std;
 int main()
 {

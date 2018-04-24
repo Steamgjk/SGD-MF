@@ -21,11 +21,12 @@ int main()
 	char comma;
 	int movie_id;
 	char line[512];
-	ofstream ofs("netflix_mtx.txt", ios::trunc);
+	//ofstream ofs("netflix_mtx.txt", ios::trunc);
+	ofstream ofs("netflix_rown.txt", ios::trunc);
 
-	for (int i = 1; i <= MOVIE_NUM; i++)
+	for (long i = 1; i <= MOVIE_NUM; i++)
 	{
-		for (int j = 0; j <= CUSTOMER_NUM; j++)
+		for (long j = 0; j <= CUSTOMER_NUM; j++)
 		{
 			user_rates[j] = 0;
 		}
@@ -46,9 +47,10 @@ int main()
 			user_rates[customer_id] = rate;
 			//getchar();
 		}
-		for (int j = 1; j <= CUSTOMER_NUM; j++ )
+		for (long j = 1; j <= CUSTOMER_NUM; j++ )
 		{
-			ofs << user_rates[j] << " ";
+			//ofs << user_rates[j] << " ";
+			ofs << (i - 1)*CUSTOMER_NUM + j - 1 << " " << user_rates[j] << endl;
 		}
 		ofs << endl;
 	}

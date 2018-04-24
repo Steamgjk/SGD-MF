@@ -172,7 +172,8 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < K; j++)
         {
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
-            P[i][j] = drand48() / 2;
+            //P[i][j] = drand48() / 2;
+            P[i][j] =  ((double)(rand() % 100) ) / 100 ;
         }
     }
     for (int i = 0; i < K; i++)
@@ -180,7 +181,9 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < M; j++)
         {
             //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
-            Q[i][j] = drand48() / 2;
+            //Q[i][j] = drand48() / 2;
+            Q[i][j] =  ((double)(rand() % 100) ) / 100 ;
+
         }
     }
     for (int i = 0; i < WORKER_NUM; i++)

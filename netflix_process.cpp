@@ -10,7 +10,7 @@ using namespace std;
 #define K 2
 #define MOVIE_NUM 17770
 #define CUSTOMER_NUM 2649429
-int user_rates[CUSTOMER_NUM + 10];
+double user_rates[CUSTOMER_NUM + 10];
 int main()
 {
 	char filename[100];
@@ -30,7 +30,7 @@ int main()
 		{
 			user_rates[j] = 0;
 		}
-		sprintf(filename, "./training_set/mv_%.7d.txt", i);
+		sprintf(filename, "./training_set/mv_%.7ld.txt", i);
 
 		ifstream ifs(filename);//请更换成自己的文件名
 		//ifs >> movie_id >> comma;

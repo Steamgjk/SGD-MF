@@ -701,7 +701,7 @@ double CalcRMSE()
         {
             sum += P[row_idx][k] * Q[k][col_idx];
         }
-        if (positve_cnt > iter->second)
+        if (sum > iter->second)
         {
             positve_cnt++;
         }

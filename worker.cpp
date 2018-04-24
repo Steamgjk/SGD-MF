@@ -415,7 +415,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     vector<double> oldP;
     vector<double> oldQ;
     //for (int step = 0; step < steps; ++step)
-    for (int sp = 0; sp < 5; sp++)
+    long updnum = sz / 10;
+    printf("upnum = %ld\n", updnum );
+    for (int sp = 0; sp < updnum; sp++)
     {
         int rand_idx = rand() % sz;
         long real_hash_idx = KeyVec[rand_idx];

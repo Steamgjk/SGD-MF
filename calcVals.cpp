@@ -37,7 +37,7 @@ int main()
 			{
 				printf("i=%ld j=%ld temp = %lf  hash_id = %ld\n", i, j, temp, i * M + j);
 			}
-			if (i == 10000 && j == 200206)
+			if (i == 10000 && j == 200205)
 			{
 				printf("i=%ld j=%ld temp = %lf  hash_id = %ld\n", i, j, temp, i * M + j);
 			}

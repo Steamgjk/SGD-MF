@@ -61,15 +61,15 @@ int main()
 		if (line[line.length() - 1] == ':')
 		{
 			ss >> mov_id;
-			mov_id--;
+			//mov_id--;
 		}
 		else
 		{
 			//cout << line << endl;
 			ss >> cus_id;
-			cus_id--;
+			//cus_id--;
 
-			hash_id = mov_id * M + cus_id;
+			hash_id = (mov_id - 1) * M + (cus_id - 1);
 			//printf("mov_id=%ld cus_id=%ld hash_id=%ld\n", mov_id, cus_id, hash_id );
 			//getchar();
 			iter = mm.find(hash_id);

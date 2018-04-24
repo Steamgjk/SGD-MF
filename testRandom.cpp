@@ -100,7 +100,7 @@ int main(int argc, const char * argv[])
         NUM = atoi(argv[1]);
     }
     LoadTestRating();
-    srand(1);
+    srand(time(0));
     double psum = 0;
     for (int i = 0; i < N; i++)
     {

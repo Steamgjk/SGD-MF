@@ -61,12 +61,14 @@ double CalcRMSE()
     map<long, double>::iterator iter;
     int positve_cnt = 0;
     int negative_cnt = 0;
+    double sss = 0;
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M;
         long col_idx = real_hash_idx % M;
         double sum = 0;
+        sss += iter->second;
         for (int k = 0; k < K; k++)
         {
             sum += P[row_idx][k] * Q[k][col_idx];
@@ -85,21 +87,24 @@ double CalcRMSE()
     }
 
     rmse /= cnt;
+    sss /= cnt;
     rmse = sqrt(rmse);
-    printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
+    printf("positve_cnt=%d negative_cnt=%d sss=%lf\n", positve_cnt, negative_cnt, sss );
     return rmse;
 }
 int main()
 {
     LoadTestRating();
     srand(1);
+    double psum = 0;
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < K; j++)
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            P[i][j] = (rand() % 100) / 1000;
+            P[i][j] = (rand() % 100) / 500;
+            psum += P[i][j];
 
         }
         //printf("\n");
@@ -110,11 +115,12 @@ int main()
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            Q[j][i] = (rand() % 100) / 1000;
+            Q[j][i] = (rand() % 100) / 500;
         }
         //printf("\n");
     }
     double rmse =  CalcRMSE();
     printf("rmse=%lf\n",  rmse);
+    printf("randavg=%lf\n", (psum / N ) / K );
 
 }

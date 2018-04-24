@@ -134,7 +134,7 @@ int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 //void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.2, float beta = 0.05);
+void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.002, float beta = 0.05);
 
 void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb);
@@ -420,7 +420,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         updnum = 100;
     }
-    updnum = 100;
+    updnum = 50;
     printf("upnum = %ld\n", updnum );
     for (int sp = 0; sp < updnum; sp++)
     {

@@ -415,7 +415,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     vector<double> oldP;
     vector<double> oldQ;
     //for (int step = 0; step < steps; ++step)
-    long updnum = sz / 100;
+    long updnum = max(sz / 10000, 100);
     printf("upnum = %ld\n", updnum );
     for (int sp = 0; sp < updnum; sp++)
     {

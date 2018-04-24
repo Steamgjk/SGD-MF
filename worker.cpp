@@ -402,21 +402,23 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 printf("sz = %ld\n", KeyVec.size() );
             }
         }
-
-
     }
-
-    int tm = rand() % 10;
-    for (int i = 0 ; i < tm; i++)
-    {
-        random_shuffle(KeyVec.begin(), KeyVec.end());//迭代器
-    }
-
-    printf("Begin Calc sz = %ld\n", KeyVec.size() );
+    /*
+        int tm = rand() % 10;
+        for (int i = 0 ; i < tm; i++)
+        {
+            random_shuffle(KeyVec.begin(), KeyVec.end());//迭代器
+        }
+    **/
+    long sz = KeyVec.size();
+    printf("Begin Calc sz = %ld\n", sz  );
+    vector<double> oldP;
+    vector<double> oldQ;
     //for (int step = 0; step < steps; ++step)
-    for (int sp = 0; sp < 50; sp++)
+    for (int sp = 0; sp < 5; sp++)
     {
-        long real_hash_idx = KeyVec[sp];
+        int rand_idx = rand() % sz;
+        long real_hash_idx = KeyVec[rand_idx];
         long real_row_idx = real_hash_idx / M;
         long real_col_idx = real_hash_idx % M;
         long i = real_row_idx - row_sta_idx;
@@ -426,30 +428,31 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         if (iter != RMap.end())
         {
             error = iter->second;
+            oldP = minP.eles;
+            oldQ = minQ.eles;
             for (int k = 0; k < minK; ++k)
             {
-                error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
+                //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
+                error -= oldP[i * minK + k] * oldQ[j * minK + k];
             }
 
             //更新公式6
             for (int k = 0; k < minK; ++k)
             {
-                updateP.eles[i * minK + k] = alpha * (error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                updateQ.eles[j * minK + k] = alpha * (error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
+                minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
+                minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
             }
-
-
         }
 
-        for (int i = 0; i < originalP.size(); i++)
-        {
-            updateP.eles[i] = minP.eles[i] - originalP[i];
-        }
-        for (int j = 0; j < originalQ.size(); j++)
-        {
-            updateQ.eles[j] = minQ.eles[j] - originalQ[j];
-        }
+    }
 
+    for (int i = 0; i < originalP.size(); i++)
+    {
+        updateP.eles[i] = minP.eles[i] - originalP[i];
+    }
+    for (int j = 0; j < originalQ.size(); j++)
+    {
+        updateQ.eles[j] = minQ.eles[j] - originalQ[j];
     }
 
     printf("end sumbmf\n");

@@ -174,7 +174,9 @@ int main(int argc, const char * argv[])
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
             //P[i][j] = drand48() / 2;
             P[i][j] =  ((double)(rand() % 100) ) / 500 ;
+
         }
+
     }
     for (int i = 0; i < K; i++)
     {

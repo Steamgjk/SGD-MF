@@ -703,6 +703,7 @@ double CalcRMSE()
         else
         {
             negative_cnt++;
+            printf("sum = %lf  real=%lf\n", sum, iter->second );
         }
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;

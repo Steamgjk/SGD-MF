@@ -473,6 +473,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                     for (int k = 0; k < minK; ++k)
                     {
                         //error_m -= P[i * minK + k] * Q[k * minM + j];
+                        /*
                         if (i * minK + k >= minP.eles.size() || i * minK + k < 0 )
                         {
                             printf("i=%ld minK=%d k=%d sz=%ld\n", i, minK, k, minP.eles.size() );
@@ -483,6 +484,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                             printf("j=%ld minK=%d k=%d sz=%ld\n", j, minK, k, minQ.eles.size() );
                             getchar();
                         }
+                        **/
                         error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
                     }
 
@@ -492,8 +494,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                         //printf("minP sz = %ld minQ sz =%ld updt sz %ld updt sz %ld\n i*minK+k=%d  j*minK+k=%d\n", minP.eles.size(), minQ.eles.size(), updateP.eles.size(), updateQ.eles.size(), i * minK + k, j * minK + k );
                         //updateP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
                         //updateQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
-                        minP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                        minQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
+                        minP.eles[i * minK + k] += alpha * (error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
+                        minQ.eles[j * minK + k] += alpha * (error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
                     }
 
 

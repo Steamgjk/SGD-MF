@@ -30,6 +30,7 @@
 using namespace std;
 #define CAP 30
 #define FILE_NAME "./netflix_row.txt"
+#define TEST_NAME "./test_out.txt"
 int WORKER_NUM = 1;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
@@ -43,6 +44,7 @@ int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 //double R[N][M];
 //double Rline[M];
 map<long, double> RMap;
+map<long, double> TestMap;
 double P[N][K];
 double Q[K][M];
 bool worker_debug = false;
@@ -130,6 +132,7 @@ void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
+void LoadTestRating();
 atomic_int recvCount(0);
 bool canSend[CAP] = {false};
 int worker_pidx[CAP];
@@ -162,6 +165,7 @@ int main(int argc, const char * argv[])
     }
     **/
     LoadRating();
+    LoadTestRating();
     printf("Load Complete\n");
     for (int i = 0; i < N; i++)
     {
@@ -302,9 +306,36 @@ void LoadRating()
         ifs >> hash_idx >> ra;
         RMap.insert(pair<long, double>(hash_idx, ra));
         cnt++;
+        if (cnt % 1000000 == 0)
+        {
+            printf("cnt = %ld\n", cnt );
+        }
     }
 
     printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
+}
+void LoadTestRating()
+{
+    ifstream ifs(TEST_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", TEST_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        TestMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+        if (cnt % 10000 == 0)
+        {
+            printf("cnt = %ld\n", cnt );
+        }
+    }
 }
 void sendTd(int send_thread_id)
 {
@@ -650,7 +681,7 @@ double CalcRMSE()
     double rmse = 0;
     int cnt = 0;
     map<long, double>::iterator iter;
-    for (iter = RMap.begin(); iter != RMap.end(); iter++)
+    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M;

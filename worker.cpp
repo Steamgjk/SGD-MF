@@ -415,7 +415,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     vector<double> oldP;
     vector<double> oldQ;
     //for (int step = 0; step < steps; ++step)
-    long updnum = sz / 10;
+    long updnum = sz / 100;
     printf("upnum = %ld\n", updnum );
     for (int sp = 0; sp < updnum; sp++)
     {
@@ -444,6 +444,10 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
                 minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
             }
+        }
+        if (sp % 100 == 0)
+        {
+            printf("sp=%d\n", sp );
         }
 
     }

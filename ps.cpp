@@ -283,7 +283,7 @@ int main(int argc, const char * argv[])
                 }
             }
             printf("Update Finish, Can Distribute\n");
-            //if (iter_t % 10 == 0)
+            if (iter_t % 10 == 0)
             {
                 double rmse = CalcRMSE();
                 printf("rmse=%lf\n", rmse);

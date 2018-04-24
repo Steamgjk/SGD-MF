@@ -50,9 +50,18 @@ int main()
 		for (long j = 1; j <= CUSTOMER_NUM; j++ )
 		{
 			//ofs << user_rates[j] << " ";
+			if (i == 10000 && j == 200206)
+			{
+				printf("i=%ld j=%ld hash_id=%ld userr=%lf\n", i, j, (i - 1)*CUSTOMER_NUM + j - 1,  user_rates[j] );
+			}
 			if (user_rates[j] > 0)
 			{
 				ofs << (i - 1)*CUSTOMER_NUM + j - 1 << " " << user_rates[j] << endl;
+				if (i == 10000 && j == 200206)
+				{
+					printf("i=%ld j=%ld hash_id=%ld userr=%lf\n", i, j, (i - 1)*CUSTOMER_NUM + j - 1,  user_rates[j] );
+				}
+
 			}
 
 		}

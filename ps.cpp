@@ -173,7 +173,7 @@ int main(int argc, const char * argv[])
         {
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
             //P[i][j] = drand48() / 2;
-            P[i][j] =  ((double)(rand() % 100) ) / 1000 ;
+            P[i][j] =  ((double)(rand() % 100) ) / 500 ;
         }
     }
     for (int i = 0; i < K; i++)
@@ -182,7 +182,7 @@ int main(int argc, const char * argv[])
         {
             //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
             //Q[i][j] = drand48() / 2;
-            Q[i][j] =  ((double)(rand() % 100) ) / 1000 ;
+            Q[i][j] =  ((double)(rand() % 100) ) / 500 ;
 
         }
     }
@@ -706,7 +706,7 @@ double CalcRMSE()
         else
         {
             negative_cnt++;
-            printf("sum = %lf  real=%lf\n", sum, iter->second );
+            //printf("sum = %lf  real=%lf\n", sum, iter->second );
         }
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;

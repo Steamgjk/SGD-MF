@@ -264,6 +264,7 @@ int main(int argc, const char * argv[])
             int idx = 0;
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
+                printf("kk = %d  block_id = %d  sz=%ld\n", kk, Pupdts[kk].block_id, Pupdts[kk].eles.size()  );
                 //Update P [N*K]
                 for (int ii = 0; ii < Pupdts[kk].eles.size(); ii++)
                 {
@@ -272,6 +273,7 @@ int main(int argc, const char * argv[])
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
                 }
             }
+            getchar();
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
                 //Update Q[K*M]

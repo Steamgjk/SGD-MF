@@ -423,7 +423,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         updnum = 100;
     }
-    updnum = 50;
+    updnum = 400;
     printf("upnum = %ld\n", updnum );
     for (int sp = 0; sp < updnum; sp++)
     {

@@ -62,6 +62,7 @@ double CalcRMSE()
     int positve_cnt = 0;
     int negative_cnt = 0;
     double sss = 0;
+    double avg = 0;
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
@@ -84,7 +85,8 @@ double CalcRMSE()
 
         }
         printf("sum = %lf  real=%lf\n", sum, iter->second );
-        getchar();
+
+        //getchar();
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }

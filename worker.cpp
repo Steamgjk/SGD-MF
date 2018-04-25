@@ -430,6 +430,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
 
         //for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
+        for (int c_col_cnt = 0; c_col_cnt < 1000; c_col_cnt++)
         {
             long i = c_row_idx;
             long j = rand() % col_len;
@@ -466,7 +467,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 {
                     printf("kkkk=%d\n", kkkk);
                 }
-
+                break;
             }
 
         }
@@ -476,34 +477,38 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
     {
-        long i = rand() % row_len;
-        long j = c_col_idx;
-
-        long real_row_idx = i + row_sta_idx;
-        long real_col_idx = j + col_sta_idx;
-        long real_hash_idx = real_row_idx * M + real_col_idx;
-
-        map<long, double>::iterator iter;
-        iter = RMap.find(real_hash_idx);
-        if (iter != RMap.end())
+        for (int c_row_cnt = 0; c_row_cnt < 1000; c_row_cnt++)
         {
-            error = iter->second;
-            for (int k = 0; k < minK; ++k)
-            {
-                //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
-                error -= oldP[i * minK + k] * oldQ[j * minK + k];
-            }
+            long i = rand() % row_len;
+            long j = c_col_idx;
 
-            for (int k = 0; k < minK; ++k)
-            {
-                minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
-            }
-            kkkk++;
-            if (kkkk % 100 == 0)
-            {
-                printf("kkkk=%d\n", kkkk);
-            }
+            long real_row_idx = i + row_sta_idx;
+            long real_col_idx = j + col_sta_idx;
+            long real_hash_idx = real_row_idx * M + real_col_idx;
 
+            map<long, double>::iterator iter;
+            iter = RMap.find(real_hash_idx);
+            if (iter != RMap.end())
+            {
+                error = iter->second;
+                for (int k = 0; k < minK; ++k)
+                {
+                    //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
+                    error -= oldP[i * minK + k] * oldQ[j * minK + k];
+                }
+
+                for (int k = 0; k < minK; ++k)
+                {
+                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
+                }
+                kkkk++;
+                if (kkkk % 100 == 0)
+                {
+                    printf("kkkk=%d\n", kkkk);
+                }
+                break;
+
+            }
         }
 
     }

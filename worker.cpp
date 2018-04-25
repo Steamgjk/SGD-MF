@@ -373,6 +373,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     updateP.ele_num = Psz;
     updateQ.eles.resize(Qsz);
     updateQ.ele_num = Qsz;
+    updateP.block_id = minP.block_id;
+    updateQ.block_id = minQ.block_id;
+
     int ii = 0;
     for (ii = 0; ii < Psz; ii++)
     {

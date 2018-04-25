@@ -43,7 +43,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define N  17770 // row number
 #define M  2649429 //col number
-#define K  40 //主题个数
+#define K  100 //主题个数
 
 #define Bsz (100*1000)
 #define Rsz (17770 * Bsz)
@@ -241,6 +241,7 @@ int main(int argc, const char * argv[])
 
 }
 
+//Converge!!!
 void LoadConfig(char*filename)
 {
 

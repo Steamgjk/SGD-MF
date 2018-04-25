@@ -273,7 +273,7 @@ int main(int argc, const char * argv[])
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
                 }
             }
-            getchar();
+            //getchar();
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
                 //Update Q[K*M]

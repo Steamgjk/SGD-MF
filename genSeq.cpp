@@ -48,7 +48,7 @@ int main(int argc, const char * argv[])
 	}
 	int total_num = round_num * P;
 	ofs << total_num << endl;
-
+	printf("total_num = %d\n", total_num);
 	for (int t = 0; t < round_num; t++)
 	{
 		random_shuffle(vec.begin(), vec.end());

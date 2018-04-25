@@ -703,8 +703,8 @@ double CalcRMSE()
     map<long, double>::iterator iter;
     int positve_cnt = 0;
     int negative_cnt = 0;
-    //for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
-    for (iter = RMap.begin(); iter != RMap.end(); iter++)
+    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+        //for (iter = RMap.begin(); iter != RMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M;

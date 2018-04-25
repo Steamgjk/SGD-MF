@@ -194,7 +194,7 @@ int main(int argc, const char * argv[])
     {
         canSend[i] = false;
     }
-
+    ubmf
     for (int i = 0; i < WORKER_NUM; i++)
     {
         worker_pidx[i] = worker_qidx[i] = i;
@@ -703,12 +703,19 @@ double CalcRMSE()
     map<long, double>::iterator iter;
     int positve_cnt = 0;
     int negative_cnt = 0;
-    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    //for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    for (iter = RMap.begin(); iter != RMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M;
         long col_idx = real_hash_idx % M;
         double sum = 0;
+        /*
+        if (rand() % 100 >= 10)
+        {
+            continue;
+        }
+        **/
         for (int k = 0; k < K; k++)
         {
             sum += P[row_idx][k] * Q[k][col_idx];

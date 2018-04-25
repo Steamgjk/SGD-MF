@@ -459,7 +459,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 for (int k = 0; k < minK; ++k)
                 {
                     minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
-                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
+                    //minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
                 }
                 kkkk++;
                 if (kkkk % 100 == 0)
@@ -470,6 +470,42 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             }
 
         }
+    }
+
+
+
+    for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
+    {
+        long i = rand() % row_len;
+        long j = c_col_idx;
+
+        long real_row_idx = i + row_sta_idx;
+        long real_col_idx = j + col_sta_idx;
+        long real_hash_idx = real_row_idx * M + real_col_idx;
+
+        map<long, double>::iterator iter;
+        iter = RMap.find(real_hash_idx);
+        if (iter != RMap.end())
+        {
+            error = iter->second;
+            for (int k = 0; k < minK; ++k)
+            {
+                //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
+                error -= oldP[i * minK + k] * oldQ[j * minK + k];
+            }
+
+            for (int k = 0; k < minK; ++k)
+            {
+                minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
+            }
+            kkkk++;
+            if (kkkk % 100 == 0)
+            {
+                printf("kkkk=%d\n", kkkk);
+            }
+
+        }
+
     }
 
     int p_num = 0;

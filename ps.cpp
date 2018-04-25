@@ -190,6 +190,9 @@ int main(int argc, const char * argv[])
 
         }
     }
+    double init_rmse = CalcRMSE();
+    printf("init rmse=%lf\n", init_rmse);
+    log_ofs << init_rmse << endl;
     for (int i = 0; i < WORKER_NUM; i++)
     {
         canSend[i] = false;

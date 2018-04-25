@@ -230,11 +230,13 @@ int main(int argc, const char * argv[])
             hasRecved = false;
 
         }
+        /*
         else
         {
             //printf("[Id:%d] has not received...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
+        **/
     }
 
 }
@@ -543,12 +545,15 @@ void sendTd(int send_thread_id)
     printf("connect to %s %d\n", remote_ip, remote_port);
     while (1 == 1)
     {
+        /*
         if (!canSend)
         {
             //printf("Td %d cannotSend...\n", thread_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         else
+        **/
+        if (canSend)
         {
             //printf("Td:%d cansend\n", thread_id );
             size_t struct_sz = sizeof(Pupdt);

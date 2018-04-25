@@ -384,11 +384,14 @@ void sendTd(int send_thread_id)
     printf("[Td:%d]connected %s  %d\n", send_thread_id, remote_ip, remote_port );
     while (1 == 1)
     {
+        /*
         if (!canSend[send_thread_id])
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         else
+        **/
+        if (canSend[send_thread_id])
         {
             int pbid = worker_pidx[send_thread_id];
             int qbid = worker_qidx[send_thread_id];

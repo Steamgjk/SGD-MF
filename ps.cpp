@@ -258,10 +258,12 @@ int main(int argc, const char * argv[])
             //cout << "RecvCount\t" << recvCount << endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
+        bool debug = true;
         if (recvCount == WORKER_NUM)
         {
             printf("Collect All, Can Update\n");
             int idx = 0;
+
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
                 printf("kk = %d  block_id = %d  sz=%ld\n", kk, Pupdts[kk].block_id, Pupdts[kk].eles.size()  );
@@ -271,9 +273,16 @@ int main(int argc, const char * argv[])
                     int row_idx = (ii + idx) / K;
                     int col_idx = (ii + idx) % K;
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
+                    if (debug)
+                    {
+                        printf("updateP %d  %d\n",  row_idx, col_idx);
+                    }
                 }
+                idx += Pupdts[kk].eles.size();
             }
             //getchar();
+            debug = false;
+            idx = 0;
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
                 //Update Q[K*M]
@@ -282,6 +291,7 @@ int main(int argc, const char * argv[])
                     int col_idx = (ii + idx) / K;
                     int row_idx = (ii + idx) % K;
                     Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
+                    idx += Qupdts[kk].eles.size();
                 }
             }
             printf("Update Finish, Can Distribute\n");

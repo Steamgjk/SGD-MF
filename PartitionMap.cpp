@@ -108,7 +108,7 @@ int main(int argc, const char * argv[])
 			sprintf(filne, "./tmp/%s-%d", FILE_NAME, block_id);
 			printf("%s\n", filne);
 			ofstream ofs(filne, ios::trunc);
-			std::map<long, double>iterator iter;
+			map<long, double>::iterator iter;
 			for (iter = SMap[i][j].begin(); iter != SMap[i][j].end(); iter++)
 			{
 				ofs << iter->first << " " << iter->second << endl;

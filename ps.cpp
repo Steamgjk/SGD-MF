@@ -272,6 +272,11 @@ int main(int argc, const char * argv[])
                 {
                     int row_idx = (ii + idx) / K;
                     int col_idx = (ii + idx) % K;
+                    if (row_idx >= N)
+                    {
+                        printf("row %d col %d \n", row_idx, col_idx );
+                        getchar();
+                    }
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
                     if (debug)
                     {
@@ -291,8 +296,9 @@ int main(int argc, const char * argv[])
                     int col_idx = (ii + idx) / K;
                     int row_idx = (ii + idx) % K;
                     Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
-                    idx += Qupdts[kk].eles.size();
+
                 }
+                idx += Qupdts[kk].eles.size();
             }
             printf("Update Finish, Can Distribute\n");
             //if (iter_t % 10 == 0)

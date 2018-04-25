@@ -172,7 +172,8 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < K; j++)
         {
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
-            P[i][j] = drand48() / 1.7;
+            //P[i][j] = drand48() / 1.7;
+            P[i][j] = drand48() / 10;
             //P[i][j] =  ((double)(rand() % 100) ) / 400 ;
 
         }
@@ -183,7 +184,8 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < M; j++)
         {
             //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
-            Q[i][j] = drand48() / 1.7;
+            //Q[i][j] = drand48() / 1.7;
+            Q[i][j] = drand48() / 10;
             //Q[i][j] =  ((double)(rand() % 100) ) / 400 ;
 
         }

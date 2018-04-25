@@ -465,6 +465,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 {
                     printf("kkkk=%d\n", kkkk);
                 }
+
             }
 
         }
@@ -479,7 +480,15 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         updateQ.eles[j] = minQ.eles[j] - originalQ[j];
     }
-
+    printf("Pupdt\n");
+    for (int xx = 0 ; xx < 100; xx++)
+    {
+        printf("%lf\n", updateP.eles[xx]);
+    }
+    for (int xx = 0 ; xx < 100; xx++)
+    {
+        printf("%lf\n", updateQ.eles[xx]);
+    }
     printf("end sumbmf\n");
 }
 

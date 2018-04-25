@@ -433,6 +433,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         {
             long i = c_row_idx;
             long j = rand() % col_len;
+
             long real_row_idx = i + row_sta_idx;
             long real_col_idx = j + col_sta_idx;
             long real_hash_idx = real_row_idx * M + real_col_idx;
@@ -471,24 +472,26 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         }
     }
 
-
+    int p_num = 0;
+    int q_num = 0;
     for (int i = 0; i < originalP.size(); i++)
     {
         updateP.eles[i] = minP.eles[i] - originalP[i];
+        if (updateP.eles[i] > 0)
+        {
+            p_num++;
+        }
     }
     for (int j = 0; j < originalQ.size(); j++)
     {
         updateQ.eles[j] = minQ.eles[j] - originalQ[j];
+        if (updateQ.eles[j] > 0)
+        {
+            q_num++;
+        }
     }
-    printf("Pupdt\n");
-    for (int xx = 0 ; xx < 100; xx++)
-    {
-        printf("%lf\n", updateP.eles[xx]);
-    }
-    for (int xx = 0 ; xx < 100; xx++)
-    {
-        printf("%lf\n", updateQ.eles[xx]);
-    }
+    printf("Pupdt=%d  Qupdt=%d\n", p_num, q_num);
+
     printf("end sumbmf\n");
 }
 

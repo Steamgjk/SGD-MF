@@ -421,11 +421,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     vector<double> oldQ;
     //for (int step = 0; step < steps; ++step)
     long updnum = sz / 10000;
-    if (updnum < 100)
-    {
-        updnum = 100;
-    }
-    updnum = 10;
+
+    updnum = 1000;
     printf("upnum = %ld\n", updnum );
     for (int sp = 0; sp < updnum; sp++)
     {

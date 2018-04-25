@@ -442,8 +442,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             long real_col_idx = real_hash_idx % M;
             long i = real_row_idx - row_sta_idx;
             long j = real_col_idx - col_sta_idx;
-            map<long, double>::iterator iter;
             **/
+            map<long, double>::iterator iter;
             iter = RMap.find(real_hash_idx);
             if (iter != RMap.end())
             {

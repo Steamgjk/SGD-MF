@@ -428,7 +428,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     oldQ = minQ.eles;
     for (int c_row_idx = 0; c_row_idx < updnum; c_row_idx++)
     {
-        for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
+
+        //for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
         {
             long i = c_row_idx;
             long j = rand() % col_len;

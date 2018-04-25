@@ -391,6 +391,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     vector<double> originalQ = minQ.eles;
 
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
+    /*
     map<long, double>::iterator iter;
     KeyVec.clear();
     for (iter = RMap.begin(); iter != RMap.end(); iter++)
@@ -408,56 +409,65 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             }
         }
     }
-    /*
-        int tm = rand() % 10;
-        for (int i = 0 ; i < tm; i++)
-        {
-            random_shuffle(KeyVec.begin(), KeyVec.end());//迭代器
-        }
-    **/
+
     long sz = KeyVec.size();
     printf("Begin Calc sz = %ld\n", sz  );
+    **/
     vector<double> oldP;
     vector<double> oldQ;
     //for (int step = 0; step < steps; ++step)
-    long updnum = sz / 10000;
-
-    updnum = 1000;
-    printf("upnum = %ld\n", updnum );
-    for (int sp = 0; sp < updnum; sp++)
+    long updnum = row_len;
+    if (updnum > col_len)
     {
-        int rand_idx = rand() % sz;
-        long real_hash_idx = KeyVec[rand_idx];
-        long real_row_idx = real_hash_idx / M;
-        long real_col_idx = real_hash_idx % M;
-        long i = real_row_idx - row_sta_idx;
-        long j = real_col_idx - col_sta_idx;
-        map<long, double>::iterator iter;
-        iter = RMap.find(real_hash_idx);
-        if (iter != RMap.end())
-        {
-            error = iter->second;
-            oldP = minP.eles;
-            oldQ = minQ.eles;
-            for (int k = 0; k < minK; ++k)
-            {
-                //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
-                error -= oldP[i * minK + k] * oldQ[j * minK + k];
-            }
-
-            //更新公式6
-            for (int k = 0; k < minK; ++k)
-            {
-                minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
-                minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
-            }
-        }
-        if (sp % 100 == 0)
-        {
-            printf("sp=%d\n", sp );
-        }
-
+        updnum = col_len;
     }
+    printf("upnum = %ld\n", updnum );
+    //for (int sp = 0; sp < updnum; sp++)
+    int kkkk = 0;
+    for (int c_row_idx = 0; c_row_idx < updnum; c_row_idx++)
+    {
+        for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
+        {
+            long real_row_idx = c_row_idx + row_sta_idx;
+            long real_col_idx = rand() % col_len + col_sta_idx;
+            long real_hash_idx = real_row_idx * M + real_col_idx;
+            /*
+            int rand_idx = rand() % sz;
+            long real_hash_idx = KeyVec[rand_idx];
+            long real_row_idx = real_hash_idx / M;
+            long real_col_idx = real_hash_idx % M;
+            long i = real_row_idx - row_sta_idx;
+            long j = real_col_idx - col_sta_idx;
+            map<long, double>::iterator iter;
+            **/
+            iter = RMap.find(real_hash_idx);
+            if (iter != RMap.end())
+            {
+                error = iter->second;
+                oldP = minP.eles;
+                oldQ = minQ.eles;
+                for (int k = 0; k < minK; ++k)
+                {
+                    //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
+                    error -= oldP[i * minK + k] * oldQ[j * minK + k];
+                }
+
+                //更新公式6
+                for (int k = 0; k < minK; ++k)
+                {
+                    minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
+                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
+                }
+                kkkk++;
+                if (kkkk % 100 == 0)
+                {
+                    printf("kkkk=%d\n", kkkk);
+                }
+            }
+
+        }
+    }
+
 
     for (int i = 0; i < originalP.size(); i++)
     {

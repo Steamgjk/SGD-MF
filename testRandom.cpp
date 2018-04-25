@@ -111,7 +111,7 @@ int main(int argc, const char * argv[])
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            P[i][j] = drand48() * 10 / 3;
+            P[i][j] = drand48() * 0.3;
             psum += P[i][j];
 
         }
@@ -123,7 +123,7 @@ int main(int argc, const char * argv[])
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            Q[j][i] = drand48() * 10 / 3;
+            Q[j][i] = drand48() * 0.3;
         }
         //printf("\n");
     }

@@ -73,7 +73,7 @@ double CalcRMSE()
         for (int k = 0; k < K; k++)
         {
             sum += P[row_idx][k] * Q[k][col_idx];
-            printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
+            //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
         }
         if (sum > iter->second)
         {
@@ -84,7 +84,7 @@ double CalcRMSE()
             negative_cnt++;
 
         }
-        printf("sum = %lf  real=%lf\n", sum, iter->second );
+        //printf("sum = %lf  real=%lf\n", sum, iter->second );
 
         //getchar();
         rmse += (sum - iter->second) * (sum - iter->second);
@@ -113,7 +113,7 @@ int main(int argc, const char * argv[])
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            P[i][j] = drand48() * 0.57;
+            P[i][j] = drand48() * 0.6058;
             psum += P[i][j];
 
         }
@@ -125,7 +125,7 @@ int main(int argc, const char * argv[])
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            Q[j][i] = drand48() * 0.57;
+            Q[j][i] = drand48() * 0.6058;
         }
         //printf("\n");
     }

@@ -197,7 +197,6 @@ int main(int argc, const char * argv[])
     {
         canSend[i] = false;
     }
-    ubmf
     for (int i = 0; i < WORKER_NUM; i++)
     {
         worker_pidx[i] = worker_qidx[i] = i;

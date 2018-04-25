@@ -424,12 +424,16 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     printf("upnum = %ld\n", updnum );
     //for (int sp = 0; sp < updnum; sp++)
     int kkkk = 0;
+    oldP = minP.eles;
+    oldQ = minQ.eles;
     for (int c_row_idx = 0; c_row_idx < updnum; c_row_idx++)
     {
         for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
         {
-            long real_row_idx = c_row_idx + row_sta_idx;
-            long real_col_idx = rand() % col_len + col_sta_idx;
+            long i = c_row_idx;
+            long j = rand() % col_len;
+            long real_row_idx = i + row_sta_idx;
+            long real_col_idx = j + col_sta_idx;
             long real_hash_idx = real_row_idx * M + real_col_idx;
             /*
             int rand_idx = rand() % sz;
@@ -444,15 +448,12 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             if (iter != RMap.end())
             {
                 error = iter->second;
-                oldP = minP.eles;
-                oldQ = minQ.eles;
                 for (int k = 0; k < minK; ++k)
                 {
                     //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
                     error -= oldP[i * minK + k] * oldQ[j * minK + k];
                 }
 
-                //更新公式6
                 for (int k = 0; k < minK; ++k)
                 {
                     minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);

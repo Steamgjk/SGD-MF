@@ -71,9 +71,15 @@ int main(int argc, const char * argv[])
 		exit(-1);
 	}
 	long hash_id; double rate;
+	int cnt = 0;
 	while (!ifs.eof())
 	{
 		ifs >> hash_id >> rate;
+		cnt++;
+		if (cnt % 1000000 == 0 )
+		{
+			printf("cnt = %d\n", cnt );
+		}
 		long row_id = hash_id / M;
 		long col_id = hash_id % M;
 		bool has  = false;

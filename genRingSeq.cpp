@@ -58,7 +58,7 @@ int main(int argc, const char * argv[])
 
 
 	ofstream actionfs(ACTION_FILE, ios::trunc);
-	if (!ofs.is_open())
+	if (!actionfs.is_open())
 	{
 		printf("open fail %s\n", ACTION_FILE );
 		exit(-1);

@@ -415,12 +415,13 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
                 TestMap.insert(pair<long, double>(iter->first, iter->second));
             }
         }
+        if (r % 100 == 0)
+        {
+            printf("process row_sta_idx %ld\n", r );
+        }
 
     }
-    if (row_sta_idx % 100 == 0)
-    {
-        printf("process row_sta_idx %ld\n", row_sta_idx );
-    }
+
 }
 void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
 {

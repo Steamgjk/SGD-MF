@@ -26,8 +26,8 @@ int n = 2;
 int P = 4;
 int round_num = 100;
 ofstream ofs[10];
-int p_idx[n][]
 int p_or_q[1000][10];
+int mms[100][100];
 #define ACTION_FILE "./action"
 #define STATE_FILE "./state"
 int main(int argc, const char * argv[])

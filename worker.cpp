@@ -415,6 +415,10 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
                 TestMap.insert(pair<long, double>(iter->first, iter->second));
             }
         }
+        if (row_sta_idx % 100 == 0)
+        {
+            printf("process row_sta_idx %ld\n", row_sta_idx );
+        }
     }
 }
 void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
@@ -461,7 +465,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     double new_rmse = old_rmse;
     int kkkk = 0;
     int iter_cnt = 0;
-    while ( new_rmse >= 0.9 * old_rmse )
+    while ( new_rmse > 0.9 * old_rmse )
     {
         for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {

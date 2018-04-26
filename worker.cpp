@@ -370,7 +370,6 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
     int negative_cnt = 0;
     long row_sta_idx = minP.sta_idx;
     long col_sta_idx = minQ.sta_idx;
-    printf("check 1\n");
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
@@ -388,6 +387,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
             }
             sum += minP.eles[row_idx * K + k] + minQ.eles[col_idx * K + k];
         }
+        printf("sum %lf  real %lf\n", sum, iter->second);
         if (sum > iter->second)
         {
             positve_cnt++;
@@ -529,7 +529,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         iter_cnt++;
         new_rmse = CalcRMSE(TestMap, minP, minQ);
         printf("old_rmse = %lf new_rmse=%lf\n", old_rmse, new_rmse );
-        if (iter_cnt > 1000)
+        if (iter_cnt > 1000000)
         {
             break;
         }

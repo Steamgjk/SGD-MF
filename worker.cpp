@@ -359,7 +359,7 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 
 double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
 {
-    printf("calc RMSE-1debug...\n");
+    //printf("calc RMSE-1debug...\n");
     double rmse = 0;
     int cnt = 0;
     map<long, double>::iterator iter;
@@ -399,10 +399,10 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
-    printf("RTestMap sz %ld cnt = %d\n", RTestMap.size(), cnt );
+    //printf("RTestMap sz %ld cnt = %d\n", RTestMap.size(), cnt );
     rmse /= cnt;
     rmse = sqrt(rmse);
-    printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
+    //printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
     return rmse;
 }
 void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)

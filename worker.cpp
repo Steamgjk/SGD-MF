@@ -493,7 +493,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     int iter_cnt = 0;
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
-    while ( new_rmse > 0.99 * old_rmse )
+    while ( new_rmse > 0.999 * old_rmse )
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
@@ -535,7 +535,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
         }
 
-        if (iter_cnt > 100000)
+        if (iter_cnt > 1000)
         {
             break;
         }

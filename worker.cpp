@@ -489,7 +489,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     FilterDataSet(RTestMap, row_sta_idx, row_len, col_sta_idx, col_len);
 
     printf("before entering rmse\n");
-    double old_rmse = CalcRMSE(TestMap, minP, minQ);
+    double old_rmse = CalcRMSE(RTestMap, minP, minQ);
     double new_rmse = old_rmse;
     int kkkk = 0;
     int iter_cnt = 0;

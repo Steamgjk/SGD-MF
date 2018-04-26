@@ -362,7 +362,7 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
 {
-    printf("calc RMSE...\n");
+    printf("calc RMSE-1debug...\n");
     double rmse = 0;
     int cnt = 0;
     map<long, double>::iterator iter;
@@ -370,7 +370,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
     int negative_cnt = 0;
     long row_sta_idx = minP.sta_idx;
     long col_sta_idx = minQ.sta_idx;
-
+    printf("check 1\n");
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;

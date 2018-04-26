@@ -33,6 +33,7 @@ using namespace std;
 
 //cnt=15454227 sizeof(long)=8
 #define FILE_NAME "./netflix_row.txt"
+#define TEST_NAME "./test_out.txt"
 
 #define WORKER_NUM 1
 char* remote_ips[10] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
@@ -140,6 +141,7 @@ void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
+void LoadTestRating();
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
 int thread_id = -1;
@@ -149,21 +151,15 @@ struct timeval start, stop, diff;
 
 //double* minR = (double*)malloc(sizeof(double) * Rsz);
 map<long, double> RMap;
+map<long, double> TestMap;
 vector<long> KeyVec;
 int main(int argc, const char * argv[])
 {
 
-    //printf("minR = %p sz = %lld\n", minR, (sizeof(double) * Rsz / 1000000000) );
-    //getchar();
-    /*
-        for (int i = 0; i < Rsz; i++)
-    {
-        minR[i] = 0;
-    }
 
-    **/
     thread_id = atoi(argv[1]);
     LoadRating();
+    LoadTestRating();
     printf("Load Rating Success\n");
 
 
@@ -197,23 +193,7 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblock.sta_idx;
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
-            //printf("ele_num = %d   size = %ld\n", ele_num, sizeof(double) * ele_num);
-            //getchar();
-            //double* minR = (double*)malloc(sizeof(double) * col_len);
-            //double* minR = (double*)malloc(sizeof(double) * col_len);
-            //printf("minR=%p sizeof(double) * M=%lld\n", minR, M );
-            //getchar();
 
-
-            //printf("okkkk minR=%p\n", minR);
-            //getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-            /*
-            for (int i = 0; i < ele_num; i++)
-            {
-                printf("%lf\t", minR[i] );
-            }
-            **/
-            //printf("fin  before minR  %p\n", minR);
             submf(Pblock, Qblock, Pupdt, Qupdt, K);
             iter_cnt++;
             if (iter_cnt == ThreshIter)
@@ -232,13 +212,6 @@ int main(int argc, const char * argv[])
             hasRecved = false;
 
         }
-        /*
-        else
-        {
-            //printf("[Id:%d] has not received...\n", thread_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-        **/
     }
 
 }
@@ -273,6 +246,30 @@ void LoadRating()
     }
 
     printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
+}
+
+void LoadTestRating()
+{
+    ifstream ifs(TEST_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", TEST_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        TestMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+        if (cnt % 10000 == 0)
+        {
+            printf("cnt = %ld\n", cnt );
+        }
+    }
 }
 void WriteLog(Block&Pb, Block&Qb)
 {
@@ -360,7 +357,7 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 }
 
 
-double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
+double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
 {
     printf("calc RMSE-1debug...\n");
     double rmse = 0;
@@ -370,7 +367,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
     int negative_cnt = 0;
     long row_sta_idx = minP.sta_idx;
     long col_sta_idx = minQ.sta_idx;
-    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    for (iter = RTestMap.begin(); iter != RTestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M - row_sta_idx;
@@ -402,13 +399,13 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
-    printf("TestMap sz %ld cnt = %d\n", TestMap.size(), cnt );
+    printf("RTestMap sz %ld cnt = %d\n", RTestMap.size(), cnt );
     rmse /= cnt;
     rmse = sqrt(rmse);
     printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
     return rmse;
 }
-void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
+void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
     printf("Entering FilterDataSet\n");
     std::map<long, double>::iterator iter;
@@ -421,10 +418,10 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
             {
                 long hash_idx = r * M + rand() % col_len + col_sta_idx;
                 iter = RMap.find(hash_idx);
-                if (iter != RMap.end())
+                if (iter != TestMap.end())
                 {
                     mem_cnt++;
-                    TestMap.insert(pair<long, double>(iter->first, iter->second));
+                    RTestMap.insert(pair<long, double>(iter->first, iter->second));
                     if (mem_cnt >= 10000)
                     {
                         break;
@@ -442,7 +439,7 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
 
         }
     }
-
+    printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
 
 
 }
@@ -481,9 +478,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
 
 
-    std::map<long, double> TestMap;
+    std::map<long, double> RTestMap;
     printf("before entering FilterDataSet\n");
-    FilterDataSet(TestMap, row_sta_idx, row_len, col_sta_idx, col_len);
+    FilterDataSet(RTestMap, row_sta_idx, row_len, col_sta_idx, col_len);
 
     printf("before entering rmse\n");
     double old_rmse = CalcRMSE(TestMap, minP, minQ);
@@ -523,16 +520,12 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                     minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
 
                 }
-                kkkk++;
-                if (kkkk % 100 == 0)
-                {
-                    printf("kkkk=%d\n", kkkk);
-                }
+
                 break;
             }
         }
         iter_cnt++;
-        new_rmse = CalcRMSE(TestMap, minP, minQ);
+        new_rmse = CalcRMSE(RTestMap, minP, minQ);
         printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
         if (iter_cnt > 100000)
         {

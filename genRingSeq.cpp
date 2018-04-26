@@ -47,7 +47,7 @@ int main(int argc, const char * argv[])
 	char filen[100];
 	for (int i = 0; i < P; i++ )
 	{
-		sprintf(filen, "%s-%d", STATE_FILE, i)
+		sprintf(filen, "%s-%d", STATE_FILE, i);
 		ofs[i].open(filen, ios::trunc);
 		if (!ofs[i].is_open())
 		{

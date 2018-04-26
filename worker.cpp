@@ -410,27 +410,32 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
     printf("Entering FilterDataSet\n");
     std::map<long, double>::iterator iter;
     long mem_cnt = 0;
-    while (mem_cnt < 10000)
+    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    {
+        long hash_idx = iter->first;
+        long r_idx = hash_idx / M;
+        long c_idx = hash_idx % M;
+        if (row_sta_idx <= r_idx && r_idx < row_sta_idx + row_len && col_sta_idx <= c_idx && c_idx < col_sta_idx + col_len)
+        {
+            RTestMap.insert(pair<long, double>(iter->first, iter->second));
+        }
+
+    }
+    /*
+    //while (mem_cnt < 10000)
     {
         for (long r = row_sta_idx; r < row_sta_idx + row_len; r++)
         {
             for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
             {
-                long hash_idx = r * M + rand() % col_len + col_sta_idx;
+                //long hash_idx = r * M + rand() % col_len + col_sta_idx;
+                long hash_idx = r * M + co;
                 iter = RMap.find(hash_idx);
                 if (iter != TestMap.end())
                 {
                     mem_cnt++;
                     RTestMap.insert(pair<long, double>(iter->first, iter->second));
-                    if (mem_cnt >= 10000)
-                    {
-                        break;
-                    }
                 }
-            }
-            if (mem_cnt >= 10000)
-            {
-                break;
             }
             if (r % 100 == 0)
             {
@@ -439,6 +444,7 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 
         }
     }
+    **/
     printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
 
 

@@ -379,7 +379,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
             //sum += P[row_idx][k] * Q[k][col_idx];
             if (row_idx * K + k > minP.eles.size() || col_idx * K + k > minQ.eles.size() )
             {
-                printf("Psz %ld  idx %ld  Qsz %ld  idx %ld\n", minP.eles.size(), row_idx * K + k ,   minQ.eles.size(), col_idx * K + k );
+                printf("Psz %ld  idx %ld  Qsz %ld  idx %ld  real_hash_idx %ld row_idx %ld col_idx %ld\n", minP.eles.size(), row_idx * K + k ,   minQ.eles.size(), col_idx * K + k, real_hash_idx, row_idx, col_idx );
                 getchar();
             }
             sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];

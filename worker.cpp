@@ -404,7 +404,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
     std::map<long, double>::iterator iter;
-    for (long r = row_sta_idx; r < row_sta_idx + row_len, r++)
+    for (long r = row_sta_idx; r < row_sta_idx + row_len; r++)
     {
         for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
         {
@@ -511,17 +511,17 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     int p_num = 0;
     int q_num = 0;
-    for (int i = 0; i < originalP.size(); i++)
+    for (int i = 0; i < oldP.size(); i++)
     {
-        updateP.eles[i] = minP.eles[i] - originalP[i];
+        updateP.eles[i] = minP.eles[i] - oldP[i];
         if (updateP.eles[i] > 0)
         {
             p_num++;
         }
     }
-    for (int j = 0; j < originalQ.size(); j++)
+    for (int j = 0; j < oldQ.size(); j++)
     {
-        updateQ.eles[j] = minQ.eles[j] - originalQ[j];
+        updateQ.eles[j] = minQ.eles[j] - oldQ[j];
         if (updateQ.eles[j] > 0)
         {
             q_num++;
@@ -529,7 +529,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     }
     printf("Pupdt=%d  Qupdt=%d\n", p_num, q_num);
 
-    printf("end sumbmf\n");
+
 }
 
 

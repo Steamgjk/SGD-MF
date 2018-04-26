@@ -403,6 +403,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
 }
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
+    printf("Entering FilterDataSet\n");
     std::map<long, double>::iterator iter;
     long mem_cnt = 0;
     while (mem_cnt < 10000)
@@ -475,9 +476,10 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     vector<double> oldP = minP.eles;
     vector<double> oldQ = minQ.eles;
     std::map<long, double> TestMap;
+    printf("before entering FilterDataSet\n");
     FilterDataSet(TestMap, row_sta_idx, row_len, col_sta_idx, col_len);
 
-
+    printf("before entering rmse\n");
     double old_rmse = CalcRMSE(TestMap, minP, minQ);
     double new_rmse = old_rmse;
     int kkkk = 0;

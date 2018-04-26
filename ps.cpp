@@ -264,6 +264,8 @@ int main(int argc, const char * argv[])
             //cout << "RecvCount\t" << recvCount << endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
+        long pos_n, neg_n, zero_n;
+
         if (recvCount == WORKER_NUM)
         {
             printf("Collect All, Can Update\n");
@@ -273,27 +275,55 @@ int main(int argc, const char * argv[])
             {
                 //printf("kk = %d  block_id = %d  sz=%ld\n", kk, Pupdts[kk].block_id, Pupdts[kk].eles.size()  );
                 //Update P [N*K]
+                pos_n = neg_n = zero_n = 0;
                 for (int ii = 0; ii < Pupdts[kk].eles.size(); ii++)
                 {
                     int row_idx = (ii + idx) / K;
                     int col_idx = (ii + idx) % K;
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
+                    if (Pupdts[kk].eles[ii] > 0)
+                    {
+                        pos_n++;
+                    }
+                    else if (Pupdts[kk].eles[ii] < 0 )
+                    {
+                        neg_n++
+                    }
+                    else
+                    {
+                        zero_n++;
+                    }
                 }
                 idx += Pupdts[kk].eles.size();
+                printf("Pupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
             }
 
             idx = 0;
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
+                pos_n = neg_n = zero_n = 0;
                 //Update Q[K*M]
                 for (int ii = 0; ii < Qupdts[kk].eles.size(); ii++)
                 {
                     int col_idx = (ii + idx) / K;
                     int row_idx = (ii + idx) % K;
                     Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
+                    if (Qupdts[kk].eles[ii] > 0)
+                    {
+                        pos_n++;
+                    }
+                    else if (Qupdts[kk].eles[ii] < 0 )
+                    {
+                        neg_n++
+                    }
+                    else
+                    {
+                        zero_n++;
+                    }
 
                 }
                 idx += Qupdts[kk].eles.size();
+                printf("Qupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
             }
             printf("Update Finish, Can Distribute\n");
             //if (iter_t % 10 == 0)

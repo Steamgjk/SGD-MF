@@ -385,7 +385,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
                 printf("Psz %ld  idx %ld  Qsz %ld  idx %ld\n", minP.eles.size(), row_idx * K + k ,   minQ.eles.size(), col_idx * K + k );
                 getchar();
             }
-            sum += minP.eles[row_idx * K + k] + minQ.eles[col_idx * K + k];
+            sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
             printf("k=%d  Pv %lf  Qv %lf  sum=%lf\n", k, minP.eles[row_idx * K + k],  minQ.eles[col_idx * K + k], sum);
         }
         getchar();
@@ -480,8 +480,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
 
-    vector<double> oldP = minP.eles;
-    vector<double> oldQ = minQ.eles;
+
     std::map<long, double> TestMap;
     printf("before entering FilterDataSet\n");
     FilterDataSet(TestMap, row_sta_idx, row_len, col_sta_idx, col_len);
@@ -493,6 +492,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     int iter_cnt = 0;
     while ( new_rmse > 0.9 * old_rmse )
     {
+        vector<double> oldP = minP.eles;
+        vector<double> oldQ = minQ.eles;
         for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {
 
@@ -517,7 +518,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 for (int k = 0; k < minK; ++k)
                 {
                     minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
-                    minQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
+                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ.eles[j * minK + k]);
 
                 }
                 kkkk++;

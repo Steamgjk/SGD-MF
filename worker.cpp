@@ -386,7 +386,9 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
                 getchar();
             }
             sum += minP.eles[row_idx * K + k] + minQ.eles[col_idx * K + k];
+            printf("k=%d  Pv %lf  Qv %lf  sum=%lf\n", k, minP.eles[row_idx * K + k],  minQ.eles[col_idx * K + k], sum);
         }
+        getchar();
         printf("sum %lf  real %lf\n", sum, iter->second);
         if (sum > iter->second)
         {

@@ -28,8 +28,8 @@ int round_num = 100;
 ofstream ofs[10];
 int p_or_q[1000][10];
 int mms[100][100];
-#define ACTION_FILE "./action"
-#define STATE_FILE "./state"
+#define ACTION_FILE "./tmp/action"
+#define STATE_FILE "./tmp/state"
 int main(int argc, const char * argv[])
 {
 	if (argc >= 2)

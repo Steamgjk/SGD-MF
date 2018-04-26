@@ -404,16 +404,26 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
     std::map<long, double>::iterator iter;
+    long mem_cnt = 0;
     for (long r = row_sta_idx; r < row_sta_idx + row_len; r++)
     {
         for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
         {
-            long hash_idx = r * M + co;
+            long hash_idx = r * M + rand() % col_sta_idx;
             iter = RMap.find(hash_idx);
             if (iter != RMap.end())
             {
+                mem_cnt++;
                 TestMap.insert(pair<long, double>(iter->first, iter->second));
+                if (mem_cnt >= 10000)
+                {
+                    break;
+                }
             }
+        }
+        if (mem_cnt >= 10000)
+        {
+            break;
         }
         if (r % 100 == 0)
         {
@@ -421,6 +431,7 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
         }
 
     }
+
 
 }
 void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
@@ -480,8 +491,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             long real_hash_idx = real_row_idx * M + real_col_idx;
 
             map<long, double>::iterator iter;
-            iter = TestMap.find(real_hash_idx);
-            if (iter != TestMap.end())
+            iter = RMap.find(real_hash_idx);
+            if (iter != RMap.end())
             {
                 error = iter->second;
                 for (int k = 0; k < minK; ++k)

@@ -43,7 +43,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define N  17770 // row number
 #define M  2649429 //col number
-#define K  100 //主题个数
+#define K  40 //主题个数
 
 #define Bsz (100*1000)
 #define Rsz (17770 * Bsz)
@@ -140,6 +140,8 @@ void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
+void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
+double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
 int thread_id = -1;
 
 struct timeval start, stop, diff;
@@ -357,6 +359,64 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
     //printf("Returned  \n");
 }
 
+
+double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
+{
+    printf("calc RMSE...\n");
+    double rmse = 0;
+    int cnt = 0;
+    map<long, double>::iterator iter;
+    int positve_cnt = 0;
+    int negative_cnt = 0;
+    long row_sta_idx = minP.sta_idx;
+    long col_sta_idx = minQ.sta_idx;
+
+    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    {
+        long real_hash_idx = iter->first;
+        long row_idx = real_hash_idx / M - row_sta_idx;
+        long col_idx = real_hash_idx % M - col_sta_idx;
+        double sum = 0;
+
+        for (int k = 0; k < K; k++)
+        {
+            //sum += P[row_idx][k] * Q[k][col_idx];
+            sum += minP.eles[row_idx * K + k] + minQ.eles[col_idx * K + k];
+        }
+        if (sum > iter->second)
+        {
+            positve_cnt++;
+        }
+        else
+        {
+            negative_cnt++;
+            //printf("sum = %lf  real=%lf\n", sum, iter->second );
+        }
+        rmse += (sum - iter->second) * (sum - iter->second);
+        cnt++;
+    }
+
+    rmse /= cnt;
+    rmse = sqrt(rmse);
+    printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
+    return rmse;
+}
+void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
+{
+    std::map<long, double>::iterator iter;
+    for (long r = row_sta_idx; r < row_sta_idx + row_len, r++)
+    {
+        for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
+        {
+            long hash_idx = r * M + co;
+            iter = RMap.find(hash_idx);
+            if (iter != RMap.end())
+            {
+                TestMap.insert(pair<long, double>(iter->first, iter->second));
+            }
+        }
+    }
+}
 void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
 {
     printf("begin submf\n");
@@ -388,68 +448,34 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         updateQ.eles[ii] = 0;
     }
-    vector<double> originalP = minP.eles;
-    vector<double> originalQ = minQ.eles;
 
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
-    /*
-    map<long, double>::iterator iter;
-    KeyVec.clear();
-    for (iter = RMap.begin(); iter != RMap.end(); iter++)
-    {
-        long real_hash_idx = iter->first;
-        long real_row_idx = real_hash_idx / M;
-        long real_col_idx = real_hash_idx % M;
-        if (row_sta_idx <= real_row_idx && real_row_idx < row_sta_idx + row_len \
-                && col_sta_idx <= real_col_idx && real_col_idx < col_sta_idx + col_len )
-        {
-            KeyVec.push_back(real_hash_idx);
-            if (KeyVec.size() % 1000000 == 0)
-            {
-                printf("sz = %ld\n", KeyVec.size() );
-            }
-        }
-    }
 
-    long sz = KeyVec.size();
-    printf("Begin Calc sz = %ld\n", sz  );
-    **/
-    vector<double> oldP;
-    vector<double> oldQ;
-    //for (int step = 0; step < steps; ++step)
-    long updnum = row_len;
-    if (updnum > col_len)
-    {
-        updnum = col_len;
-    }
-    printf("upnum = %ld\n", updnum );
-    //for (int sp = 0; sp < updnum; sp++)
+    vector<double> oldP = minP.eles;
+    vector<double> oldQ = minQ.eles;
+    std::map<long, double> TestMap;
+    FilterDataSet(TestMap, row_sta_idx, row_len, col_sta_idx, col_len);
+
+
+    double old_rmse = CalcRMSE(TestMap, minP, minQ);
+    double new_rmse = old_rmse;
     int kkkk = 0;
-    oldP = minP.eles;
-    oldQ = minQ.eles;
-    for (int c_row_idx = 0; c_row_idx < updnum; c_row_idx++)
+    int iter_cnt = 0;
+    while ( new_rmse >= 0.9 * old_rmse )
     {
-
-        //for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
-        for (int c_col_cnt = 0; c_col_cnt < 1000; c_col_cnt++)
+        for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {
+
             long i = c_row_idx;
             long j = rand() % col_len;
 
             long real_row_idx = i + row_sta_idx;
             long real_col_idx = j + col_sta_idx;
             long real_hash_idx = real_row_idx * M + real_col_idx;
-            /*
-            int rand_idx = rand() % sz;
-            long real_hash_idx = KeyVec[rand_idx];
-            long real_row_idx = real_hash_idx / M;
-            long real_col_idx = real_hash_idx % M;
-            long i = real_row_idx - row_sta_idx;
-            long j = real_col_idx - col_sta_idx;
-            **/
+
             map<long, double>::iterator iter;
-            iter = RMap.find(real_hash_idx);
-            if (iter != RMap.end())
+            iter = TestMap.find(real_hash_idx);
+            if (iter != TestMap.end())
             {
                 error = iter->second;
                 for (int k = 0; k < minK; ++k)
@@ -461,7 +487,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 for (int k = 0; k < minK; ++k)
                 {
                     minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
-                    //minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
+
                 }
                 kkkk++;
                 if (kkkk % 100 == 0)
@@ -470,49 +496,18 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 }
                 break;
             }
-
         }
-    }
-
-
-
-    for (int c_col_idx = 0; c_col_idx < updnum; c_col_idx++)
-    {
-        for (int c_row_cnt = 0; c_row_cnt < 1000; c_row_cnt++)
+        iter_cnt++;
+        new_rmse = CalcRMSE(TestMap, minP, minQ);
+        printf("old_rmse = %lf new_rmse=%lf\n", old_rmse, new_rmse );
+        if (iter_cnt > 1000)
         {
-            long i = rand() % row_len;
-            long j = c_col_idx;
-
-            long real_row_idx = i + row_sta_idx;
-            long real_col_idx = j + col_sta_idx;
-            long real_hash_idx = real_row_idx * M + real_col_idx;
-
-            map<long, double>::iterator iter;
-            iter = RMap.find(real_hash_idx);
-            if (iter != RMap.end())
-            {
-                error = iter->second;
-                for (int k = 0; k < minK; ++k)
-                {
-                    //error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
-                    error -= oldP[i * minK + k] * oldQ[j * minK + k];
-                }
-
-                for (int k = 0; k < minK; ++k)
-                {
-                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
-                }
-                kkkk++;
-                if (kkkk % 100 == 0)
-                {
-                    printf("kkkk=%d\n", kkkk);
-                }
-                break;
-
-            }
+            break;
         }
-
     }
+
+
+
 
     int p_num = 0;
     int q_num = 0;
@@ -763,10 +758,6 @@ void recvTd(int recv_thread_id)
         //Qblock.printBlock();
 
         hasRecved = true;
-
-
-
-
     }
 }
 

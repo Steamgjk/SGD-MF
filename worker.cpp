@@ -141,7 +141,7 @@ void WriteLog(Block&Pb, Block&Qb);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
-double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
+double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
 int thread_id = -1;
 
 struct timeval start, stop, diff;

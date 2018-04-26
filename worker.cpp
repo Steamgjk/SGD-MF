@@ -490,6 +490,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     double new_rmse = old_rmse;
     int kkkk = 0;
     int iter_cnt = 0;
+    vector<double> originalP = minP.eles;
+    vector<double> originalQ = minQ.eles;
     while ( new_rmse > 0.9 * old_rmse )
     {
         vector<double> oldP = minP.eles;
@@ -543,17 +545,17 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     int p_num = 0;
     int q_num = 0;
-    for (int i = 0; i < oldP.size(); i++)
+    for (int i = 0; i < originalP.size(); i++)
     {
-        updateP.eles[i] = minP.eles[i] - oldP[i];
+        updateP.eles[i] = minP.eles[i] - originalP[i];
         if (updateP.eles[i] > 0)
         {
             p_num++;
         }
     }
-    for (int j = 0; j < oldQ.size(); j++)
+    for (int j = 0; j < originalQ.size(); j++)
     {
-        updateQ.eles[j] = minQ.eles[j] - oldQ[j];
+        updateQ.eles[j] = minQ.eles[j] - originalQ[j];
         if (updateQ.eles[j] > 0)
         {
             q_num++;

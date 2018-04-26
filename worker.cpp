@@ -485,10 +485,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
 
     std::map<long, double> RTestMap;
-    printf("before entering FilterDataSet\n");
     FilterDataSet(RTestMap, row_sta_idx, row_len, col_sta_idx, col_len);
 
-    printf("before entering rmse\n");
     double old_rmse = CalcRMSE(RTestMap, minP, minQ);
     double new_rmse = old_rmse;
     int kkkk = 0;
@@ -532,7 +530,11 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         }
         iter_cnt++;
         new_rmse = CalcRMSE(RTestMap, minP, minQ);
-        printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
+        if (iter_cnt % 100 == 0)
+        {
+            printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
+        }
+
         if (iter_cnt > 100000)
         {
             break;

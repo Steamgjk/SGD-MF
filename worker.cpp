@@ -525,7 +525,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
                 }
 
-                break;
+
             }
         }
         iter_cnt++;

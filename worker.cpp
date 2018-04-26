@@ -412,7 +412,7 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
         {
             for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
             {
-                long hash_idx = r * M + rand() % col_sta_idx;
+                long hash_idx = r * M + rand() % col_len + col_sta_idx;
                 iter = RMap.find(hash_idx);
                 if (iter != RMap.end())
                 {

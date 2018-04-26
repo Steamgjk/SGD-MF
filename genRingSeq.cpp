@@ -47,7 +47,7 @@ int main(int argc, const char * argv[])
 	char filen[100];
 	for (int i = 0; i < P; i++ )
 	{
-		sprintf(filen, "%s-%d", SEQ_FILE, i)
+		sprintf(filen, "%s-%d", STATE_FILE, i)
 		ofs[i].open(filen, ios::trunc);
 		if (!ofs[i].is_open())
 		{
@@ -56,13 +56,14 @@ int main(int argc, const char * argv[])
 		}
 	}
 
+
+	ofstream actionfs(ACTION_FILE, ios::trunc);
 	if (!ofs.is_open())
 	{
-		printf("open fail %s\n", SEQ_FILE );
+		printf("open fail %s\n", ACTION_FILE );
 		exit(-1);
 	}
 
-	ofstream actionfs(ACTION_FILE, ios::trunc);
 	for (int t = 0; t < round_num; t++)
 	{
 		for (int i = 0; i < n; i++)

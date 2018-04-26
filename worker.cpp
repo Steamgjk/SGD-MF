@@ -535,7 +535,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
         }
 
-        if (iter_cnt > 1000)
+        if (iter_cnt > 100)
         {
             break;
         }

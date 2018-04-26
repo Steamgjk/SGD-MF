@@ -395,7 +395,7 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
-
+    printf("TestMap sz %ld cnt = %d\n", TestMap.size(), cnt );
     rmse /= cnt;
     rmse = sqrt(rmse);
     printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
@@ -405,32 +405,36 @@ void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, 
 {
     std::map<long, double>::iterator iter;
     long mem_cnt = 0;
-    for (long r = row_sta_idx; r < row_sta_idx + row_len; r++)
+    while (mem_cnt < 10000)
     {
-        for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
+        for (long r = row_sta_idx; r < row_sta_idx + row_len; r++)
         {
-            long hash_idx = r * M + rand() % col_sta_idx;
-            iter = RMap.find(hash_idx);
-            if (iter != RMap.end())
+            for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
             {
-                mem_cnt++;
-                TestMap.insert(pair<long, double>(iter->first, iter->second));
-                if (mem_cnt >= 10000)
+                long hash_idx = r * M + rand() % col_sta_idx;
+                iter = RMap.find(hash_idx);
+                if (iter != RMap.end())
                 {
-                    break;
+                    mem_cnt++;
+                    TestMap.insert(pair<long, double>(iter->first, iter->second));
+                    if (mem_cnt >= 10000)
+                    {
+                        break;
+                    }
                 }
             }
-        }
-        if (mem_cnt >= 10000)
-        {
-            break;
-        }
-        if (r % 100 == 0)
-        {
-            printf("process row_sta_idx %ld\n", r );
-        }
+            if (mem_cnt >= 10000)
+            {
+                break;
+            }
+            if (r % 100 == 0)
+            {
+                printf("process row_sta_idx %ld\n", r );
+            }
 
+        }
     }
+
 
 
 }

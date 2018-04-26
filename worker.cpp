@@ -381,6 +381,11 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ)
         for (int k = 0; k < K; k++)
         {
             //sum += P[row_idx][k] * Q[k][col_idx];
+            if (row_idx * K + k > minP.eles.size() || col_idx * K + k > minQ.eles.size() )
+            {
+                printf("Psz %ld  idx %ld  Qsz %ld  idx %ld\n", minP.eles.size(), row_idx * K + k ,   minQ.eles.size(), col_idx * K + k );
+                getchar();
+            }
             sum += minP.eles[row_idx * K + k] + minQ.eles[col_idx * K + k];
         }
         if (sum > iter->second)

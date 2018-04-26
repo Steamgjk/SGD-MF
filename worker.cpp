@@ -518,7 +518,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                 for (int k = 0; k < minK; ++k)
                 {
                     minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
-                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ.eles[j * minK + k]);
+                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
 
                 }
                 kkkk++;

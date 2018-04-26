@@ -287,7 +287,7 @@ int main(int argc, const char * argv[])
                     }
                     else if (Pupdts[kk].eles[ii] < 0 )
                     {
-                        neg_n++
+                        neg_n++;
                     }
                     else
                     {
@@ -314,7 +314,7 @@ int main(int argc, const char * argv[])
                     }
                     else if (Qupdts[kk].eles[ii] < 0 )
                     {
-                        neg_n++
+                        neg_n++;
                     }
                     else
                     {

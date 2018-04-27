@@ -493,8 +493,8 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
-        printf("row_sta_idx %ld row_len=%ld  col_sta_idx %ld col_len=%ld\n", row_sta_idx, row_len, col_sta_idx, col_len );
-        printf("oldP  sz %ld bid %ld oldQ sz  %ld  bid %ld\n", oldP.size(), minP.block_id, oldQ.size(), minQ.block_id );
+        //printf("row_sta_idx %ld row_len=%ld  col_sta_idx %ld col_len=%ld\n", row_sta_idx, row_len, col_sta_idx, col_len );
+        //printf("oldP  sz %ld bid %ld oldQ sz  %ld  bid %ld\n", oldP.size(), minP.block_id, oldQ.size(), minQ.block_id );
         for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {
 
@@ -515,7 +515,8 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
                     if (i * minK + k >= oldP.size() || j * minK + k >= oldQ.size())
                     {
 
-                        printf("i=%ld minK=%d j =%ld k=%d  idx = %ld idx =%ld Psz=%ld Qsz =%ld\n", i, minK, j, k, i * minK + k, j * minK + k, oldP.size(), oldQ.size() );
+                        //printf("i=%ld minK=%d j =%ld k=%d  idx = %ld idx =%ld Psz=%ld Qsz =%ld\n", i, minK, j, k, i * minK + k, j * minK + k, oldP.size(), oldQ.size() );
+                        printf("P(1) is %d  Q(0) is %d\n", minP.isP, minQ.isP);
                         getchar();
                     }
                     error -= oldP[i * minK + k] * oldQ[j * minK + k];

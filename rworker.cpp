@@ -139,7 +139,7 @@ void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
-void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, float alpha = 0.003, float beta = 0.1);
+void submf(Block& minP, Block& minQ, int minK, float alpha = 0.003, float beta = 0.1);
 void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);

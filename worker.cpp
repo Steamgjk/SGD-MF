@@ -225,11 +225,7 @@ int main(int argc, const char * argv[])
 
 }
 
-//Converge!!!
-void LoadConfig(char*filename)
-{
 
-}
 void LoadRating()
 {
     ifstream ifs(FILE_NAME);
@@ -280,6 +276,7 @@ void LoadTestRating()
         }
     }
 }
+
 void WriteLog(Block&Pb, Block&Qb)
 {
     char fn[100];

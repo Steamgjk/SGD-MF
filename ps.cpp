@@ -159,6 +159,14 @@ int main(int argc, const char * argv[])
     }
     srand(1);
     ofstream log_ofs("./rmse.txt", ios::trunc);
+    if (!log_ofs.is_open())
+    {
+        printf("failed open log\n");
+    }
+    else
+    {
+        printf("opened log\n");
+    }
     /*
     for (int i = 0; i < N; i++)
     {

@@ -220,7 +220,7 @@ int main(int argc, const char * argv[])
             submf( Pblocks[pidx], Qblocks[qidx], K);
 
             iter_cnt++;
-            if (iter_cnt % ThreshIter == 0)
+            //if (iter_cnt % ThreshIter == 0)
             {
                 gettimeofday(&stop, 0);
 

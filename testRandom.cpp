@@ -21,12 +21,18 @@
 #include <fstream>
 #include <sys/time.h>
 #include <map>
+/*
 #define N  17770 // row number
 #define M  2649429 //col number
 #define K  40 //主题个数
+**/
+#define TEST_NAME "./movielen10M_test.txt"
+#define N 71567
+#define M 65133
+#define K  40 //主题个数
 double P[N][K];
 double Q[K][M];
-#define TEST_NAME "./test_out.txt"
+//#define TEST_NAME "./test_out.txt"
 using namespace std;
 map<long, double> TestMap;
 
@@ -113,7 +119,7 @@ int main(int argc, const char * argv[])
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            P[i][j] = drand48() * 0.6058;
+            P[i][j] = drand48() * NUM;
             psum += P[i][j];
 
         }
@@ -125,7 +131,7 @@ int main(int argc, const char * argv[])
         {
             // printf("%lf ", ((double)rand() / RAND_MAX / 10.0) );
             //printf("%lf ", drand48() );
-            Q[j][i] = drand48() * 0.6058;
+            Q[j][i] = drand48() * NUM;
         }
         //printf("\n");
     }

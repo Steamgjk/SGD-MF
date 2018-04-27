@@ -1,10 +1,4 @@
-//
-//  main.cpp
-//  linux_socket_api
-//
-//  Created by bikang on 16/11/2.
-//  Copyright (c) 2016年 bikang. All rights reserved.
-//
+
 
 #include <iostream>
 
@@ -32,22 +26,24 @@
 
 using namespace std;
 
-#define BUFFER_SIZE 1024
 
-#define FILE_NAME "./mtx-small.txt"
+
 
 
 char* local_ips[10] = {"127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
 
-#define N  16 //用户数
-#define M  16 //物品数
-#define K  2 //主题个数
+#define FILE_NAME "./traina.txt"
+#define TEST_NAME "./testa.txt"
+#define N 71567
+#define M 65133
+#define K  40 //主题个数
+
 #define CAP 30
 #define PERIOD 4
 int WORKER_NUM = 2;
-#define ThreshIter 100
+#define ThreshIter 5
 #define SEQ_LEN 5000
 
 struct Block
@@ -143,12 +139,16 @@ void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
-void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-void WriteLog(Block&Pb, Block&Qb);
+void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, float alpha = 0.003, float beta = 0.1);
+void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
+void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
-void LoadConfig(char*filename);
+void LoadRating();
+void LoadTestRating();
 
 
+map<long, double> RMap;
+map<long, double> TestMap;
 
 int thread_id = -1;
 int main(int argc, const char * argv[])
@@ -156,6 +156,9 @@ int main(int argc, const char * argv[])
     srand(time(0));
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
+    LoadRating();
+    LoadTestRating();
+
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
 
@@ -178,11 +181,11 @@ int main(int argc, const char * argv[])
 
     for (int i = 0; i < Pblocks[worker_pidx[thread_id]].ele_num; i++)
     {
-        Pblocks[worker_pidx[thread_id]].eles[i] = rand() % 5;
+        Pblocks[worker_pidx[thread_id]].eles[i] = drand48() * 0.6;
     }
     for (int j = 0; j < Qblocks[worker_qidx[thread_id]].ele_num; j++)
     {
-        Qblocks[worker_qidx[thread_id]].eles[j] = rand() % 5;
+        Qblocks[worker_qidx[thread_id]].eles[j] =  drand48() * 0.6;
     }
     recvedCount++;
     int cnt = 0;
@@ -206,16 +209,9 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblocks[qidx].sta_idx;
             int col_len = Qblocks[qidx].height;
             int ele_num = row_len * col_len;
-            //printf("begin getMinR\n");
-            double* minR = (double*)malloc(sizeof(double) * ele_num);
-            for (int i = 0; i < ele_num; i++)
-            {
-                minR[i] = 0;
-            }
-            getMinR(minR, row_sta_idx, row_len, col_sta_idx, col_len);
-            //printf("endMinR\n");
 
-            submf(minR, Pblocks[pidx], Qblocks[qidx], K);
+
+            submf( Pblocks[pidx], Qblocks[qidx], K);
 
             iter_cnt++;
             if (iter_cnt == ThreshIter)
@@ -224,8 +220,8 @@ int main(int argc, const char * argv[])
 
                 long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
                 printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
-                WriteLog(Pblocks[pidx], Qblocks[qidx]);
-                exit(0);
+                WriteLog(Pblocks[pidx], Qblocks[qidx], iter_cnt);
+
             }
 
 
@@ -247,22 +243,63 @@ int main(int argc, const char * argv[])
                     worker_pidx[i] = (worker_pidx[i] + WORKER_NUM - 1) % WORKER_NUM;
                 }
             }
-            free(minR);
+
             toSendCount++;
 
-        }
-        else
-        {
-            //printf("[Id:%d] has not received...\n", thread_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
 
 }
 
-void LoadConfig(char*filename)
+void LoadRating()
 {
+    ifstream ifs(FILE_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", FILE_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        RMap.insert(pair<long, double>(hash_idx, ra));
+        //KeyVec.insert(hash_idx);
+        cnt++;
+        if (cnt % 1000000 == 0)
+        {
+            printf("cnt=%d\n", cnt );
+        }
+    }
 
+    printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
+}
+
+void LoadTestRating()
+{
+    ifstream ifs(TEST_NAME);
+    if (!ifs.is_open())
+    {
+        printf("fail to open the file %s\n", TEST_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        TestMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+        if (cnt % 10000 == 0)
+        {
+            printf("cnt = %ld\n", cnt );
+        }
+    }
 }
 
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
@@ -310,10 +347,10 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
     //printf("Returned  \n");
 }
 
-void WriteLog(Block&Pb, Block&Qb)
+void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
 {
     char fn[100];
-    sprintf(fn, "Pblock-%d", Pb.block_id);
+    sprintf(fn, "Pblock-%d-%d", iter_cnt, Pb.block_id);
     ofstream pofs(fn, ios::trunc);
     for (int h = 0; h < Pb.height; h++)
     {
@@ -323,7 +360,7 @@ void WriteLog(Block&Pb, Block&Qb)
         }
         pofs << endl;
     }
-    sprintf(fn, "Qblock-%d", Qb.block_id);
+    sprintf(fn, "Qblock-%d-%d", iter_cnt, Qb.block_id);
     ofstream qofs(fn, ios::trunc);
     for (int h = 0; h < Qb.height; h++)
     {
@@ -335,43 +372,99 @@ void WriteLog(Block&Pb, Block&Qb)
     }
 }
 
-void submf(double * minR, Block & minP, Block & minQ,  int minK, int steps, float alpha , float beta)
+void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
-    //printf("begin submf\n");
+    printf("Entering FilterDataSet\n");
+    std::map<long, double>::iterator iter;
+    long mem_cnt = 0;
+    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    {
+        long hash_idx = iter->first;
+        long r_idx = hash_idx / M;
+        long c_idx = hash_idx % M;
+        if (row_sta_idx <= r_idx && r_idx < row_sta_idx + row_len && col_sta_idx <= c_idx && c_idx < col_sta_idx + col_len)
+        {
+            RTestMap.insert(pair<long, double>(iter->first, iter->second));
+        }
+
+    }
+
+    printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
+
+
+}
+
+
+void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
+{
+    printf("begin submf\n");
     double error = 0;
     int minN = minP.height;
     int minM = minQ.height;
+    int row_sta_idx = minP.sta_idx;
+    int col_sta_idx = minQ.sta_idx;
+    int row_len = minP.height;
+    int col_len = minQ.height;
+
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
-    vector<int> vshuf(minM * minN);
-    for (int i = 0; i < minM * minN; i++)
-    {
-        vshuf[i] = i;
-    }
-    random_shuffle(vshuf.begin(), vshuf.end());//迭代器
+    printf("row_len=%ld col_len=%ld\n", row_len, col_len );
 
-    for (int ii = 0; ii < minN * minM; ii++)
+
+    std::map<long, double> RTestMap;
+    FilterDataSet(RTestMap, row_sta_idx, row_len, col_sta_idx, col_len);
+
+    double old_rmse = CalcRMSE(RTestMap, minP, minQ);
+    double new_rmse = old_rmse;
+    int kkkk = 0;
+    int iter_cnt = 0;
+    vector<double> originalP = minP.eles;
+    vector<double> originalQ = minQ.eles;
+    while ( new_rmse > 0.99 * old_rmse )
     {
-        int idx = vshuf[ii];
-        int i = idx / minM;
-        int j = idx % minM;
-        if (minR[i * minM + j] > 0)
+        vector<double> oldP = minP.eles;
+        vector<double> oldQ = minQ.eles;
+        for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {
-            //这里面的error 就是公式6里面的e(i,j)
-            error = minR[i * minM + j];
-            for (int k = 0; k < minK; ++k)
+
+            long i = c_row_idx;
+            long j = rand() % col_len;
+
+            long real_row_idx = i + row_sta_idx;
+            long real_col_idx = j + col_sta_idx;
+            long real_hash_idx = real_row_idx * M + real_col_idx;
+
+            map<long, double>::iterator iter;
+            iter = RMap.find(real_hash_idx);
+            if (iter != RMap.end())
             {
-                //error_m -= P[i * minK + k] * Q[k * minM + j];
-                error -= minP.eles[i * minK + k] * minQ.eles[j * minK + k];
-            }
-            //更新公式6
-            for (int k = 0; k < minK; ++k)
-            {
-                minP.eles[i * minK + k] += alpha * (2 * error * minQ.eles[j * minK + k] - beta * minP.eles[i * minK + k]);
-                minQ.eles[j * minK + k] += alpha * (2 * error * minP.eles[i * minK + k] - beta * minQ.eles[j * minK + k]);
+                error = iter->second;
+                for (int k = 0; k < minK; ++k)
+                {
+                    error -= oldP[i * minK + k] * oldQ[j * minK + k];
+                }
+
+                for (int k = 0; k < minK; ++k)
+                {
+                    minP.eles[i * minK + k] += alpha * (error * oldQ[j * minK + k] - beta * oldP[i * minK + k]);
+                    minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
+
+                }
             }
         }
+        iter_cnt++;
+        new_rmse = CalcRMSE(RTestMap, minP, minQ);
+        if (iter_cnt % 100 == 0)
+        {
+            printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
+        }
+
+        if (iter_cnt > 100)
+        {
+            break;
+        }
     }
+
 }
 int wait4connection(char*local_ip, int local_port)
 {
@@ -440,12 +533,7 @@ void sendTd(int send_thread_id)
     int send_cnt = 0;
     while (1 == 1)
     {
-        if (toSendCount == 0)
-        {
-            //printf("Td %d cannotSend...\n", thread_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-        else
+        if (toSendCount > 0)
         {
             int direct = directions[send_cnt % PERIOD];
             size_t struct_sz = sizeof(Block);
@@ -461,18 +549,7 @@ void sendTd(int send_thread_id)
                 buf = (char*)malloc(struct_sz + data_sz);
                 //printf("SendTd direct=1 ch1... eles=%ld\n", Qblocks[send_qidx].eles.size() );
                 memcpy(buf, &(Qblocks[send_qidx]), struct_sz);
-                /*
-                char* temp = (char*)malloc(data_sz);
-                memcpy(temp, (char*) & (Qblocks[send_qidx].eles[0]), data_sz );
-                double* dbtemp = (double*)(void*)temp;
-                for (int i = 0; i < Qblocks[send_qidx].eles.size(); i++ )
-                {
-                    printf("%lf\t", dbtemp[i] );
-                }
-                printf("\n");
-                **/
                 memcpy(buf + struct_sz, (char*) & (Qblocks[send_qidx].eles[0]), data_sz);
-                //printf("SendTd direct=1 ch2\n");
                 //updat send_qidx to right
                 send_qidx = (send_qidx + 1) % WORKER_NUM;
                 //printf("SendTd direct=1 ch3\n");

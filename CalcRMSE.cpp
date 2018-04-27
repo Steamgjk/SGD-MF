@@ -147,7 +147,7 @@ int main(int argc, const char * argv[])
             {
                 for (int kk = 0; kk < K; kk++)
                 {
-                    ifs >> Q[kk][col_idx];
+                    ifs1 >> Q[kk][col_idx];
                 }
                 col_idx++;
             }

@@ -591,8 +591,7 @@ void sendTd(int send_thread_id)
 
     struct sockaddr_in address;
     bzero(&address, sizeof(address));
-    int sendbuf = 4096;
-    int len = sizeof( sendbuf );
+
     //转换成网络地址
     address.sin_port = htons(remote_port);
     address.sin_family = AF_INET;
@@ -630,6 +629,8 @@ void sendTd(int send_thread_id)
                 //updat send_qidx to right
                 send_qidx = (send_qidx + 1) % WORKER_NUM;
                 //printf("SendTd direct=1 ch3\n");
+                printf("send Q\n");
+                getchar();
             }
             else
             {
@@ -640,6 +641,8 @@ void sendTd(int send_thread_id)
                 memcpy(buf + struct_sz, (char*) & (Pblocks[send_pidx].eles[0]), data_sz);
                 //update send_pidx to up
                 send_pidx = (send_pidx + WORKER_NUM - 1) % WORKER_NUM;
+                printf("send P\n");
+                getchar();
             }
             //printf("SendTd  check point 1\n");
             int ret = send(fd, buf, (struct_sz + data_sz), 0);

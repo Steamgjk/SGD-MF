@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
 	//ofstream ofs("netflix_mtx.txt", ios::trunc);
-	ifstream ifs("./ml-10M100K/rb.train", ios::in | iso::out);
+	ifstream ifs("./ml-10M100K/rb.train", ios::in | ios::out);
 	ofstream ofs("./ml-10M100K/train.txt", ios::trunc);
 	long user_id;
 	long movie_id;

@@ -775,8 +775,8 @@ double CalcRMSE()
         cnt++;
     }
 
-    //rmse /= cnt;
-    //rmse = sqrt(rmse);
+    rmse /= cnt;
+    rmse = sqrt(rmse);
     printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
     return rmse;
 }

@@ -509,7 +509,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
                     if (i * minK + k >= oldP.size() || j * minK + k >= oldQ.size())
                     {
 
-                        printf("i=%ld minK=%d j =%ld Psz=%ld Qsz =%ld\n", i, minK, j, oldP.size(); oldQ.size() );
+                        printf("i=%ld minK=%d j =%ld Psz=%ld Qsz =%ld\n", i, minK, j, oldP.size(), oldQ.size() );
                         getchar();
                     }
                     error -= oldP[i * minK + k] * oldQ[j * minK + k];

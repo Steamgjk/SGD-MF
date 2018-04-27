@@ -472,7 +472,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
 
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
-    printf("row_len=%ld col_len=%ld\n", row_len, col_len );
+    printf("row_sta_idx %ld row_len=%ld  col_sta_idx %ld col_len=%ld\n", row_sta_idx, row_len, col_sta_idx, col_len );
 
 
     std::map<long, double> RTestMap;
@@ -488,7 +488,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
-        printf("oldP sz %ld  oldQ sz %ld\n", oldP.size(), oldQ.size() );
+        printf("oldP bid %d sz %ld  oldQ sz  %ld  bid %d\n", oldP.size(), minP.block_id, oldQ.size(), minQ.block_id );
         for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {
 

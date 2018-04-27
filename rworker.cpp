@@ -150,7 +150,6 @@ double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
 
 map<long, double> RMap;
 map<long, double> TestMap;
-
 int thread_id = -1;
 int main(int argc, const char * argv[])
 {
@@ -209,6 +208,8 @@ int main(int argc, const char * argv[])
             if (!isstart)
             {
                 isstart = true;
+                std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+                printf("OK Start\n");
                 gettimeofday(&start, 0);
             }
             //SGD

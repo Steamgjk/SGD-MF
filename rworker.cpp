@@ -641,24 +641,7 @@ void recvTd(int recv_thread_id)
     {
         int direct = directions[cnt % PERIOD];
         size_t expected_len = sizeof(Block);
-        char* sockBuf = NULL;
-        if (direct == 1)
-        {
-            //printf("recv direct=1\n");
-            // I will go right, so I send my Qblock to the right neighbor,
-            //similarly, I also receive a Qblock from my left neighbor
-            sockBuf = (char*)(void*)(&(Qblocks[recv_qidx]));
-            //I will go right, update recv_qidx
-            recv_qidx = (recv_qidx + 1) % WORKER_NUM;
-
-        }
-        else
-        {
-            //printf("recv direct =0\n");
-            sockBuf = (char*)(void*)(&(Pblocks[recv_pidx]));
-            // I will go up, update recv_pidx
-            recv_pidx = (recv_pidx + WORKER_NUM - 1) % WORKER_NUM;
-        }
+        char* sockBuf = (char*)malloc(expected_len);
         size_t cur_len = 0;
         int ret = 0;
         //printf("recv Check 1\n");
@@ -675,13 +658,25 @@ void recvTd(int recv_thread_id)
         }
 
         struct Block* pb = (struct Block*)(void*)sockBuf;
-        pb->eles.resize(pb->ele_num);
-        printf("hehee assign\n");
-        for (int i = 0; i < pb->ele_num; i++)
+        if (direct == 1)
         {
-            pb->eles[i] = i ;
+            //printf("recv direct=1\n");
+            // I will go right, so I send my Qblock to the right neighbor,
+            //similarly, I also receive a Qblock from my left neighbor
+            Qblocks[recv_qidx].block_id = pb->block_id;
+            Qblocks[recv_qidx].sta_idx = pb->sta_idx;
+            Qblocks[recv_qidx].height = pb->height;
+            Qblocks[recv_qidx].ele_num = pb->ele_num;
+
         }
-        printf("okk\n");
+        else
+        {
+            Pblocks[recv_pidx].block_id = pb->block_id;
+            Pblocks[recv_pidx].sta_idx = pb->sta_idx;
+            Pblocks[recv_pidx].height = pb->height;
+            Pblocks[recv_pidx].ele_num = pb->ele_num;
+        }
+
         size_t data_sz = sizeof(double) * (pb->ele_num);
         sockBuf = (char*)malloc(data_sz);
         //printf("recv check 4\n");
@@ -696,13 +691,30 @@ void recvTd(int recv_thread_id)
             }
             cur_len += ret;
         }
-        printf("check 5  ele_num = %ld data_sz = %ld  vec sz = %ld\n", pb->ele_num, data_sz, pb->eles.size() );
         double* data_eles = (double*)(void*)sockBuf;
 
-        getchar();
-        for (int i = 0; i < pb->ele_num; i++)
+
+        if (direct == 1)
         {
-            pb->eles[i] = data_eles[i];
+            for (int i = 0; i < Qblocks[recv_qidx].ele_num; i++)
+            {
+                Qblocks[recv_qidx].eles[i] = data_eles[i];
+            }
+            // I will go right, so I send my Qblock to the right neighbor,
+            //similarly, I also receive a Qblock from my left neighbor
+
+            //I will go right, update recv_qidx
+            recv_qidx = (recv_qidx + 1) % WORKER_NUM;
+
+        }
+        else
+        {
+            for (int i = 0; i < Pblocks[recv_pidx].ele_num; i++)
+            {
+                Pblocks[recv_pidx].eles[i] = data_eles[i];
+            }
+            // I will go up, update recv_pidx
+            recv_pidx = (recv_pidx + WORKER_NUM - 1) % WORKER_NUM;
         }
         free(data_eles);
         recvedCount++;

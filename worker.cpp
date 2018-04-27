@@ -32,8 +32,17 @@
 using namespace std;
 
 //cnt=15454227 sizeof(long)=8
-#define FILE_NAME "./netflix_row.txt"
-#define TEST_NAME "./test_out.txt"
+//#define FILE_NAME "./netflix_row.txt"
+//#define TEST_NAME "./test_out.txt"
+//#define N  17770 // row number
+//#define M  2649429 //col number
+//#define K  40 //主题个数
+
+#define FILE_NAME "./movielen10M_train.txt"
+#define TEST_NAME "./movielen10M_test.txt"
+#define N 71567
+#define M 65133
+#define K  40 //主题个数
 
 #define WORKER_NUM 1
 char* remote_ips[10] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
@@ -42,9 +51,7 @@ int remote_ports[10] = {4411, 4412, 4413, 4414};
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
-#define N  17770 // row number
-#define M  2649429 //col number
-#define K  40 //主题个数
+
 
 #define Bsz (100*1000)
 #define Rsz (17770 * Bsz)

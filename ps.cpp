@@ -29,17 +29,25 @@
 #include <map>
 using namespace std;
 #define CAP 30
-#define FILE_NAME "./netflix_row.txt"
-#define TEST_NAME "./test_out.txt"
+//#define FILE_NAME "./netflix_row.txt"
+//#define TEST_NAME "./test_out.txt"
+//#define N  17770 // row number
+//#define M  2649429 //col number
+//#define K  40 //主题个数
+
+#define FILE_NAME "./movielen10M_train.txt"
+#define TEST_NAME "./movielen10M_test.txt"
+#define N 71567
+#define M 65133
+#define K  40 //主题个数
 int WORKER_NUM = 1;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
 char* remote_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
-#define N  17770 // row number
-#define M  2649429 //col number
-#define K  40 //主题个数
+
+
 
 //double R[N][M];
 //double Rline[M];

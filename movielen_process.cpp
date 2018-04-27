@@ -10,14 +10,6 @@ using namespace std;
 #define K 2
 int main()
 {
-	char filename[100];
-	int temp;
-	int customer_id;
-	char datetime[100];
-	int rate;
-	char comma;
-	int movie_id;
-	char line[512];
 	//ofstream ofs("netflix_mtx.txt", ios::trunc);
 	ifstream ifs("./ml-10M100K/rb.train", ios::in | iso::out);
 	ofstream ofs("./ml-10M100K/train.txt", ios::trunc);

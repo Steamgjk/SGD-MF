@@ -18,11 +18,17 @@ int main()
 	double rate;
 	char tmp;
 	string line;
+	int cnt = 0;
 	while (!ifs.eof())
 	{
 		ifs >> user_id >> tmp >> tmp >> movie_id >> tmp >> tmp >> rate >> line;
 		long hasn_idx =  (user_id - 1) * M + (movie_id - 1);
-		ofs << hasn_idx << rate << endl;
+		ofs << hasn_idx << " " << rate << endl;
+		cnt++;
+		if (cnt % 10000 == 0)
+		{
+			printf("cnt = %d\n", cnt);
+		}
 	}
 
 

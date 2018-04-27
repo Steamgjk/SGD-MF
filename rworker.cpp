@@ -691,11 +691,12 @@ void recvTd(int recv_thread_id)
             }
             cur_len += ret;
         }
-        printf("check 5  ele_num = %ld \n", pb->ele_num );
+        printf("check 5  ele_num = %ld data_sz = %ld\n", pb->ele_num, data_sz );
         double* data_eles = (double*)(void*)sockBuf;
         for (int i = 0; i < pb->ele_num; i++)
         {
             printf("i=%d\n", i);
+            printf("%lf\n", data_eles[i] );
             pb->eles[i] = data_eles[i];
         }
         free(data_eles);

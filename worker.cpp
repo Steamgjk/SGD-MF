@@ -147,7 +147,7 @@ void recvTd(int recv_thread_id);
 void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.003, float beta = 0.1);
 
 void LoadConfig(char*filename);
-void WriteLog(Block&Pb, Block&Qb);
+void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
 void LoadTestRating();
@@ -205,13 +205,13 @@ int main(int argc, const char * argv[])
 
             submf(Pblock, Qblock, Pupdt, Qupdt, K);
             iter_cnt++;
-            if (iter_cnt == ThreshIter)
+            if (iter_cnt == 5 )
             {
                 gettimeofday(&stop, 0);
 
                 long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
                 printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
-                WriteLog(Pblock, Qblock);
+                WriteLog(Pblock, Qblock, iter_cnt);
                 exit(0);
             }
 
@@ -277,10 +277,10 @@ void LoadTestRating()
     }
 }
 
-void WriteLog(Block&Pb, Block&Qb)
+void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
 {
     char fn[100];
-    sprintf(fn, "Pblock-%d", Pb.block_id);
+    sprintf(fn, "./PS-track/Pblock-%d-%d", iter_cnt, Pb.block_id);
     ofstream pofs(fn, ios::trunc);
     for (int h = 0; h < Pb.height; h++)
     {
@@ -290,7 +290,7 @@ void WriteLog(Block&Pb, Block&Qb)
         }
         pofs << endl;
     }
-    sprintf(fn, "Qblock-%d", Qb.block_id);
+    sprintf(fn, "./PS-track/Qblock-%d-%d", iter_cnt, Qb.block_id);
     ofstream qofs(fn, ios::trunc);
     for (int h = 0; h < Qb.height; h++)
     {
@@ -301,6 +301,7 @@ void WriteLog(Block&Pb, Block&Qb)
         qofs << endl;
     }
 }
+
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
 {
     //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
@@ -691,8 +692,7 @@ void recvTd(int recv_thread_id)
             cur_len += ret;
         }
 
-        //ret = recv(connfd, sockBuf, expected_len, 0);
-        //printf("check 2\n");
+
         struct Block* pb = (struct Block*)(void*)sockBuf;
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
@@ -700,8 +700,7 @@ void recvTd(int recv_thread_id)
         Pblock.height = pb->height;
         Pblock.ele_num = pb->ele_num;
         Pblock.eles.resize(pb->ele_num);
-        //printf("check 3\n");
-        //free(sockBuf);
+
 
         size_t data_sz = sizeof(double) * (Pblock.ele_num);
         sockBuf = (char*)malloc(data_sz);
@@ -724,11 +723,7 @@ void recvTd(int recv_thread_id)
             Pblock.eles[i] = data_eles[i];
         }
         free(data_eles);
-        //printf("[ID:%d] get Pblock %d\n", thread_id, Pblock.block_id);
-        //Pblock.printBlock();
 
-        //printf("Here recv pause...\n");
-        //getchar();
 
         expected_len = sizeof(Pblock);
         sockBuf = (char*)malloc(expected_len);
@@ -776,6 +771,7 @@ void recvTd(int recv_thread_id)
 
         //printf("[ID:%d] get Qblock %d\n", thread_id, Qblock.block_id);
         //Qblock.printBlock();
+
 
         hasRecved = true;
     }

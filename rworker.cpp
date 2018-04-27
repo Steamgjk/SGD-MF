@@ -697,6 +697,11 @@ void recvTd(int recv_thread_id)
         {
             printf("i=%d\n", i);
             printf("%lf\n", data_eles[i] );
+
+        }
+        getchar();
+        for (int i = 0; i < pb->ele_num; i++)
+        {
             pb->eles[i] = data_eles[i];
         }
         free(data_eles);

@@ -134,6 +134,7 @@ int main(int argc, const char * argv[])
                 }
                 row_idx++;
             }
+            printf("%s read\n", filename );
             sprintf(filename, "./track/Qblock-%d-%d", i, j);
             ifstream ifs1(filename, ios::in | ios::out);
             if (!ifs1.is_open())
@@ -150,6 +151,7 @@ int main(int argc, const char * argv[])
                 }
                 col_idx++;
             }
+            printf("%s read\n", filename );
         }
         double rmse = CalcRMSE();
         ofs << rmse << endl;

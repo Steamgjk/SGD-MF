@@ -11,10 +11,10 @@ using namespace std;
 int main()
 {
 	//ofstream ofs("netflix_mtx.txt", ios::trunc);
-	//ifstream ifs("./ml-10M100K/rb.train", ios::in | ios::out);
-	//ofstream ofs("./ml-10M100K/train.txt", ios::trunc);
-	ifstream ifs("./ml-10M100K/rb.test", ios::in | ios::out);
-	ofstream ofs("./ml-10M100K/test.txt", ios::trunc);
+	ifstream ifs("./ml-10M100K/ra.train", ios::in | ios::out);
+	ofstream ofs("./ml-10M100K/traina.txt", ios::trunc);
+	//ifstream ifs("./ml-10M100K/rb.test", ios::in | ios::out);
+	//ofstream ofs("./ml-10M100K/test.txt", ios::trunc);
 	long user_id;
 	long movie_id;
 	double rate;

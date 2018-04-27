@@ -232,7 +232,7 @@ int main(int argc, const char * argv[])
                 long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
                 printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
                 WriteLog(Pblocks[pidx], Qblocks[qidx], iter_cnt);
-
+                exit(0);
             }
 
 

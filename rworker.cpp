@@ -145,7 +145,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
 void LoadTestRating();
-
+double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
 
 map<long, double> RMap;
 map<long, double> TestMap;

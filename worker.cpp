@@ -142,7 +142,7 @@ int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 //void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.002, float beta = 0.05);
+void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.003, float beta = 0.1);
 
 void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb);
@@ -500,7 +500,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     int iter_cnt = 0;
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
-    while ( new_rmse > 0.999 * old_rmse )
+    while ( new_rmse > 0.99 * old_rmse )
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
@@ -531,7 +531,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                     minQ.eles[j * minK + k] += alpha * (error * oldP[i * minK + k] - beta * oldQ[j * minK + k]);
 
                 }
-
+                //oldP = minP.eles;
+                //oldQ = minQ.eles;
 
             }
         }

@@ -249,7 +249,7 @@ int main(int argc, const char * argv[])
                     worker_pidx[i] = (worker_pidx[i] + WORKER_NUM - 1) % WORKER_NUM;
                 }
             }
-
+            cnt++;
             toSendCount++;
 
         }
@@ -666,10 +666,10 @@ void recvTd(int recv_thread_id)
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
 
     printf("[Td:%d] worker get connection\n", recv_thread_id);
-    int cnt = 0;
+    int recv_cnt = 0;
     while (1 == 1)
     {
-        int direct = directions[cnt % PERIOD];
+        int direct = directions[recv_cnt % PERIOD];
         size_t expected_len = sizeof(Block);
         char* sockBuf = (char*)malloc(expected_len);
         size_t cur_len = 0;
@@ -750,6 +750,7 @@ void recvTd(int recv_thread_id)
             // I will go up, update recv_pidx
             recv_pidx = (recv_pidx + WORKER_NUM - 1) % WORKER_NUM;
         }
+        recv_cnt++;
         free(data_eles);
         recvedCount++;
         //printf("recv pausing..\n");

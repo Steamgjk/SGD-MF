@@ -417,8 +417,16 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
         cnt++;
     }
     //printf("RTestMap sz %ld cnt = %d\n", RTestMap.size(), cnt );
-    rmse /= cnt;
-    rmse = sqrt(rmse);
+    if (cnt != 0)
+    {
+        rmse /= cnt;
+        rmse = sqrt(rmse);
+    }
+    else
+    {
+        rmse = 0;
+    }
+
     //printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
     return rmse;
 }
@@ -436,6 +444,11 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
         if (row_sta_idx <= r_idx && r_idx < row_sta_idx + row_len && col_sta_idx <= c_idx && c_idx < col_sta_idx + col_len)
         {
             RTestMap.insert(pair<long, double>(iter->first, iter->second));
+        }
+        else
+        {
+            //printf("r_idx %ld c_idx %ld row_sta_idx %ld col_sta_idx %ld row_len %ld col_len %ld\n", r_idx, c_idx, row_sta_idx, col_sta_idx, row_len, col_len);
+            //getchar();
         }
 
     }
@@ -475,6 +488,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
+        printf("oldP sz %ld  oldQ sz %ld\n", oldP.size(), oldQ.size() );
         for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         {
 

@@ -35,8 +35,10 @@ using namespace std;
 //#define M  2649429 //col number
 //#define K  40 //主题个数
 
-#define FILE_NAME "./movielen10M_train.txt"
-#define TEST_NAME "./movielen10M_test.txt"
+//#define FILE_NAME "./movielen10M_train.txt"
+//#define TEST_NAME "./movielen10M_test.txt"
+#define FILE_NAME "./traina.txt"
+#define TEST_NAME "./testa.txt"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数

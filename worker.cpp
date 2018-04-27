@@ -434,7 +434,7 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 }
 void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
 {
-    printf("begin submf\n");
+    //printf("begin submf\n");
     double error = 0;
     int minN = minP.height;
     int minM = minQ.height;
@@ -640,7 +640,7 @@ void sendTd(int send_thread_id)
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Id:%d] send success \n", thread_id);
+                //printf("[Id:%d] send success \n", thread_id);
             }
             free(buf);
 
@@ -652,7 +652,7 @@ void sendTd(int send_thread_id)
             ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Id:%d] send success \n", thread_id);
+                //printf("[Id:%d] send success \n", thread_id);
             }
             free(buf);
             //printf("Here we pause...\n");

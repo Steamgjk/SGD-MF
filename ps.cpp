@@ -267,11 +267,12 @@ int main(int argc, const char * argv[])
         random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
-
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            printf("%d:[%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-        }
+        /*
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    printf("%d:[%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+                }
+                **/
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
@@ -462,7 +463,7 @@ void sendTd(int send_thread_id)
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success pbid =%d\n", send_thread_id, pbid );
+                //printf("[Td:%d] send success pbid =%d\n", send_thread_id, pbid );
             }
             free(buf);
 
@@ -474,7 +475,7 @@ void sendTd(int send_thread_id)
             ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success qbid=%d\n", send_thread_id, qbid);
+                //printf("[Td:%d] send success qbid=%d\n", send_thread_id, qbid);
             }
             free(buf);
             canSend[send_thread_id] = false;

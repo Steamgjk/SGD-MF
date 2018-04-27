@@ -688,6 +688,7 @@ void recvTd(int recv_thread_id)
             if (ret < 0)
             {
                 printf("Mimatch!\n");
+                exit(-1);
             }
             cur_len += ret;
         }

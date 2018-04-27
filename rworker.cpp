@@ -493,7 +493,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
     int iter_cnt = 0;
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
-    while ( new_rmse > 0.99 * old_rmse )
+    while ( new_rmse > 0.999 * old_rmse )
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;

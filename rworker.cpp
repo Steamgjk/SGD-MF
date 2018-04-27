@@ -372,6 +372,57 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
     }
 }
 
+
+
+double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
+{
+    //printf("calc RMSE-1debug...\n");
+    double rmse = 0;
+    int cnt = 0;
+    map<long, double>::iterator iter;
+    int positve_cnt = 0;
+    int negative_cnt = 0;
+    long row_sta_idx = minP.sta_idx;
+    long col_sta_idx = minQ.sta_idx;
+    for (iter = RTestMap.begin(); iter != RTestMap.end(); iter++)
+    {
+        long real_hash_idx = iter->first;
+        long row_idx = real_hash_idx / M - row_sta_idx;
+        long col_idx = real_hash_idx % M - col_sta_idx;
+        double sum = 0;
+
+        for (int k = 0; k < K; k++)
+        {
+            //sum += P[row_idx][k] * Q[k][col_idx];
+            if (row_idx * K + k > minP.eles.size() || col_idx * K + k > minQ.eles.size() )
+            {
+                printf("Psz %ld  idx %ld  Qsz %ld  idx %ld  real_hash_idx %ld row_idx %ld col_idx %ld Pblock_id %d QblockId %d Psta  %d Qsta %d\n", minP.eles.size(), row_idx * K + k ,   minQ.eles.size(), col_idx * K + k, real_hash_idx, row_idx, col_idx, minP.block_id, minQ.block_id, minP.sta_idx, minQ.sta_idx );
+                getchar();
+            }
+            sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
+            //printf("k=%d  Pv %lf  Qv %lf  sum=%lf\n", k, minP.eles[row_idx * K + k],  minQ.eles[col_idx * K + k], sum);
+        }
+        //getchar();
+        //printf("sum %lf  real %lf\n", sum, iter->second);
+        if (sum > iter->second)
+        {
+            positve_cnt++;
+        }
+        else
+        {
+            negative_cnt++;
+            //printf("sum = %lf  real=%lf\n", sum, iter->second );
+        }
+        rmse += (sum - iter->second) * (sum - iter->second);
+        cnt++;
+    }
+    //printf("RTestMap sz %ld cnt = %d\n", RTestMap.size(), cnt );
+    rmse /= cnt;
+    rmse = sqrt(rmse);
+    //printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
+    return rmse;
+}
+
 void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
     printf("Entering FilterDataSet\n");

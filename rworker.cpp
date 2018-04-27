@@ -220,7 +220,7 @@ int main(int argc, const char * argv[])
             submf( Pblocks[pidx], Qblocks[qidx], K);
 
             iter_cnt++;
-            if (iter_cnt == ThreshIter)
+            if (iter_cnt % ThreshIter == 0)
             {
                 gettimeofday(&stop, 0);
 
@@ -356,7 +356,7 @@ void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int co
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
 {
     char fn[100];
-    sprintf(fn, "Pblock-%d-%d", iter_cnt, Pb.block_id);
+    sprintf(fn, "./track/Pblock-%d-%d", iter_cnt, Pb.block_id);
     ofstream pofs(fn, ios::trunc);
     for (int h = 0; h < Pb.height; h++)
     {
@@ -366,7 +366,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
         }
         pofs << endl;
     }
-    sprintf(fn, "Qblock-%d-%d", iter_cnt, Qb.block_id);
+    sprintf(fn, "./track/Qblock-%d-%d", iter_cnt, Qb.block_id);
     ofstream qofs(fn, ios::trunc);
     for (int h = 0; h < Qb.height; h++)
     {
@@ -631,7 +631,7 @@ void sendTd(int send_thread_id)
                 send_qidx = (send_qidx + 1) % WORKER_NUM;
                 //printf("SendTd direct=1 ch3\n");
                 printf("send Q\n");
-                getchar();
+                //getchar();
             }
             else
             {
@@ -643,7 +643,7 @@ void sendTd(int send_thread_id)
                 //update send_pidx to up
                 send_pidx = (send_pidx + WORKER_NUM - 1) % WORKER_NUM;
                 printf("send P\n");
-                getchar();
+                //getchar();
             }
             //printf("SendTd  check point 1\n");
             int ret = send(fd, buf, (struct_sz + data_sz), 0);

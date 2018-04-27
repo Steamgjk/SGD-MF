@@ -676,7 +676,12 @@ void recvTd(int recv_thread_id)
 
         struct Block* pb = (struct Block*)(void*)sockBuf;
         pb->eles.resize(pb->ele_num);
-
+        printf("hehee assign\n");
+        for (int i = 0; i < pb->ele_num; i++)
+        {
+            pb->eles[i] = i ;
+        }
+        printf("okk\n");
         size_t data_sz = sizeof(double) * (pb->ele_num);
         sockBuf = (char*)malloc(data_sz);
         //printf("recv check 4\n");

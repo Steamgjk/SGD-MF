@@ -53,6 +53,7 @@ struct Block
     int sta_idx;
     int height; //height
     int ele_num;
+    bool isP;
     vector<double> eles;
     Block()
     {
@@ -179,6 +180,11 @@ int main(int argc, const char * argv[])
     partitionP(WORKER_NUM, Pblocks);
     partitionQ(WORKER_NUM, Qblocks);
 
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        Pblocks[i].isP = true;
+        Qblocks[i].isP = false;
+    }
     for (int i = 0; i < Pblocks[worker_pidx[thread_id]].ele_num; i++)
     {
         Pblocks[worker_pidx[thread_id]].eles[i] = drand48() * 0.6;
@@ -208,8 +214,8 @@ int main(int argc, const char * argv[])
             int row_len = Pblocks[pidx].height;
             int col_sta_idx = Qblocks[qidx].sta_idx;
             int col_len = Qblocks[qidx].height;
-            int ele_num = row_len * col_len;
 
+            printf("processing p %d q %d\n", pidx, qidx );
 
             submf( Pblocks[pidx], Qblocks[qidx], K);
 
@@ -480,7 +486,6 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
 
     double old_rmse = CalcRMSE(RTestMap, minP, minQ);
     double new_rmse = old_rmse;
-    int kkkk = 0;
     int iter_cnt = 0;
     vector<double> originalP = minP.eles;
     vector<double> originalQ = minQ.eles;
@@ -688,7 +693,8 @@ void recvTd(int recv_thread_id)
             Qblocks[recv_qidx].sta_idx = pb->sta_idx;
             Qblocks[recv_qidx].height = pb->height;
             Qblocks[recv_qidx].ele_num = pb->ele_num;
-
+            Qblocks[recv_qidx].isP = pb->isP;
+            printf("should be Q (0) real is %d\n", pb->isP );
         }
         else
         {
@@ -696,6 +702,8 @@ void recvTd(int recv_thread_id)
             Pblocks[recv_pidx].sta_idx = pb->sta_idx;
             Pblocks[recv_pidx].height = pb->height;
             Pblocks[recv_pidx].ele_num = pb->ele_num;
+            Pblocks[recv_pidx].isP = pb->isP;
+            printf("should be P(1) real is %d\n", pb->isP );
         }
 
         size_t data_sz = sizeof(double) * (pb->ele_num);

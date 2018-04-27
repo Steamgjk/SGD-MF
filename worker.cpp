@@ -165,7 +165,7 @@ vector<long> KeyVec;
 int main(int argc, const char * argv[])
 {
 
-    thresh_log = 10;
+    int thresh_log = 10;
     thread_id = atoi(argv[1]);
     if (argc >= 3)
     {

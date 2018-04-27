@@ -636,7 +636,7 @@ void sendTd(int send_thread_id)
                 //updat send_qidx to right
                 send_qidx = (send_qidx + 1) % WORKER_NUM;
                 //printf("SendTd direct=1 ch3\n");
-                printf("send Q\n");
+                //printf("send Q\n");
                 //getchar();
             }
             else
@@ -648,7 +648,7 @@ void sendTd(int send_thread_id)
                 memcpy(buf + struct_sz, (char*) & (Pblocks[send_pidx].eles[0]), data_sz);
                 //update send_pidx to up
                 send_pidx = (send_pidx + WORKER_NUM - 1) % WORKER_NUM;
-                printf("send P\n");
+                //printf("send P\n");
                 //getchar();
             }
             //printf("SendTd  check point 1\n");

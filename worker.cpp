@@ -391,17 +391,17 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
             sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
             //printf("k=%d  Pv %lf  Qv %lf  sum=%lf\n", k, minP.eles[row_idx * K + k],  minQ.eles[col_idx * K + k], sum);
         }
-        //getchar();
-        //printf("sum %lf  real %lf\n", sum, iter->second);
-        if (sum > iter->second)
-        {
-            positve_cnt++;
-        }
-        else
-        {
-            negative_cnt++;
-            //printf("sum = %lf  real=%lf\n", sum, iter->second );
-        }
+        /*
+                if (sum > iter->second)
+                {
+                    positve_cnt++;
+                }
+                else
+                {
+                    negative_cnt++;
+                    //printf("sum = %lf  real=%lf\n", sum, iter->second );
+                }
+                **/
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
@@ -413,7 +413,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
 }
 void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
-    printf("Entering FilterDataSet\n");
+    //printf("Entering FilterDataSet\n");
     std::map<long, double>::iterator iter;
     long mem_cnt = 0;
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
@@ -427,31 +427,8 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
         }
 
     }
-    /*
-    //while (mem_cnt < 10000)
-    {
-        for (long r = row_sta_idx; r < row_sta_idx + row_len; r++)
-        {
-            for (long co = col_sta_idx; co < col_sta_idx + col_len; co++)
-            {
-                //long hash_idx = r * M + rand() % col_len + col_sta_idx;
-                long hash_idx = r * M + co;
-                iter = RMap.find(hash_idx);
-                if (iter != TestMap.end())
-                {
-                    mem_cnt++;
-                    RTestMap.insert(pair<long, double>(iter->first, iter->second));
-                }
-            }
-            if (r % 100 == 0)
-            {
-                printf("process row_sta_idx %ld\n", r );
-            }
 
-        }
-    }
-    **/
-    printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
+    //printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
 
 
 }
@@ -487,7 +464,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         updateQ.eles[ii] = 0;
     }
 
-    printf("row_len=%ld col_len=%ld\n", row_len, col_len );
+    //printf("row_len=%ld col_len=%ld\n", row_len, col_len );
 
 
     std::map<long, double> RTestMap;
@@ -495,10 +472,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
     double old_rmse = CalcRMSE(RTestMap, minP, minQ);
     double new_rmse = old_rmse;
-    int kkkk = 0;
     int iter_cnt = 0;
-    vector<double> originalP = minP.eles;
-    vector<double> originalQ = minQ.eles;
+    //vector<double> originalP = minP.eles;
+    //vector<double> originalQ = minQ.eles;
     while ( new_rmse > 0.99 * old_rmse )
     {
         vector<double> oldP = minP.eles;
@@ -550,27 +526,27 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
 
 
 
-
-    int p_num = 0;
-    int q_num = 0;
-    for (int i = 0; i < originalP.size(); i++)
-    {
-        updateP.eles[i] = minP.eles[i] - originalP[i];
-        if (updateP.eles[i] > 0)
+    /*
+        int p_num = 0;
+        int q_num = 0;
+        for (int i = 0; i < originalP.size(); i++)
         {
-            p_num++;
+            updateP.eles[i] = minP.eles[i] - originalP[i];
+            if (updateP.eles[i] > 0)
+            {
+                p_num++;
+            }
         }
-    }
-    for (int j = 0; j < originalQ.size(); j++)
-    {
-        updateQ.eles[j] = minQ.eles[j] - originalQ[j];
-        if (updateQ.eles[j] > 0)
+        for (int j = 0; j < originalQ.size(); j++)
         {
-            q_num++;
+            updateQ.eles[j] = minQ.eles[j] - originalQ[j];
+            if (updateQ.eles[j] > 0)
+            {
+                q_num++;
+            }
         }
-    }
-    printf("Pupdt=%d  Qupdt=%d\n", p_num, q_num);
-
+        printf("Pupdt=%d  Qupdt=%d\n", p_num, q_num);
+    **/
 
 }
 

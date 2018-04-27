@@ -286,19 +286,20 @@ int main(int argc, const char * argv[])
 
         if (recvCount == WORKER_NUM)
         {
-            printf("Collect All, Can Update\n");
+            //printf("Collect All, Can Update\n");
             int idx = 0;
 
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
                 //printf("kk = %d  block_id = %d  sz=%ld\n", kk, Pupdts[kk].block_id, Pupdts[kk].eles.size()  );
                 //Update P [N*K]
-                pos_n = neg_n = zero_n = 0;
+                //pos_n = neg_n = zero_n = 0;
                 for (int ii = 0; ii < Pupdts[kk].eles.size(); ii++)
                 {
                     int row_idx = (ii + idx) / K;
                     int col_idx = (ii + idx) % K;
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
+                    /*
                     if (Pupdts[kk].eles[ii] > 0)
                     {
                         pos_n++;
@@ -311,9 +312,10 @@ int main(int argc, const char * argv[])
                     {
                         zero_n++;
                     }
+                    **/
                 }
                 idx += Pupdts[kk].eles.size();
-                printf("Pupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
+                //printf("Pupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
             }
 
             idx = 0;
@@ -326,6 +328,7 @@ int main(int argc, const char * argv[])
                     int col_idx = (ii + idx) / K;
                     int row_idx = (ii + idx) % K;
                     Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
+                    /**
                     if (Qupdts[kk].eles[ii] > 0)
                     {
                         pos_n++;
@@ -338,12 +341,13 @@ int main(int argc, const char * argv[])
                     {
                         zero_n++;
                     }
-
+                    **/
                 }
                 idx += Qupdts[kk].eles.size();
-                printf("Qupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
+                //printf("Qupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
             }
-            printf("Update Finish, Can Distribute\n");
+            // printf("Update Finish, Can Distribute\n");
+            /*
             //if (iter_t % 10 == 0)
             {
                 double rmse = CalcRMSE();
@@ -351,6 +355,7 @@ int main(int argc, const char * argv[])
                 log_ofs << rmse << endl;
 
             }
+            **/
             recvCount = 0;
         }
         iter_t++;
@@ -772,6 +777,7 @@ double CalcRMSE()
         {
             sum += P[row_idx][k] * Q[k][col_idx];
         }
+        /*
         if (sum > iter->second)
         {
             positve_cnt++;
@@ -781,13 +787,14 @@ double CalcRMSE()
             negative_cnt++;
             //printf("sum = %lf  real=%lf\n", sum, iter->second );
         }
+        **/
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
 
     rmse /= cnt;
     rmse = sqrt(rmse);
-    printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
+    //printf("positve_cnt=%d negative_cnt=%d\n", positve_cnt, negative_cnt );
     return rmse;
 }
 void partitionP(int portion_num,  Block* Pblocks)

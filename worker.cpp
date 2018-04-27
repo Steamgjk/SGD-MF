@@ -165,8 +165,12 @@ vector<long> KeyVec;
 int main(int argc, const char * argv[])
 {
 
-
+    thresh_log = 10;
     thread_id = atoi(argv[1]);
+    if (argc >= 3)
+    {
+        thresh_log = atoi(argv[2]);
+    }
     LoadRating();
     LoadTestRating();
     printf("Load Rating Success\n");
@@ -205,7 +209,7 @@ int main(int argc, const char * argv[])
 
             submf(Pblock, Qblock, Pupdt, Qupdt, K);
             iter_cnt++;
-            if (iter_cnt == 5 )
+            if (iter_cnt == thresh_log )
             {
                 gettimeofday(&stop, 0);
 

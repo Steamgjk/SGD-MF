@@ -154,9 +154,14 @@ map<long, double> TestMap;
 int thread_id = -1;
 int main(int argc, const char * argv[])
 {
+    int iter_thresh = 10;
     srand(time(0));
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
+    if (argc >= 4)
+    {
+        iter_thresh = atoi(argv[3]);
+    }
     LoadRating();
     LoadTestRating();
 
@@ -215,12 +220,12 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblocks[qidx].sta_idx;
             int col_len = Qblocks[qidx].height;
 
-            printf("processing p %d q %d\n", pidx, qidx );
+            //printf("processing p %d q %d\n", pidx, qidx );
 
             submf( Pblocks[pidx], Qblocks[qidx], K);
 
             iter_cnt++;
-            //if (iter_cnt % ThreshIter == 0)
+            if (iter_cnt == iter_thresh)
             {
                 gettimeofday(&stop, 0);
 
@@ -400,25 +405,27 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
         for (int k = 0; k < K; k++)
         {
             //sum += P[row_idx][k] * Q[k][col_idx];
+            /*
             if (row_idx * K + k > minP.eles.size() || col_idx * K + k > minQ.eles.size() )
             {
                 printf("Psz %ld  idx %ld  Qsz %ld  idx %ld  real_hash_idx %ld row_idx %ld col_idx %ld Pblock_id %d QblockId %d Psta  %d Qsta %d\n", minP.eles.size(), row_idx * K + k ,   minQ.eles.size(), col_idx * K + k, real_hash_idx, row_idx, col_idx, minP.block_id, minQ.block_id, minP.sta_idx, minQ.sta_idx );
                 getchar();
             }
+            **/
             sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
             //printf("k=%d  Pv %lf  Qv %lf  sum=%lf\n", k, minP.eles[row_idx * K + k],  minQ.eles[col_idx * K + k], sum);
         }
-        //getchar();
-        //printf("sum %lf  real %lf\n", sum, iter->second);
-        if (sum > iter->second)
-        {
-            positve_cnt++;
-        }
-        else
-        {
-            negative_cnt++;
-            //printf("sum = %lf  real=%lf\n", sum, iter->second );
-        }
+        /*
+                if (sum > iter->second)
+                {
+                    positve_cnt++;
+                }
+                else
+                {
+                    negative_cnt++;
+                    //printf("sum = %lf  real=%lf\n", sum, iter->second );
+                }
+                **/
         rmse += (sum - iter->second) * (sum - iter->second);
         cnt++;
     }
@@ -439,7 +446,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
 
 void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len)
 {
-    printf("Entering FilterDataSet\n");
+    //printf("Entering FilterDataSet\n");
     std::map<long, double>::iterator iter;
     long mem_cnt = 0;
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
@@ -451,15 +458,11 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
         {
             RTestMap.insert(pair<long, double>(iter->first, iter->second));
         }
-        else
-        {
-            //printf("r_idx %ld c_idx %ld row_sta_idx %ld col_sta_idx %ld row_len %ld col_len %ld\n", r_idx, c_idx, row_sta_idx, col_sta_idx, row_len, col_len);
-            //getchar();
-        }
+
 
     }
 
-    printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
+    // printf("Entering Test FilterDataSet  %ld\n", RTestMap.size());
 
 
 }
@@ -467,7 +470,7 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 
 void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
 {
-    printf("begin submf\n");
+    //printf("begin submf\n");
     double error = 0;
     int minN = minP.height;
     int minM = minQ.height;
@@ -478,7 +481,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
 
     int Psz =  minP.height * minK;
     int Qsz = minQ.height * minK;
-    printf("row_sta_idx %ld row_len=%ld  col_sta_idx %ld col_len=%ld\n", row_sta_idx, row_len, col_sta_idx, col_len );
+    //printf("row_sta_idx %ld row_len=%ld  col_sta_idx %ld col_len=%ld\n", row_sta_idx, row_len, col_sta_idx, col_len );
 
 
     std::map<long, double> RTestMap;
@@ -512,6 +515,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
                 error = iter->second;
                 for (int k = 0; k < minK; ++k)
                 {
+                    /*
                     if (i * minK + k >= oldP.size() || j * minK + k >= oldQ.size())
                     {
 
@@ -519,6 +523,7 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
                         printf("P(1) is %d  Q(0) is %d\n", minP.isP, minQ.isP);
                         getchar();
                     }
+                    **/
                     error -= oldP[i * minK + k] * oldQ[j * minK + k];
                 }
 
@@ -532,11 +537,12 @@ void submf(Block & minP, Block & minQ,  int minK,  float alpha , float beta)
         }
         iter_cnt++;
         new_rmse = CalcRMSE(RTestMap, minP, minQ);
+        /*
         if (iter_cnt % 100 == 0)
         {
             printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
         }
-
+        **/
         if (iter_cnt > 100)
         {
             break;
@@ -647,10 +653,12 @@ void sendTd(int send_thread_id)
             }
             //printf("SendTd  check point 1\n");
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
+            /*
             if (ret >= 0 )
             {
                 printf("[Id:%d] send success \n", thread_id);
             }
+            **/
             free(buf);
             send_cnt++;
             toSendCount--;
@@ -698,7 +706,7 @@ void recvTd(int recv_thread_id)
             Qblocks[recv_qidx].height = pb->height;
             Qblocks[recv_qidx].ele_num = pb->ele_num;
             Qblocks[recv_qidx].isP = pb->isP;
-            printf("should be Q (0) real is %d\n", pb->isP );
+            //printf("should be Q (0) real is %d\n", pb->isP );
         }
         else
         {
@@ -707,7 +715,7 @@ void recvTd(int recv_thread_id)
             Pblocks[recv_pidx].height = pb->height;
             Pblocks[recv_pidx].ele_num = pb->ele_num;
             Pblocks[recv_pidx].isP = pb->isP;
-            printf("should be P(1) real is %d\n", pb->isP );
+            //printf("should be P(1) real is %d\n", pb->isP );
         }
 
         size_t data_sz = sizeof(double) * (pb->ele_num);

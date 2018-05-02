@@ -155,6 +155,7 @@ void LoadActionConfig(char* fn);
 void LoadStateConfig(char* fn);
 void getTestMap(map<long, double>& TestMap, int block_id);
 void getBlockRates(map<long, double>& BlockMap, int block_id);
+void SGD_MF(int p_block_idx, int q_block_idx);
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 
 
@@ -170,17 +171,14 @@ int main(int argc, const char * argv[])
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
-
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
-
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
 
     partitionP(WORKER_NUM * n, Pblocks);
     partitionQ(WORKER_NUM * n, Qblocks);
 
-    getTestMap();
 
 
     int block_to_process;
@@ -410,9 +408,9 @@ void SGD_MF(int p_block_idx, int q_block_idx)
     int Psz =  Pblocks[p_block_idx].height * K;
     int Qsz = Qblocks[q_block_idx].height * K;
 
-    printf("row_len=%ld col_len=%ld\n", row_len, col_len );
+    printf("row_len=%d col_len=%d\n", row_len, col_len );
 
-    double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx].eles, Qblocks[q_block_idx].eles);
+    double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
     double new_rmse = old_rmse;
 
     int iter_cnt = 0;
@@ -447,7 +445,7 @@ void SGD_MF(int p_block_idx, int q_block_idx)
             }
         }
         iter_cnt++;
-        new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], minP, minQ);
+        new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
         if (iter_cnt % 100 == 0)
         {
             printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );

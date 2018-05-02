@@ -21,6 +21,7 @@
 #include <vector>
 #include <list>
 #include <queue>
+#include <map>
 #include <thread>
 #include <chrono>
 #include <algorithm>
@@ -151,8 +152,8 @@ void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, flo
 void WriteLog(Block&Pb, Block&Qb);
 void LoadActionConfig(char* fn);
 void LoadStateConfig(char* fn);
-void getTestMap();
-
+void getTestMap(map<long, double>& TestMap, int block_id);
+void getBlockRates(map<long, double>& BlockMap, int block_id);
 
 int thread_id = -1;
 int main(int argc, const char * argv[])

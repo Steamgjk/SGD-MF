@@ -7,3 +7,4 @@ g++  -g  -std=c++11  -pthread rworker_en.cpp -o rworker_en
 g++  -g  -std=c++11  -pthread genSeq.cpp -o genSeq
 g++  -g  -std=c++11  -pthread PartitionMap.cpp -o PartitionMap
 g++  -g  -std=c++11  -pthread genRingSeq.cpp -o genRingSeq
+g++  -g  -std=c++11  -pthread genMatrix.cpp -o genMatrix

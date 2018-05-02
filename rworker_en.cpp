@@ -2,8 +2,8 @@
 //  main.cpp
 //  linux_socket_api
 //
-//  Created by bikang on 16/11/2.
-//  Copyright (c) 2016年 bikang. All rights reserved.
+//  Created by Jinkun Geng on 18/5/2.
+//  Copyright (c) 2018年 Jinkun Geng. All rights reserved.
 //
 
 #include <iostream>
@@ -180,7 +180,6 @@ int main(int argc, const char * argv[])
     partitionQ(WORKER_NUM * n, Qblocks);
 
 
-
     int block_to_process;
     int action_to_process;
     int action = 0;
@@ -238,6 +237,7 @@ int main(int argc, const char * argv[])
 void LoadActionConfig(char* fn)
 {
     //Should init both send_action and recv_action //same
+    /*
     ifstream ifs(fn);
     if (!ifs.is_open())
     {
@@ -252,17 +252,28 @@ void LoadActionConfig(char* fn)
         actions[cnt] = act;
         cnt++;
     }
+    **/
+    int cnt = 0;
+    for (int i = 0; i < SEQ_LEN; i++ )
+    {
+        for (int gp = 0; gp < GROUP_NUM; gp++)
+        {
+            actions[cnt] = gp % 2;
+        }
+    }
 
 }
 void LoadStateConfig(char* fn)
 {
     //Should init both to_send and to_recv //recv gained from action
+    /*
     ifstream ifs(fn);
     if (!ifs.is_open())
     {
         printf("fail to open the file %s\n", fn);
         exit(-1);
     }
+
     int st = 0;
     int cnt = 0;
     while (!ifs.eof())
@@ -270,6 +281,11 @@ void LoadStateConfig(char* fn)
         ifs >> st;
         states[cnt] = st;
         cnt++;
+    }
+    **/
+    for (int gp = 0; gp < GROUP_NUM; gp++)
+    {
+        states[gp] = thread_id + gp * WORKER_NUM;
     }
     for (size_t i = 0; i < SEQ_LEN; i++ )
     {

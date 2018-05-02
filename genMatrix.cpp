@@ -32,6 +32,7 @@ double P[N][K];
 double Q[K][N];
 #define TD_NUM 64
 #define DIM_SIZE 8
+double pi = 3.141592653;
 void work_func(int td)
 {
 	printf("Thread td %d\n", td );
@@ -88,6 +89,14 @@ void work_func(int td)
 }
 int main()
 {
+	double theta = 0.1;
+	double miu = 0 -;
+	for (int x = -4; x <= 5; x++)
+	{
+		double r = exp(0.0 - (x * x / theta / theta / 2) ) / theta / sqrt(2.0) / pi;
+		printf("x=%d  r=%lf\n", x, r );
+	}
+	/*
 	srand(time(0));
 	char fn[100];
 	sprintf(fn, "./data/Pmtx");
@@ -127,5 +136,6 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		printf("sleep\n");
 	}
+	**/
 
 }

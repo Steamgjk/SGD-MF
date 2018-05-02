@@ -34,8 +34,8 @@
 using namespace std;
 
 
+#define WORKER_TD 32
 #define ACTION_NAME "./action"
-
 #define STATE_NAME "./state"
 
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
@@ -55,6 +55,11 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 int GROUP_NUM = 1;
 int DIM_NUM = 4;
 int WORKER_NUM = 2;
+
+int process_qu[WORKER_TD][SEQ_LEN];
+int process_head[WORKER_TD];
+int process_tail[WORKER_TD];
+
 struct Block
 {
     int block_id;
@@ -160,6 +165,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 
 
 int thread_id = -1;
+int p_block_idx, int q_block_idx;
 int main(int argc, const char * argv[])
 {
     srand(time(0));
@@ -216,7 +222,9 @@ int main(int argc, const char * argv[])
             {
                 //Wait
             }
-            SGD_MF(p_to_process[i], q_to_process[i]);
+            p_block_idx = p_to_process[i];
+            q_block_idx = q_to_process[i];
+            SGD_MF();
             if (send_this_p[i] == true)
             {
                 to_send[to_send_tail] = p_to_process[i];
@@ -413,8 +421,24 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
     return rmse;
 }
 
+void CalcSGD(int worker_td)
+{
+    int row_sta_idx = Pblocks[p_block_idx].sta_idx;
+    int col_sta_idx = Qblocks[p_block_idx].sta_idx;
+    int row_len = Pblocks[p_block_idx].height;
+    int col_len = Qblocks[q_block_idx].height;
+    int row_unit_len = row_len / WORKER_TD;
+    int col_unit_len = col_len / WORKER_TD;
 
-void SGD_MF(int p_block_idx, int q_block_idx)
+    while (process_tail[worker_td] <= process_head[worker_td])
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    int
+
+
+}
+void SGD_MF()
 {
     double error = 0;
     int row_sta_idx = Pblocks[p_block_idx].sta_idx;

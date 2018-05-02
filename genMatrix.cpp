@@ -30,7 +30,8 @@ using namespace std;
 #define K 10
 double P[N][K];
 double Q[K][N];
-#define TD_NUM 16
+#define TD_NUM 64
+#define DIM_SIZE 8
 void work_func(int td)
 {
 	printf("Thread td %d\n", td );
@@ -43,17 +44,19 @@ void work_func(int td)
 	ofstream Hofs(fn, ios::trunc);
 	sprintf(fn, "./data/TestingMap-%d", td);
 	ofstream Tofs(fn, ios::trunc);
+	int row_idx = td / DIM_SIZE;
+	int col_idx = td % DIM_SIZE;
+	long row_len = N / TD_NUM;
+	long col_len = M / TD_NUM;
+	long row_sta_idx = row_idx * row_len;
+	long col_sta_idx = col_idx * col_len;
 
 	long cnt = 0;
 	long train_cnt = 0;
 	long test_cnt = 0;
-
-	long row_len = N / TD_NUM;
-	long row_idx = td * row_len;
-
-	for (long i = row_idx; i < row_idx + row_len; i++)
+	for (long i = row_sta_idx; i < row_sta_idx + row_len; i++)
 	{
-		for (long j = 0; j < M; j++)
+		for (long j = col_sta_idx; j < col_sta_idx + col_len; j++)
 		{
 			r = rand() % 10000;
 			if (r < 20)

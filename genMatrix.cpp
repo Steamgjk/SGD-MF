@@ -89,11 +89,11 @@ void work_func(int td)
 }
 int main()
 {
-	double theta = 0.1;
+	double theta = 1;
 	double miu = 0;
 	for (int x = -4; x <= 5; x++)
 	{
-		double r = exp(0.0 - (x * x / theta / theta / 2) ) / theta / sqrt(2.0) / pi;
+		double r = exp(0.0 - (x * x * 1.0 / 2) ) / (sqrt(2.0) * pi);
 		printf("x=%d  r=%lf\n", x, r );
 	}
 	/*

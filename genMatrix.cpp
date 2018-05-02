@@ -93,7 +93,7 @@ int main()
 	double miu = 0;
 	for (int x = -4; x <= 5; x++)
 	{
-		double r = exp(0.0 - (x * x * 1.0 / 2) ) / (sqrt(2.0) * pi);
+		double r = exp(0.0 - (x * x * 1.0 / 2) ) / (sqrt(2.0) * pi) * 5;
 		printf("x=%d  r=%lf\n", x, r );
 	}
 	/*

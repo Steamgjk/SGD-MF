@@ -165,7 +165,8 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 
 
 int thread_id = -1;
-int p_block_idx, int q_block_idx;
+int p_block_idx;
+int q_block_idx;
 int main(int argc, const char * argv[])
 {
     srand(time(0));

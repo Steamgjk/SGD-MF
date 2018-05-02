@@ -62,6 +62,7 @@ struct Block
     int sta_idx;
     int height; //height
     int ele_num;
+    bool isP;
     vector<double> eles;
     Block()
     {

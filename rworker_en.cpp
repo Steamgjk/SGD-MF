@@ -160,7 +160,7 @@ void LoadActionConfig(char* fn);
 void LoadStateConfig(char* fn);
 void getTestMap(map<long, double>& TestMap, int block_id);
 void getBlockRates(map<long, double>& BlockMap, int block_id);
-void SGD_MF(int p_block_idx, int q_block_idx);
+void SGD_MF();
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 
 

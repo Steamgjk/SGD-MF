@@ -406,8 +406,8 @@ void SGD_MF(int p_block_idx, int q_block_idx)
     int col_sta_idx = Qblocks[p_block_idx].sta_idx;
     int row_len = Pblocks[p_block_idx].height;
     int col_len = Qblocks[q_block_idx].height;
-    int Psz =  Pblocks[p_block_idx].height * minK;
-    int Qsz = Qblocks[q_block_idx].height * minK;
+    int Psz =  Pblocks[p_block_idx].height * K;
+    int Qsz = Qblocks[q_block_idx].height * K;
 
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
 
@@ -434,19 +434,19 @@ void SGD_MF(int p_block_idx, int q_block_idx)
             if (iter != TestMaps[p_block_idx][q_block_idx].end())
             {
                 error = iter->second;
-                for (int k = 0; k < minK; ++k)
+                for (int k = 0; k < K; ++k)
                 {
-                    error -= oldP[i * minK + k] * oldQ[j * minK + k];
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
                 }
-                for (int k = 0; k < minK; ++k)
+                for (int k = 0; k < K; ++k)
                 {
-                    Pblocks[p_block_idx].eles[i * minK + k] += 0.002 * (error * oldQ[j * minK + k] - 0.05 * oldP[i * minK + k]);
-                    Qblocks[q_block_idx].eles[j * minK + k] += 0.002 * (error * oldP[i * minK + k] - 0.05 * oldQ[j * minK + k]);
+                    Pblocks[p_block_idx].eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
+                    Qblocks[q_block_idx].eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
                 }
             }
         }
         iter_cnt++;
-        new_rmse = CalcRMSE(RTestMap, minP, minQ);
+        new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], minP, minQ);
         if (iter_cnt % 100 == 0)
         {
             printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );

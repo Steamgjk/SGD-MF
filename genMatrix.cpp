@@ -59,7 +59,8 @@ void work_func(int td)
 	{
 		for (long j = col_sta_idx; j < col_sta_idx + col_len; j++)
 		{
-			r = rand() % 10000;
+			//200M
+			r = rand() % 10000000;
 			if (r < 20)
 			{
 				hash_id = i * M + j;
@@ -70,8 +71,9 @@ void work_func(int td)
 				}
 				Hofs << hash_id << " " << sum << endl;
 				train_cnt++;
-				r = rand() % 10000;
-				if (r < 20)
+				//2M
+				r = rand() % 1000;
+				if (r < 10)
 				{
 					Tofs << hash_id << " " << sum << endl;
 					test_cnt++;
@@ -87,9 +89,10 @@ void work_func(int td)
 	printf("[%d]  finished\n", td );
 
 }
-
+double val[10] = {0.000755, 0.025004, 0.304611, 1.365174, 2.250791, 1.365174, 0.304611, 0.025004, 0.000755, 0.000008};
 int main()
 {
+	/*
 	double theta = 1;
 	double miu = 0;
 	for (int x = -4; x <= 5; x++)
@@ -97,20 +100,25 @@ int main()
 		double r = exp(0.0 - (x * x * 1.0 / 2) ) / (sqrt(2.0) * pi) * 10;
 		printf("x=%d  r=%lf\n", x, r );
 	}
-	/*
+	**/
+
 	srand(time(0));
 	char fn[100];
 	sprintf(fn, "./data/Pmtx");
 	ofstream Pofs(fn, ios::trunc);
 	sprintf(fn, "./data/Qmtx");
 	ofstream Qofs(fn, ios::trunc);
+	/*
 	std::default_random_engine e; //引擎
 	std::normal_distribution<double> n(1, 0.1); //均值, 方差
+	**/
+	long unit_len = N / K;
 	for (int i = 0; i < N; i++)
 	{
+		long offset = i / unit_len;
 		for (int j = 0; j < K; j++)
 		{
-			P[i][j] = n(e);
+			P[i][j] = val[(j + offset) % K];
 			Pofs << P[i][j] << " ";
 		}
 		Pofs << endl;
@@ -119,7 +127,8 @@ int main()
 	{
 		for (int j = 0; j < M; j++)
 		{
-			Q[i][j] = n(e);
+			long offset = j / unit_len;
+			Q[i][j] = val[(i + offset) % K];
 			Qofs << Q[i][j] << " ";
 		}
 		Qofs << endl;
@@ -137,6 +146,6 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		printf("sleep\n");
 	}
-	**/
+
 
 }

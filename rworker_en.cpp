@@ -140,7 +140,7 @@ int to_send_head, to_send_tail;
 int to_recv[QU_LEN];
 int to_recv_head, to_recv_tail;
 
-std::map<long, double> TestMaps[100];
+std::map<long, double> TestMaps[100][100];
 //0 is to right trans Q, 1 is up, trans p
 
 int wait4connection(char*local_ip, int local_port);
@@ -154,6 +154,8 @@ void LoadActionConfig(char* fn);
 void LoadStateConfig(char* fn);
 void getTestMap(map<long, double>& TestMap, int block_id);
 void getBlockRates(map<long, double>& BlockMap, int block_id);
+double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
+
 
 int thread_id = -1;
 int main(int argc, const char * argv[])
@@ -358,6 +360,45 @@ void WriteLog(Block&Pb, Block&Qb)
     }
 }
 
+
+
+double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
+{
+    double rmse = 0;
+    int cnt = 0;
+    map<long, double>::iterator iter;
+    int positve_cnt = 0;
+    int negative_cnt = 0;
+    long row_sta_idx = minP.sta_idx;
+    long col_sta_idx = minQ.sta_idx;
+    for (iter = RTestMap.begin(); iter != RTestMap.end(); iter++)
+    {
+        long real_hash_idx = iter->first;
+        long row_idx = real_hash_idx / M - row_sta_idx;
+        long col_idx = real_hash_idx % M - col_sta_idx;
+        double sum = 0;
+
+        for (int k = 0; k < K; k++)
+        {
+            sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
+        }
+
+        rmse += (sum - iter->second) * (sum - iter->second);
+        cnt++;
+    }
+    if (cnt != 0)
+    {
+        rmse /= cnt;
+        rmse = sqrt(rmse);
+    }
+    else
+    {
+        rmse = 0;
+    }
+    return rmse;
+}
+
+
 void SGD_MF(int p_block_idx, int q_block_idx)
 {
     double error = 0;
@@ -370,7 +411,7 @@ void SGD_MF(int p_block_idx, int q_block_idx)
 
     printf("row_len=%ld col_len=%ld\n", row_len, col_len );
 
-    double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], minP, minQ);
+    double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx].eles, Qblocks[q_block_idx].eles);
     double new_rmse = old_rmse;
 
     int iter_cnt = 0;

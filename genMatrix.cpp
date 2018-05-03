@@ -59,7 +59,7 @@ void work_func(int td)
 	{
 		for (long j = col_sta_idx; j < col_sta_idx + col_len; j++)
 		{
-			//200M
+			//20M
 			r = rand() % 1000000;
 			if (r < 20)
 			{
@@ -69,13 +69,13 @@ void work_func(int td)
 				{
 					sum += P[i][k] * Q[k][j];
 				}
-				Hofs << hash_id << " " << sum << endl;
+				//Hofs << hash_id << " " << sum << endl;
 				train_cnt++;
 				//2M
 				r = rand() % 1000;
 				if (r < 10)
 				{
-					Tofs << hash_id << " " << sum << endl;
+					//Tofs << hash_id << " " << sum << endl;
 					test_cnt++;
 				}
 			}
@@ -119,7 +119,7 @@ int main()
 		for (int j = 0; j < K; j++)
 		{
 			P[i][j] = val[(j + offset) % K];
-			Pofs << P[i][j] << " ";
+			//Pofs << P[i][j] << " ";
 		}
 		Pofs << endl;
 	}
@@ -129,7 +129,7 @@ int main()
 		{
 			long offset = j / unit_len;
 			Q[i][j] = val[(i + offset) % K];
-			Qofs << Q[i][j] << " ";
+			//Qofs << Q[i][j] << " ";
 		}
 		Qofs << endl;
 	}

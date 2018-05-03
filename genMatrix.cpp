@@ -47,8 +47,8 @@ void work_func(int td)
 	ofstream Tofs(fn, ios::trunc);
 	int row_idx = td / DIM_SIZE;
 	int col_idx = td % DIM_SIZE;
-	long row_len = N / TD_NUM;
-	long col_len = M / TD_NUM;
+	long row_len = N / DIM_SIZE;
+	long col_len = M / DIM_SIZE;
 	long row_sta_idx = row_idx * row_len;
 	long col_sta_idx = col_idx * col_len;
 

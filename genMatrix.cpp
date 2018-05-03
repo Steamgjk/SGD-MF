@@ -25,8 +25,8 @@
 #include <queue>
 #include <random>
 using namespace std;
-#define N 10000000
-#define M 10000000
+#define N 1000000
+#define M 1000000
 #define K 10
 double P[N][K];
 double Q[K][N];
@@ -60,7 +60,7 @@ void work_func(int td)
 		for (long j = col_sta_idx; j < col_sta_idx + col_len; j++)
 		{
 			//200M
-			r = rand() % 10000000;
+			r = rand() % 1000000;
 			if (r < 20)
 			{
 				hash_id = i * M + j;

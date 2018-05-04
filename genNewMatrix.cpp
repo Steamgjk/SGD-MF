@@ -148,10 +148,10 @@ void genMatrix()
 				}
 			}
 			cnt++;
-			//if (cnt % 10000000 == 0)
+			if (cnt % 10000000 == 0)
 			{
 				printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
-				getchar();
+				//getchar();
 			}
 		}
 	}

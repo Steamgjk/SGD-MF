@@ -69,20 +69,15 @@ void work_func(int td)
 			{
 				hash_id = i * M + j;
 				sum = subM[i % 100][j % 100];
-				/*
-				sum = 0;
-				for (int k = 0; k < K; k++)
-				{
-					sum += P[i][k] * Q[k][j];
-				}
-				**/
-				Hofs << hash_id << " " << sum << endl;
+
+
+				//Hofs << hash_id << " " << sum << endl;
 				train_cnt++;
 				//2M
 				//r = rand() % 1000;
 				if (r < 20)
 				{
-					Tofs << hash_id << " " << sum << endl;
+					//Tofs << hash_id << " " << sum << endl;
 					test_cnt++;
 				}
 			}

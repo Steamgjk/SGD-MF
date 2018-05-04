@@ -219,14 +219,21 @@ int main()
 				hash_id = i * M + j;
 				sum = subM[i % 100][j % 100];
 
+
 				//Hofs << hash_id << " " << sum << endl;
-				train_cnt++;
+				TrainHash[train_tail] =  hash_id;
+				TrainVal[train_tail] = sum;
+				train_tail++;
+				//train_cnt++;
 				//2M
 				//r = rand() % 1000;
 				if (r < 20)
 				{
 					//Tofs << hash_id << " " << sum << endl;
-					test_cnt++;
+					//test_cnt++;
+					TestHash[test_tail] = hash_id;
+					TestVal[test_tail] = sum;
+					test_tail++;
 				}
 			}
 			cnt++;

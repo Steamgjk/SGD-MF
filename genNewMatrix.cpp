@@ -28,8 +28,14 @@ using namespace std;
 #define N 1000000
 #define M 1000000
 #define K 10
-double P[N][K];
-double Q[K][N];
+//double P[N][K];
+//double Q[K][N];
+long TrainHash[21000000];
+long TestHash[2100000];
+double TrainVal[21000000];
+long TestVal[2100000];
+long train_head, train_tail, test_head, test_tail;
+
 #define TD_NUM 64
 #define DIM_SIZE 8
 double pi = 3.141592653;
@@ -37,6 +43,60 @@ double val[100] = {0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0
 double subM[100][100];
 double subP[100][100];
 double subQ[100][100];
+void WriteTrain()
+{
+	int td;
+	ofstream Hofs[64];
+	for (int i = 0; i < DIM_SIZE; i++)
+	{
+		for (int j = 0; j < DIM_SIZE; j++)
+		{
+			td = i * DIM_SIZE + j;
+			sprintf(fn, "./data/TrainingMap-%d", td);
+			Hofs[i].open(fn, ios::trunc);
+		}
+	}
+	long sz = (M / 8);
+	sz = sz * N / 8;
+	int file_idx = 0;
+	while (train_head < train_tail)
+	{
+		file_idx = TrainHash[train_head] / sz;
+		Hofs[file_idx] << TrainHash[train_head] << " " << TrainVal[train_head] << endl;
+		train_head++;
+		if (train_head % 10000 == 0)
+		{
+			printf("train_head = %ld\n", train_head );
+		}
+	}
+}
+void WriteTest()
+{
+	int td;
+	ofstream Hofs[64];
+	for (int i = 0; i < DIM_SIZE; i++)
+	{
+		for (int j = 0; j < DIM_SIZE; j++)
+		{
+			td = i * DIM_SIZE + j;
+			sprintf(fn, "./data/TrainingMap-%d", td);
+			Hofs[i].open(fn, ios::trunc);
+		}
+	}
+	long sz = (M / 8);
+	sz = sz * N / 8;
+	int file_idx = 0;
+	while (test_head < test_tail)
+	{
+		file_idx = TestHash[test_head] / sz;
+		Hofs[file_idx] << TestHash[test_head] << " " << TestVal[test_head] << endl;
+		test_head++;
+		if (test_head % 1000 == 0)
+		{
+			printf("test_head = %ld\n", test_head );
+		}
+	}
+}
 void work_func(int td)
 {
 	printf("Thread td %d\n", td );
@@ -72,19 +132,25 @@ void work_func(int td)
 
 
 				//Hofs << hash_id << " " << sum << endl;
-				train_cnt++;
+				TrainHash[train_tail] =  hash_id;
+				TrainVal[train_tail] = sum;
+				train_tail++;
+				//train_cnt++;
 				//2M
 				//r = rand() % 1000;
 				if (r < 20)
 				{
 					//Tofs << hash_id << " " << sum << endl;
-					test_cnt++;
+					//test_cnt++;
+					TestHash[test_tail] = hash_id;
+					TestVal[test_tail] = sum;
+					test_tail++;
 				}
 			}
 			cnt++;
 			if (cnt % 1000000 == 0)
 			{
-				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_cnt, test_cnt);
+				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_tail, test_tail);
 			}
 		}
 	}
@@ -126,7 +192,12 @@ int main()
 			}
 		}
 	}
+	train_head = train_tail = test_head = test_tail = 0;
+	std::thread train_thread(WriteTrain);
+	train_thread.detach();
 
+	std::thread test_thread(WriteTest);
+	test_thread.detach();
 
 	double sum = 0;
 	long hash_id = 0;
@@ -144,7 +215,6 @@ int main()
 			{
 				hash_id = i * M + j;
 				sum = subM[i % 100][j % 100];
-
 
 				//Hofs << hash_id << " " << sum << endl;
 				train_cnt++;

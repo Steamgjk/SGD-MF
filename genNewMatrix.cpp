@@ -93,7 +93,7 @@ double val[10] = {0.000755, 0.025004, 0.304611, 1.365174, 2.250791, 1.365174, 0.
 int main()
 {
 
-	double theta = 1;
+	double theta = 10;
 	double miu = 0;
 	for (int x = -49; x <= 50; x++)
 	{

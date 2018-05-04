@@ -66,7 +66,7 @@ void WriteTrain()
 	int ccc = 10;
 	while (1 == 1)
 	{
-		printf("train_head=%ld train_tail=%ld\n", train_head, train_head );
+		printf("train_head=%ld train_tail=%ld\n", train_head, train_tail );
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 	while (train_head < train_tail)

@@ -33,7 +33,7 @@ using namespace std;
 long TrainHash[21000000];
 long TestHash[2100000];
 double TrainVal[21000000];
-long TestVal[2100000];
+double TestVal[2100000];
 long train_head = 0;
 long train_tail = 0;
 long test_head = 0;

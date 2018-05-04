@@ -68,18 +68,26 @@ void WriteTrain()
 		printf("train_head=%ld train_tail=%ld\n", train_head, train_tail );
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
-	printf("enter\n");
-	while (train_head < train_tail)
+	//printf("enter\n");
+	while (1 == 1)
 	{
-		printf("hhhh\n");
-		file_idx = TrainHash[train_head] / sz;
-		Hofs[file_idx] << TrainHash[train_head] << " " << TrainVal[train_head] << endl;
-		train_head++;
-		printf("train_head=%ld file_idx=%d\n", train_head, file_idx );
-		if (train_head % 10000 == 0)
+		//printf("hhhh\n");
+		if (train_head < train_tail)
 		{
-			printf("train_head = %ld\n", train_head );
+			file_idx = TrainHash[train_head] / sz;
+			Hofs[file_idx] << TrainHash[train_head] << " " << TrainVal[train_head] << endl;
+			train_head++;
+			printf("train_head=%ld file_idx=%d\n", train_head, file_idx );
+			if (train_head % 10000 == 0)
+			{
+				printf("train_head = %ld\n", train_head );
+			}
 		}
+		if (train_head >= 20000000)
+		{
+			break;
+		}
+
 	}
 }
 void WriteTest()
@@ -99,16 +107,24 @@ void WriteTest()
 	long sz = (M / 8);
 	sz = sz * N / 8;
 	int file_idx = 0;
-	while (test_head < test_tail)
+	while (1 == 1)
 	{
-		file_idx = TestHash[test_head] / sz;
-		Tofs[file_idx] << TestHash[test_head] << " " << TestVal[test_head] << endl;
-		test_head++;
-		if (test_head % 1000 == 0)
+		if (test_head < test_tail)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-			printf("test_head = %ld\n", test_head );
+			file_idx = TestHash[test_head] / sz;
+			Tofs[file_idx] << TestHash[test_head] << " " << TestVal[test_head] << endl;
+			test_head++;
+			if (test_head % 1000 == 0)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				printf("test_head = %ld\n", test_head );
+			}
 		}
+		if (test_head >= 2000000)
+		{
+			break;
+		}
+
 	}
 }
 //double val[10] = {0.000755, 0.025004, 0.304611, 1.365174, 2.250791, 1.365174, 0.304611, 0.025004, 0.000755, 0.000008};

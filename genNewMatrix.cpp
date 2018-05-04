@@ -113,44 +113,8 @@ void WriteTest()
 //double val[10] = {0.000755, 0.025004, 0.304611, 1.365174, 2.250791, 1.365174, 0.304611, 0.025004, 0.000755, 0.000008};
 
 
-
-int main()
+void genMatrix()
 {
-	/*
-		double theta = 5;
-		double miu = 0;
-		for (int x = -49; x <= 50; x++)
-		{
-			double r = 1.0 / (sqrt(2.0 * pi) * theta) * exp(-( (x - miu) * (x - miu) / (2 * theta * theta) ) ) * 50;
-			//printf("x=%d  r=%lf\n", x, r );
-			printf("%lf,", r);
-		}
-	**/
-	for (int i = 0; i < 100; i++)
-	{
-		for (int j = 0; j < 100; j++)
-		{
-			subP[i][j] = val[(i + j) % 100];
-			subQ[i][j] = val[(j + i) % 100];
-		}
-	}
-	for (int i = 0; i < 100; i++)
-	{
-		for (int j = 0; j < 100; j++)
-		{
-			subM[i][j] = 0;
-			for (int k = 0; k < 100; k++)
-			{
-				subM[i][j] += subP[i][k] * subQ[k][j];
-			}
-		}
-	}
-	train_head = train_tail = test_head = test_tail = 0;
-	std::thread train_thread(WriteTrain);
-	train_thread.detach();
-
-	std::thread test_thread(WriteTest);
-	test_thread.detach();
 
 	double sum = 0;
 	long hash_id = 0;
@@ -191,6 +155,48 @@ int main()
 			}
 		}
 	}
+}
+int main()
+{
+	/*
+		double theta = 5;
+		double miu = 0;
+		for (int x = -49; x <= 50; x++)
+		{
+			double r = 1.0 / (sqrt(2.0 * pi) * theta) * exp(-( (x - miu) * (x - miu) / (2 * theta * theta) ) ) * 50;
+			//printf("x=%d  r=%lf\n", x, r );
+			printf("%lf,", r);
+		}
+	**/
+	for (int i = 0; i < 100; i++)
+	{
+		for (int j = 0; j < 100; j++)
+		{
+			subP[i][j] = val[(i + j) % 100];
+			subQ[i][j] = val[(j + i) % 100];
+		}
+	}
+	for (int i = 0; i < 100; i++)
+	{
+		for (int j = 0; j < 100; j++)
+		{
+			subM[i][j] = 0;
+			for (int k = 0; k < 100; k++)
+			{
+				subM[i][j] += subP[i][k] * subQ[k][j];
+			}
+		}
+	}
+	train_head = train_tail = test_head = test_tail = 0;
+	std::thread train_thread(WriteTrain);
+	train_thread.detach();
+
+	std::thread test_thread(WriteTest);
+	test_thread.detach();
+
+	std::thread gen_thread(genMatrix);
+	test_thread.detach();
+
 
 
 	while (true)

@@ -152,7 +152,7 @@ void work_func(int td)
 			cnt++;
 			if (cnt % 10000000 == 0)
 			{
-				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_tail, test_tail);
+				printf("[%d]：:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_tail, test_tail);
 			}
 		}
 	}
@@ -229,7 +229,7 @@ int main()
 				}
 			}
 			cnt++;
-			if (cnt % 1000000 == 0)
+			if (cnt % 10000000 == 0)
 			{
 				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", 0, cnt, train_cnt, test_cnt);
 			}

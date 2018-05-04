@@ -127,6 +127,41 @@ int main()
 		}
 	}
 
+
+	long cnt = 0;
+	long train_cnt = 0;
+	long test_cnt = 0;
+
+	for (long i = 0; i < N; i++)
+	{
+		for (long j = 0; j < M; j++)
+		{
+			//20M
+			r = rand() % 10000000;
+			if (r < 200)
+			{
+				hash_id = i * M + j;
+				sum = subM[i % 100][j % 100];
+
+
+				//Hofs << hash_id << " " << sum << endl;
+				train_cnt++;
+				//2M
+				//r = rand() % 1000;
+				if (r < 20)
+				{
+					//Tofs << hash_id << " " << sum << endl;
+					test_cnt++;
+				}
+			}
+			cnt++;
+			if (cnt % 1000000 == 0)
+			{
+				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_cnt, test_cnt);
+			}
+		}
+	}
+
 	/*
 		srand(time(0));
 		char fn[100];
@@ -158,12 +193,13 @@ int main()
 		}
 		cout << "finish P and Q" << endl;
 	**/
-
-	for (int td = 0; td < TD_NUM; td++)
-	{
-		std::thread worker_thread(work_func, td);
-		worker_thread.detach();
-	}
+	/*
+		for (int td = 0; td < TD_NUM; td++)
+		{
+			std::thread worker_thread(work_func, td);
+			worker_thread.detach();
+		}
+		**/
 	while (true)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));

@@ -34,7 +34,10 @@ long TrainHash[21000000];
 long TestHash[2100000];
 double TrainVal[21000000];
 long TestVal[2100000];
-long train_head, train_tail, test_head, test_tail;
+long train_head = 0;
+long train_tail = 0;
+long test_head = 0;
+long test_tail = 0;
 
 #define TD_NUM 64
 #define DIM_SIZE 8
@@ -61,7 +64,7 @@ void WriteTrain()
 	sz = sz * N / 8;
 	int file_idx = 0;
 	int ccc = 10;
-	while (ccc--)
+	while (1 == 1)
 	{
 		printf("train_head=%ld train_tail=%ld\n", train_head, train_head );
 	}
@@ -151,8 +154,6 @@ int main()
 	double sum = 0;
 	long hash_id = 0;
 	long cnt = 0;
-	long train_cnt = 0;
-	long test_cnt = 0;
 	double r = 0;
 	for (long i = 0; i < N; i++)
 	{
@@ -184,7 +185,7 @@ int main()
 			cnt++;
 			if (cnt % 10000000 == 0)
 			{
-				//printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
+				printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
 			}
 		}
 	}

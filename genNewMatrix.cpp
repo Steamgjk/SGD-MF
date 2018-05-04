@@ -150,7 +150,7 @@ void work_func(int td)
 				}
 			}
 			cnt++;
-			if (cnt % 1000000 == 0)
+			if (cnt % 10000000 == 0)
 			{
 				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_tail, test_tail);
 			}

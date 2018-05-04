@@ -171,16 +171,16 @@ void genMatrix()
 }
 int main()
 {
+
+	double theta = 5;
+	double miu = 0;
+	for (int x = -49; x <= 50; x++)
+	{
+		double r = 1.0 / (sqrt(2.0 * pi) * theta) * exp(-( (x - miu) * (x - miu) / (2 * theta * theta) ) ) * 10;
+		//printf("x=%d  r=%lf\n", x, r );
+		printf("%lf,", r);
+	}
 	/*
-		double theta = 5;
-		double miu = 0;
-		for (int x = -49; x <= 50; x++)
-		{
-			double r = 1.0 / (sqrt(2.0 * pi) * theta) * exp(-( (x - miu) * (x - miu) / (2 * theta * theta) ) ) * 50;
-			//printf("x=%d  r=%lf\n", x, r );
-			printf("%lf,", r);
-		}
-	**/
 	for (int i = 0; i < 100; i++)
 	{
 		for (int j = 0; j < 100; j++)
@@ -217,6 +217,7 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		//printf("sleep\n");
 	}
+	**/
 
 
 }

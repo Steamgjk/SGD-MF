@@ -54,7 +54,7 @@ void WriteTrain()
 		{
 			td = i * DIM_SIZE + j;
 			sprintf(fn, "./data/TrainingMap-%d", td);
-			Hofs[i].open(fn, ios::trunc);
+			Hofs[td].open(fn, ios::trunc);
 		}
 	}
 	long sz = (M / 8);
@@ -82,7 +82,7 @@ void WriteTest()
 		{
 			td = i * DIM_SIZE + j;
 			sprintf(fn, "./data/TrainingMap-%d", td);
-			Hofs[i].open(fn, ios::trunc);
+			Hofs[td].open(fn, ios::trunc);
 		}
 	}
 	long sz = (M / 8);

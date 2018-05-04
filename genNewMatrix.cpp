@@ -60,12 +60,7 @@ void WriteTrain()
 	long sz = (M / 8);
 	sz = sz * N / 8;
 	int file_idx = 0;
-	int ccc = 10;
-	while (ccc--)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		printf("train_head=%ld  train_tail=%ld\n", train_head, train_tail );
-	}
+
 	while (train_head < train_tail)
 	{
 		file_idx = TrainHash[train_head] / sz;

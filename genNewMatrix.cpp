@@ -128,10 +128,12 @@ int main()
 	}
 
 
+	double sum = 0;
+	long hash_id = 0;
 	long cnt = 0;
 	long train_cnt = 0;
 	long test_cnt = 0;
-
+	double r = 0;
 	for (long i = 0; i < N; i++)
 	{
 		for (long j = 0; j < M; j++)
@@ -157,7 +159,7 @@ int main()
 			cnt++;
 			if (cnt % 1000000 == 0)
 			{
-				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", td, cnt, train_cnt, test_cnt);
+				printf("[%d]:cnt = %ld train_cnt=%ld test_cnt=%ld\n", 0, cnt, train_cnt, test_cnt);
 			}
 		}
 	}

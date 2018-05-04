@@ -63,8 +63,7 @@ void WriteTrain()
 	long sz = (M / 8);
 	sz = sz * N / 8;
 	int file_idx = 0;
-	int ccc = 10;
-	while (1 == 1)
+	while (1 == 0)
 	{
 		printf("train_head=%ld train_tail=%ld\n", train_head, train_tail );
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
@@ -194,9 +193,9 @@ int main()
 	std::thread test_thread(WriteTest);
 	test_thread.detach();
 
-	std::thread gen_thread(genMatrix);
-	gen_thread.detach();
-
+	//std::thread gen_thread(genMatrix);
+	//gen_thread.detach();
+	genMatrix();
 
 
 	while (true)

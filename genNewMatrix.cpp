@@ -68,8 +68,10 @@ void WriteTrain()
 		printf("train_head=%ld train_tail=%ld\n", train_head, train_tail );
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
+	printf("enter\n");
 	while (train_head < train_tail)
 	{
+		printf("hhhh\n");
 		file_idx = TrainHash[train_head] / sz;
 		Hofs[file_idx] << TrainHash[train_head] << " " << TrainVal[train_head] << endl;
 		train_head++;
@@ -149,7 +151,7 @@ void genMatrix()
 			cnt++;
 			if (cnt % 10000000 == 0)
 			{
-				printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
+				//printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
 				//getchar();
 			}
 		}

@@ -97,7 +97,7 @@ int main()
 	double miu = 0;
 	for (int x = -49; x <= 50; x++)
 	{
-		double r = exp(0.0 - ( (x - 3.0) * (x - 3.0) * 1.0 / 2 / 10) ) / (sqrt(2.0) * pi) / 10;
+		double r = 1.0 / (sqrt(2.0 * pi) * theta) * exp(-( (x - miu) * (x - miu) / (2 * theta * theta) ) ) * 3;
 		//printf("x=%d  r=%lf\n", x, r );
 		printf("%lf,", r);
 	}

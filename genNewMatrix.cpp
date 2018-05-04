@@ -65,6 +65,7 @@ void WriteTrain()
 		file_idx = TrainHash[train_head] / sz;
 		Hofs[file_idx] << TrainHash[train_head] << " " << TrainVal[train_head] << endl;
 		train_head++;
+		printf("train_head=%ld\n", train_head );
 		if (train_head % 10000 == 0)
 		{
 			printf("train_head = %ld\n", train_head );

@@ -195,7 +195,7 @@ int main()
 	test_thread.detach();
 
 	std::thread gen_thread(genMatrix);
-	test_thread.detach();
+	gen_thread.detach();
 
 
 

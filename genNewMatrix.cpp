@@ -46,6 +46,7 @@ double subQ[100][100];
 void WriteTrain()
 {
 	int td;
+	char fn[100];
 	ofstream Hofs[64];
 	for (int i = 0; i < DIM_SIZE; i++)
 	{
@@ -73,6 +74,7 @@ void WriteTrain()
 void WriteTest()
 {
 	int td;
+	char fn[100];
 	ofstream Hofs[64];
 	for (int i = 0; i < DIM_SIZE; i++)
 	{

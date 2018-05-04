@@ -67,6 +67,7 @@ void WriteTrain()
 	while (1 == 1)
 	{
 		printf("train_head=%ld train_tail=%ld\n", train_head, train_head );
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 	while (train_head < train_tail)
 	{
@@ -183,7 +184,7 @@ int main()
 				}
 			}
 			cnt++;
-			if (cnt % 10000000 == 0)
+			//if (cnt % 10000000 == 0)
 			{
 				printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
 			}

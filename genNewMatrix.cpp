@@ -63,12 +63,8 @@ void WriteTrain()
 	long sz = (M / 8);
 	sz = sz * N / 8;
 	int file_idx = 0;
-	while (1 == 0)
-	{
-		printf("train_head=%ld train_tail=%ld\n", train_head, train_tail );
-		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	}
-	//printf("enter\n");
+
+
 	while (1 == 1)
 	{
 		//printf("hhhh\n");
@@ -77,7 +73,7 @@ void WriteTrain()
 			file_idx = TrainHash[train_head] / sz;
 			Hofs[file_idx] << TrainHash[train_head] << " " << TrainVal[train_head] << endl;
 			train_head++;
-			printf("train_head=%ld file_idx=%d\n", train_head, file_idx );
+			//printf("train_head=%ld file_idx=%d\n", train_head, file_idx );
 			if (train_head % 10000 == 0)
 			{
 				printf("train_head = %ld\n", train_head );
@@ -116,7 +112,7 @@ void WriteTest()
 			test_head++;
 			if (test_head % 1000 == 0)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				printf("test_head = %ld\n", test_head );
 			}
 		}
@@ -167,7 +163,7 @@ void genMatrix()
 			cnt++;
 			if (cnt % 10000000 == 0)
 			{
-				//printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
+				printf("[%d]:cnt = %ld train_tail=%ld test_tail=%ld\n", 0, cnt, train_tail, test_tail);
 				//getchar();
 			}
 		}

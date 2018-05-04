@@ -75,14 +75,14 @@ void WriteTest()
 {
 	int td;
 	char fn[100];
-	ofstream Hofs[64];
+	ofstream Tofs[64];
 	for (int i = 0; i < DIM_SIZE; i++)
 	{
 		for (int j = 0; j < DIM_SIZE; j++)
 		{
 			td = i * DIM_SIZE + j;
-			sprintf(fn, "./data/TrainingMap-%d", td);
-			Hofs[td].open(fn, ios::trunc);
+			sprintf(fn, "./data/TestMap-%d", td);
+			Tofs[td].open(fn, ios::trunc);
 		}
 	}
 	long sz = (M / 8);
@@ -91,7 +91,7 @@ void WriteTest()
 	while (test_head < test_tail)
 	{
 		file_idx = TestHash[test_head] / sz;
-		Hofs[file_idx] << TestHash[test_head] << " " << TestVal[test_head] << endl;
+		Tofs[file_idx] << TestHash[test_head] << " " << TestVal[test_head] << endl;
 		test_head++;
 		if (test_head % 1000 == 0)
 		{

@@ -253,6 +253,8 @@ int main(int argc, const char * argv[])
             while (to_recv_head >= to_recv_tail)
             {
                 //Wait
+                printf("to recv\n");
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }
 
@@ -638,7 +640,7 @@ void SGD_MF()
             printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
         }
 
-        if (iter_cnt > 100)
+        if (iter_cnt > 10)
         {
             break;
         }

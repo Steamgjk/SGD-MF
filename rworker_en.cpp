@@ -307,6 +307,7 @@ void LoadStateConfig(char* fn)
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
         states[gp] = thread_id + gp * WORKER_NUM;
+        printf("state[%d] %d\n", gp, states[gp] );
     }
     for (size_t i = 0; i < SEQ_LEN; i++ )
     {
@@ -341,7 +342,7 @@ void LoadData(int pre_read)
     {
         int data_idx = states[i];
         int row = data_idx / DIM_NUM;
-        int col = data_idx / DIM_NUM;
+        int col = data_idx % DIM_NUM;
 
         if (TrainMaps[row][col].size() != 0)
         {
@@ -377,7 +378,7 @@ void LoadData(int pre_read)
         }
         while (!ifs2.eof())
         {
-            ifs >> hash_id >> rate;
+            ifs2 >> hash_id >> rate;
             TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
             cnt++;
             if (cnt % 100000 == 0)
@@ -404,7 +405,7 @@ void readData(int data_thread_id)
         }
         int data_idx = states[tail_idx];
         int row = data_idx / DIM_NUM;
-        int col = data_idx / DIM_NUM;
+        int col = data_idx % DIM_NUM;
 
         if (TrainMaps[row][col].size() != 0)
         {
@@ -438,7 +439,7 @@ void readData(int data_thread_id)
         }
         while (!ifs2.eof())
         {
-            ifs >> hash_id >> rate;
+            ifs2 >> hash_id >> rate;
             TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
             cnt++;
             if (cnt % 100000 == 0)
@@ -449,7 +450,7 @@ void readData(int data_thread_id)
         tail_idx++;
         data_idx = states[head_idx];
         row = data_idx / DIM_NUM;
-        col = data_idx / DIM_NUM;
+        col = data_idx % DIM_NUM;
         TrainMaps[row][col].clear();
         TestMaps[row][col].clear();
         head_idx++;

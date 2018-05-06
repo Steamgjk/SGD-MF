@@ -539,13 +539,14 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
     int negative_cnt = 0;
     long row_sta_idx = minP.sta_idx;
     long col_sta_idx = minQ.sta_idx;
+    printf("Psz = %ld  Qsz= %ld row_sta_idx=%ld, col_sta_idx=%ld\n", minP.ele_num, minQ.ele_num, row_sta_idx, col_sta_idx );
     for (iter = RTestMap.begin(); iter != RTestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M - row_sta_idx;
         long col_idx = real_hash_idx % M - col_sta_idx;
         double sum = 0;
-
+        printf("Pidx = %ld  Qidx = %ld\n", row_idx * K + k, col_idx * K + k );
         for (int k = 0; k < K; k++)
         {
             sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];

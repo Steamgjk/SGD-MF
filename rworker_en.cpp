@@ -390,6 +390,8 @@ void readData(int data_thread_id)
 {
     int head_idx = 0;
     int tail_idx = CACHE_NUM;
+    long hash_id;
+    double rate;
     while (head_idx < to_send_tail)
     {
         if (tail_idx >= QU_LEN)

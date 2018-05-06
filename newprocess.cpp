@@ -50,7 +50,9 @@ void write_data(int td_id)
 			heads[row][col]++;
 			if (heads[row][col] % 10000 == 0)
 			{
+
 				printf("W[%d][%d] %ld\n", row, col, heads[row][col] );
+				getchar();
 			}
 		}
 	}
@@ -99,6 +101,7 @@ int main()
 				printf("brow = %ld bcol %ld\n", brow, bcol );
 				printf("[%ld][%ld] %ld\n", brow, bcol, tails[brow][col] );
 			}
+
 
 		}
 	}

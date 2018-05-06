@@ -38,7 +38,7 @@ void write_data(int td_id)
 {
 	char fn[100];
 	sprintf(fn, "%s-%d", OUT_NAME, td_id);
-	ofstream ofs(fn, iso::trunc);
+	ofstream ofs(fn, ios::trunc);
 	int row = td / 8;
 	int col = td % 8;
 	while (1 == 1)
@@ -106,3 +106,5 @@ int main()
 	}
 
 }
+
+//g++  -g  -std=c++11  -pthread newprocess.cpp -o newprocess

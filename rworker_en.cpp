@@ -195,8 +195,8 @@ int main(int argc, const char * argv[])
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
 
-    partitionP(WORKER_NUM * n, Pblocks);
-    partitionQ(WORKER_NUM * n, Qblocks);
+    partitionP(DIM_NUM, Pblocks);
+    partitionQ(DIM_NUM, Qblocks);
 
 
     int block_to_process;

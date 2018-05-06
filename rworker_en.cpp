@@ -47,10 +47,13 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
+#define N 1000000
+#define M 1000000
+#define K  100 //主题个数
 
-#define N 71567
-#define M 65133
-#define K  40 //主题个数
+//#define N 71567
+//#define M 65133
+//#define K  40 //主题个数
 #define CAP 30
 #define SEQ_LEN 1000
 #define QU_LEN 5000

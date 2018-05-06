@@ -343,7 +343,7 @@ void LoadData(int pre_read)
         int row = data_idx / DIM_NUM;
         int col = data_idx / DIM_NUM;
 
-        if (TrainingMaps[row][col].size() != 0)
+        if (TrainMaps[row][col].size() != 0)
         {
             continue;
         }

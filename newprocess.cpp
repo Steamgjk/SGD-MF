@@ -39,8 +39,8 @@ void write_data(int td_id)
 	char fn[100];
 	sprintf(fn, "%s-%d", OUT_NAME, td_id);
 	ofstream ofs(fn, ios::trunc);
-	int row = td / 8;
-	int col = td % 8;
+	int row = td_id / 8;
+	int col = td_id % 8;
 	while (1 == 1)
 	{
 		if (heads[row][col] < tails[row][col])
@@ -95,7 +95,7 @@ int main()
 			tails[brow][bcol]++;
 			if (tails[brow][bcol] % 10000 == 0)
 			{
-				printf("[%d][%d] %ld\n", brow, bcol, tails[brow][col] );
+				printf("[%ld][%ld] %ld\n", brow, bcol, tails[brow][col] );
 			}
 
 		}

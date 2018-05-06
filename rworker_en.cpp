@@ -42,8 +42,12 @@ char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
 
-#define FILE_NAME "./traina.txt"
-#define TEST_NAME "./testa.txt"
+//#define FILE_NAME "./traina.txt"
+//#define TEST_NAME "./testa.txt"
+
+#define FILE_NAME "./data/TrainingMap-"
+#define TEST_NAME "./data/TestMap-"
+
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
@@ -55,6 +59,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 int GROUP_NUM = 1;
 int DIM_NUM = 4;
 int WORKER_NUM = 2;
+int CACHE_NUM = 20;
 
 int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
@@ -146,12 +151,15 @@ int to_send_head, to_send_tail;
 int to_recv[QU_LEN];
 int to_recv_head, to_recv_tail;
 
+std::map<long, double> TrainMaps[100][100];
 std::map<long, double> TestMaps[100][100];
 //0 is to right trans Q, 1 is up, trans p
 
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
+void readData(int data_thread_id);
+
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
@@ -162,7 +170,7 @@ void getTestMap(map<long, double>& TestMap, int block_id);
 void getBlockRates(map<long, double>& BlockMap, int block_id);
 void SGD_MF();
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
-
+void LoadData(int pre_read);
 
 int thread_id = -1;
 int p_block_idx;
@@ -178,6 +186,10 @@ int main(int argc, const char * argv[])
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
+    LoadData(CACHE_NUM);
+    std::thread data_read_thread(readData, thread_id);
+    data_read_thread.detach();
+
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
     std::thread recv_thread(recvTd, thread_id);
@@ -306,20 +318,138 @@ void LoadStateConfig(char* fn)
             {
                 to_send[loc] = states[loc] % DIM_NUM;
                 to_recv[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
-                states[loc] = (states[loc] / DIM_NUM) * DIM_NUM + (states[loc] + 1) % DIM_NUM;
+                states[loc] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
             }
             else
             {
                 to_send[loc] = states[loc] / DIM_NUM;
                 to_recv[loc] = (to_send[loc]  + DIM_NUM - GROUP_NUM) % DIM_NUM;
-                states[loc] = ((states[loc] / DIM_NUM + DIM_NUM - 1) % DIM_NUM) * DIM_NUM + states[loc] % DIM_NUM;
+                states[loc] = ((states[loc] / DIM_NUM + DIM_NUM - 1) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
         }
 
     }
 
 }
+void LoadData(int pre_read)
+{
+    char fn[100];
+    long hasd_id;
+    double rate;
+    long cnt = 0;
+    for (int i = 0; i < pre_read; i++)
+    {
+        int data_idx = states[i];
+        int row = data_idx / DIM_NUM;
+        int col = data_idx / DIM_NUM;
 
+        if (TrainingMaps[row][col].size() != 0)
+        {
+            continue;
+        }
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        cnt = 0;
+        while (!ifs.eof())
+        {
+            ifs >> hash_id >> rate;
+            TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            cnt++;
+            if (cnt % 100000 == 0)
+            {
+                printf("Train cnt = %ld\n", cnt);
+            }
+        }
+        sprintf(fn, "%s%d", TEST_NAME, data_idx);
+        ifstream ifs2(fn);
+        cnt = 0;
+        if (!ifs2.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        while (!ifs2.eof())
+        {
+            ifs >> hash_id >> rate;
+            TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            cnt++;
+            if (cnt % 100000 == 0)
+            {
+                printf("Test cnt = %ld\n", cnt);
+            }
+        }
+
+    }
+}
+void readData(int data_thread_id)
+{
+    int head_idx = 0;
+    int tail_idx = CACHE_NUM;
+    while (head_idx < to_send_tail)
+    {
+        if (tail_idx >= QU_LEN)
+        {
+            break;
+        }
+        int data_idx = states[tail_idx];
+        int row = data_idx / DIM_NUM;
+        int col = data_idx / DIM_NUM;
+
+        if (TrainingMaps[row][col].size() != 0)
+        {
+            continue;
+        }
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        cnt = 0;
+        while (!ifs.eof())
+        {
+            ifs >> hash_id >> rate;
+            TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            cnt++;
+            if (cnt % 100000 == 0)
+            {
+                printf("Train cnt = %ld\n", cnt);
+            }
+        }
+        sprintf(fn, "%s%d", TEST_NAME, data_idx);
+        ifstream ifs2(fn);
+        cnt = 0;
+        if (!ifs2.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        while (!ifs2.eof())
+        {
+            ifs >> hash_id >> rate;
+            TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            cnt++;
+            if (cnt % 100000 == 0)
+            {
+                printf("Test cnt = %ld\n", cnt);
+            }
+        }
+        tail_idx++;
+        data_idx = states[head_idx];
+        row = data_idx / DIM_NUM;
+        col = data_idx / DIM_NUM;
+        TrainMaps[row][col].clear();
+        TestMaps[row][col].clear();
+        head_idx++;
+    }
+
+}
 void getBlockRates(map<long, double>& BlockMap, int block_id)
 {
     char fn[100];
@@ -470,8 +600,8 @@ void SGD_MF()
             long real_hash_idx = real_row_idx * M + real_col_idx;
 
             map<long, double>::iterator iter;
-            iter = TestMaps[p_block_idx][q_block_idx].find(real_hash_idx);
-            if (iter != TestMaps[p_block_idx][q_block_idx].end())
+            iter = TrainMaps[p_block_idx][q_block_idx].find(real_hash_idx);
+            if (iter != TrainMaps[p_block_idx][q_block_idx].end())
             {
                 error = iter->second;
                 for (int k = 0; k < K; ++k)

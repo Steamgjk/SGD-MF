@@ -96,6 +96,7 @@ int main()
 			tails[brow][bcol]++;
 			if (tails[brow][bcol] % 10000 == 0)
 			{
+				printf("brow = %ld bcol %ld\n", brow, bcol );
 				printf("[%ld][%ld] %ld\n", brow, bcol, tails[brow][col] );
 			}
 

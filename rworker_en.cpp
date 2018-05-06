@@ -203,9 +203,9 @@ int main(int argc, const char * argv[])
     int action_to_process;
     int action = 0;
     int state_idx = 0;
-    std::vector<int> p_to_process(n);
-    std::vector<int> q_to_process(n);
-    std::vector<bool> send_this_p(n);
+    std::vector<int> p_to_process(GROUP_NUM);
+    std::vector<int> q_to_process(GROUP_NUM);
+    std::vector<bool> send_this_p(GROUP_NUM);
     //Init Mark
     while (1 == 1)
     {

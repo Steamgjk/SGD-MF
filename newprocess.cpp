@@ -68,6 +68,7 @@ int main()
 	for (int i = 0 ; i < 63; i++)
 	{
 		std::thread write_td(write_data, i);
+		write_td.detach();
 	}
 	char fn[100];
 	long hash_id;

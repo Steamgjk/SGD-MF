@@ -153,6 +153,7 @@ int to_send_head, to_send_tail;
 int to_recv[QU_LEN];
 int to_recv_head, to_recv_tail;
 
+int has_processed;
 std::map<long, double> TrainMaps[100][100];
 std::map<long, double> TestMaps[100][100];
 //0 is to right trans Q, 1 is up, trans p
@@ -183,7 +184,7 @@ int main(int argc, const char * argv[])
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
     DIM_NUM = GROUP_NUM * WORKER_NUM;
-    to_send_head = to_recv_tail = to_recv_tail = to_recv_head = 0;
+    to_send_head = to_recv_tail = to_recv_tail = to_recv_head = has_processed = 0;
 
     LoadActionConfig(ACTION_NAME);
     char state_name[100];
@@ -249,14 +250,14 @@ int main(int argc, const char * argv[])
                 to_send[to_send_tail] = q_to_process[i];
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
-
-            while (to_recv_head >= to_recv_tail)
+            has_processed++;
+            while (has_processed < to_recv_head)
             {
                 //Wait
                 printf("to recv\n");
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
-            to_recv_head = (to_recv_head + 1) % QU_LEN;
+
         }
 
 
@@ -714,6 +715,7 @@ void sendTd(int send_thread_id)
     int send_cnt = 0;
     while (1 == 1)
     {
+        printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
         if (to_send_head < to_send_tail)
         {
             int block_idx = to_send[to_send_head];
@@ -765,7 +767,7 @@ void recvTd(int recv_thread_id)
     int ret = 0;
     while (1 == 1)
     {
-        if (to_recv_head < to_recv_tail)
+        //if (to_recv_head < to_recv_tail)
         {
             int block_idx = to_recv[to_recv_head];
             int block_p_or_q = actions[to_recv_head];

@@ -46,7 +46,7 @@ void write_data(int td_id)
 		if (heads[row][col] < tails[row][col])
 		{
 			long h = heads[row][col];
-			ofs << hash_ids[row][col][h] << rates[row][col][h] << endl;
+			ofs << hash_ids[row][col][h] << " " << rates[row][col][h] << endl;
 			heads[row][col]++;
 			if (heads[row][col] % 10000 == 0)
 			{

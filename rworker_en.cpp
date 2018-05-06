@@ -348,6 +348,7 @@ void LoadData(int pre_read)
             continue;
         }
         sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        printf("fn=%s\n", fn );
         ifstream ifs(fn);
         if (!ifs.is_open())
         {
@@ -366,6 +367,7 @@ void LoadData(int pre_read)
             }
         }
         sprintf(fn, "%s%d", TEST_NAME, data_idx);
+        printf("fn=%s\n", fn );
         ifstream ifs2(fn);
         cnt = 0;
         if (!ifs2.is_open())

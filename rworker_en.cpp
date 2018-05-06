@@ -539,7 +539,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
     int negative_cnt = 0;
     long row_sta_idx = minP.sta_idx;
     long col_sta_idx = minQ.sta_idx;
-    printf("Psz = %ld  Qsz= %ld row_sta_idx=%ld, col_sta_idx=%ld\n", minP.ele_num, minQ.ele_num, row_sta_idx, col_sta_idx );
+    //printf("Psz = %ld  Qsz= %ld row_sta_idx=%ld, col_sta_idx=%ld\n", minP.ele_num, minQ.ele_num, row_sta_idx, col_sta_idx );
     for (iter = RTestMap.begin(); iter != RTestMap.end(); iter++)
     {
         long real_hash_idx = iter->first;
@@ -549,7 +549,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
 
         for (int k = 0; k < K; k++)
         {
-            printf("hashs=%ld row_idx=%ld col_idx=%ld M=%ld row_sta_idx=%ld col_sta_idx=%ld Pidx = %ld  Qidx = %ld pbid=%d qid=%d\n", real_hash_idx, row_idx, col_idx, M, row_sta_idx, col_sta_idx, row_idx * K + k, col_idx * K + k, minP.block_id, minQ.block_id );
+            //printf("hashs=%ld row_idx=%ld col_idx=%ld M=%ld row_sta_idx=%ld col_sta_idx=%ld Pidx = %ld  Qidx = %ld pbid=%d qid=%d\n", real_hash_idx, row_idx, col_idx, M, row_sta_idx, col_sta_idx, row_idx * K + k, col_idx * K + k, minP.block_id, minQ.block_id );
             sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
         }
 
@@ -595,7 +595,7 @@ void SGD_MF()
     int Psz =  Pblocks[p_block_idx].height * K;
     int Qsz = Qblocks[q_block_idx].height * K;
 
-    printf("row_len=%d col_len=%d\n", row_len, col_len );
+    //printf("row_len=%d col_len=%d\n", row_len, col_len );
 
     double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
     double new_rmse = old_rmse;

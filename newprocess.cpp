@@ -100,6 +100,7 @@ int main()
 			{
 				printf("brow = %ld bcol %ld\n", brow, bcol );
 				printf("[%ld][%ld] %ld\n", brow, bcol, tails[brow][col] );
+				getchar();
 			}
 
 

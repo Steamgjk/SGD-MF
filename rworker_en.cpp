@@ -334,7 +334,7 @@ void LoadStateConfig(char* fn)
 void LoadData(int pre_read)
 {
     char fn[100];
-    long hasd_id;
+    long hash_id;
     double rate;
     long cnt = 0;
     for (int i = 0; i < pre_read; i++)

@@ -237,7 +237,7 @@ int main(int argc, const char * argv[])
 
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
-            printf("pidx = %d  qidx=%d\n", p_block_idx, q_block_idx );
+            printf("pidx = %d  qidx=%d to_recv_head=%d to_recv_tail=%d\n", p_block_idx, q_block_idx, to_recv_head, to_recv_tail );
             SGD_MF();
             if (send_this_p[i] == true)
             {
@@ -249,13 +249,14 @@ int main(int argc, const char * argv[])
                 to_send[to_send_tail] = q_to_process[i];
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
-            to_recv_head = (to_recv_head + 1) % QU_LEN;
+
             while (to_recv_head >= to_recv_tail)
             {
                 //Wait
                 printf("to recv\n");
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
+            to_recv_head = (to_recv_head + 1) % QU_LEN;
         }
 
 

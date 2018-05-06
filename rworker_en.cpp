@@ -56,7 +56,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 #define QU_LEN 5000
 #define ThreshIter 100
 
-int GROUP_NUM = 1;
+int GROUP_NUM = 2;
 int DIM_NUM = 4;
 int WORKER_NUM = 2;
 int CACHE_NUM = 20;
@@ -141,7 +141,6 @@ struct Block Qblocks[CAP];
 
 struct timeval start, stop, diff;
 
-int n = 2;
 int states[QU_LEN];
 int actions[QU_LEN];
 
@@ -180,6 +179,7 @@ int main(int argc, const char * argv[])
     srand(time(0));
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
+    DIM_NUM = GROUP_NUM * WORKER_NUM;
     to_send_head = to_recv_tail = to_recv_tail = to_recv_head = 0;
 
     LoadActionConfig(ACTION_NAME);
@@ -209,7 +209,7 @@ int main(int argc, const char * argv[])
     //Init Mark
     while (1 == 1)
     {
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < GROUP_NUM; i++)
         {
             block_to_process = states[state_idx];
             action = actions[state_idx];
@@ -229,7 +229,7 @@ int main(int argc, const char * argv[])
 
         //random_shuffle(p_to_process.begin(), p_to_process.end());
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < GROUP_NUM; i++)
         {
             while (to_recv_head <= to_recv_tail)
             {
@@ -306,7 +306,9 @@ void LoadStateConfig(char* fn)
     **/
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
-        states[gp] = thread_id + gp * WORKER_NUM;
+        int row = thread_id * GROUP_NUM + gp;
+        int col = thread_id * GROUP_NUM + gp;
+        states[gp] = row * DIM_NUM + col;
         printf("state[%d] %d\n", gp, states[gp] );
     }
     for (size_t i = 0; i < SEQ_LEN; i++ )

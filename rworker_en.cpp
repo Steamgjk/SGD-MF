@@ -924,7 +924,7 @@ void recvTd(int recv_thread_id)
             free(dataBuf);
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("recv success time = %lld, to_recv_head=%d\n", mksp, to_recv_head );
+            printf("recv success time = %lld, to_recv_head=%d has_processed=%d\n", mksp, to_recv_head, has_processed );
             to_recv_head = (to_recv_head + 1) % QU_LEN;
         }
     }

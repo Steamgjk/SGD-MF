@@ -417,6 +417,7 @@ void readData(int data_thread_id)
     long hash_id;
     double rate;
     long cnt = 0;
+    printf("INi head_idx=%d  to_send_tail=%d\n", head_idx, to_send_tail );
     while (head_idx < to_send_tail)
     {
         printf("head_idx=%d  to_send_tail=%d\n", head_idx, to_send_tail );

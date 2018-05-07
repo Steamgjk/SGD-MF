@@ -239,7 +239,13 @@ int main(int argc, const char * argv[])
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
             printf("pidx = %d  qidx=%d to_recv_head=%d to_recv_tail=%d\n", p_block_idx, q_block_idx, to_recv_head, to_recv_tail );
+            struct timeval st, et, tspan;
+            gettimeofday(&st, 0);
             SGD_MF();
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+            printf("time = %lld\n", mksp);
+
             if (send_this_p[i] == true)
             {
                 to_send[to_send_tail] = p_to_process[i];
@@ -756,6 +762,9 @@ void sendTd(int send_thread_id)
             printf("test ret = %d\n", ret );
             getchar();
             **/
+            struct timeval st, et, tspan;
+            gettimeofday(&st, 0);
+
 
             while (remain_len > 0)
             {
@@ -778,8 +787,10 @@ void sendTd(int send_thread_id)
                 //getchar();
             }
 
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld\n", thread_id, struct_sz, data_sz, ret, mksp);
             //getchar();
             free(buf);
 
@@ -818,6 +829,10 @@ void recvTd(int recv_thread_id)
             cur_len = 0;
             ret = 0;
             blockBuf = (char*)malloc(sizeof(Block));
+
+            struct timeval st, et, tspan;
+            gettimeofday(&st, 0);
+
             while (cur_len < expected_len)
             {
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
@@ -878,6 +893,9 @@ void recvTd(int recv_thread_id)
             //getchar();
             free(blockBuf);
             free(dataBuf);
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+            printf("recv full %lld\n", mksp );
             to_recv_head = (to_recv_head + 1) % QU_LEN;
         }
     }

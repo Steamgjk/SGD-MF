@@ -784,7 +784,7 @@ void recvTd(int recv_thread_id)
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;
-
+            getchar();
             while (cur_len < expected_len)
             {
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);

@@ -743,7 +743,7 @@ void sendTd(int send_thread_id)
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
             printf("before send... stucsz=%ld data_sz=%ld \n", struct_sz, data_sz);
-            size_t total_len = stucsz + data_sz;
+            size_t total_len = struct_sz + data_sz;
             size_t sent_len = 0;
             size_t remain_len = total_len;
             int ret = -1;

@@ -774,6 +774,12 @@ void sendTd(int send_thread_id)
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
     int send_cnt = 0;
+    printf("\n+++++++\n");
+    for (int i = 0; i < 20; i++)
+    {
+        printf("%d\t", to_send[i]);
+    }
+    printf("\n\n\n");
     while (1 == 1)
     {
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );

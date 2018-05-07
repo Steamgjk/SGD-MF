@@ -318,12 +318,14 @@ void LoadActionConfig(char* fn)
         cnt++;
     }
     **/
-    int cnt = 0;
+    int loc = 0;
     for (int i = 0; i < SEQ_LEN; i++ )
     {
         for (int gp = 0; gp < GROUP_NUM; gp++)
         {
-            actions[cnt] = gp % 2;
+            loc = i * GROUP_NUM + gp;
+            actions[loc] = gp % 2;
+
         }
     }
 

@@ -150,8 +150,8 @@ int actions[QU_LEN];
 int to_send[QU_LEN];
 int to_send_head, to_send_tail;
 
-int to_recv[QU_LEN];
-int to_recv_head, to_recv_tail;
+int has_recved[QU_LEN];
+int recved_head, recved_tail;
 
 int has_processed;
 
@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
     DIM_NUM = GROUP_NUM * WORKER_NUM;
-    to_send_head = to_recv_tail = to_recv_tail = to_recv_head = has_processed = 0;
+    to_send_head = to_send_tail = recved_head = recved_tail = has_processed = 0;
 
     LoadActionConfig(ACTION_NAME);
     char state_name[100];
@@ -244,7 +244,7 @@ int main(int argc, const char * argv[])
 
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
-            //printf("pidx = %d  qidx=%d to_recv_head=%d to_recv_tail=%d\n", p_block_idx, q_block_idx, to_recv_head, to_recv_tail );
+            //printf("pidx = %d  qidx=%d recved_head=%d recved_tail=%d\n", p_block_idx, q_block_idx, recved_head, recved_tail );
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
             SGD_MF();
@@ -264,10 +264,10 @@ int main(int argc, const char * argv[])
             }
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
-            while (has_processed >= to_recv_head || has_processed >= disk_read_tail_idx)
+            while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
-                printf("to recv has_processed=%d to_recv_head=%d disk_read_tail_idx=%d\n", has_processed, to_recv_head, disk_read_tail_idx);
+                printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
             //getchar();
@@ -349,14 +349,14 @@ void LoadStateConfig(char* fn)
             if (actions[loc] == 0)
             {
                 to_send[loc] = states[loc] % DIM_NUM;
-                to_recv[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
+                has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
             }
             else
             {
                 to_send[loc] = states[loc] / DIM_NUM;
-                to_recv[loc] = (to_send[loc]  + DIM_NUM - GROUP_NUM) % DIM_NUM;
+                has_recved[loc] = (to_send[loc]  + DIM_NUM - GROUP_NUM) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - 1) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
@@ -846,12 +846,12 @@ void recvTd(int recv_thread_id)
     int ret = 0;
     while (1 == 1)
     {
-        //if (to_recv_head < to_recv_tail)
+        //if (recved_head < recved_tail)
         {
 
-            int block_idx = to_recv[to_recv_head];
-            int block_p_or_q = actions[to_recv_head];
-            //printf("to_recv_head=%d block_idx=%d  block_p_or_q=%d\n", to_recv_head, block_idx, block_p_or_q );
+            int block_idx = has_recved[recved_head];
+            int block_p_or_q = actions[recved_head];
+            //printf("recved_head=%d block_idx=%d  block_p_or_q=%d\n", recved_head, block_idx, block_p_or_q );
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;
@@ -924,8 +924,8 @@ void recvTd(int recv_thread_id)
             free(dataBuf);
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("recv success time = %lld, to_recv_head=%d has_processed=%d\n", mksp, to_recv_head, has_processed );
-            to_recv_head = (to_recv_head + 1) % QU_LEN;
+            printf("recv success time = %lld, recved_head=%d has_processed=%d\n", mksp, recved_head, has_processed );
+            recved_head = (recved_head + 1) % QU_LEN;
         }
     }
 

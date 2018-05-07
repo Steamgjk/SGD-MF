@@ -741,6 +741,8 @@ void sendTd(int send_thread_id)
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
+            printf("stop send....\n");
+            getchar();
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {

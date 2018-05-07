@@ -840,8 +840,8 @@ void recvTd(int recv_thread_id)
     else
     {
         //打印客户端信息
-        char showData[INET_ADDRSTRLEN];
-        std::cout << inet_ntop(AF_INET, &addressClient.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(addressClient.sin_port) << std::endl;
+        //char showData[INET_ADDRSTRLEN];
+        //std::cout << inet_ntop(AF_INET, &addressClient.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(addressClient.sin_port) << std::endl;
 
         //接受数据
         const int BUF_LEN = 1024;

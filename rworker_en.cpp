@@ -447,48 +447,47 @@ void readData(int data_thread_id)
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
 
-        if (TrainMaps[row][col].size() != 0)
+        if (TrainMaps[row][col].size() == 0)
         {
-            //printf("Traing not empty\n");
-            continue;
-        }
-        sprintf(fn, "%s%d", FILE_NAME, data_idx);
-        //printf("read fn =%s\n", fn );
-        ifstream ifs(fn);
-        if (!ifs.is_open())
-        {
-            printf("fail to open %s\n", fn );
-            exit(-1);
-        }
-        cnt = 0;
-        while (!ifs.eof())
-        {
-            ifs >> hash_id >> rate;
-            TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
-            /*
-            cnt++;
-            if (cnt % 100000 == 0)
+
+            sprintf(fn, "%s%d", FILE_NAME, data_idx);
+            //printf("read fn =%s\n", fn );
+            ifstream ifs(fn);
+            if (!ifs.is_open())
             {
-                printf("Train cnt = %ld\n", cnt);
+                printf("fail to open %s\n", fn );
+                exit(-1);
             }
-            **/
-        }
-        sprintf(fn, "%s%d", TEST_NAME, data_idx);
-        ifstream ifs2(fn);
-        cnt = 0;
-        if (!ifs2.is_open())
-        {
-            printf("fail to open %s\n", fn );
-            exit(-1);
-        }
-        while (!ifs2.eof())
-        {
-            ifs2 >> hash_id >> rate;
-            TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
-            cnt++;
-            if (cnt % 100000 == 0)
+            cnt = 0;
+            while (!ifs.eof())
             {
-                printf("Test cnt = %ld\n", cnt);
+                ifs >> hash_id >> rate;
+                TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+                /*
+                cnt++;
+                if (cnt % 100000 == 0)
+                {
+                    printf("Train cnt = %ld\n", cnt);
+                }
+                **/
+            }
+            sprintf(fn, "%s%d", TEST_NAME, data_idx);
+            ifstream ifs2(fn);
+            cnt = 0;
+            if (!ifs2.is_open())
+            {
+                printf("fail to open %s\n", fn );
+                exit(-1);
+            }
+            while (!ifs2.eof())
+            {
+                ifs2 >> hash_id >> rate;
+                TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
+                cnt++;
+                if (cnt % 100000 == 0)
+                {
+                    printf("Test cnt = %ld\n", cnt);
+                }
             }
         }
         disk_read_tail_idx++;

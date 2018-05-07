@@ -25,8 +25,8 @@
 #include <queue>
 #include <random>
 using namespace std;
-#define FILE_NAME "./data/TestMap"
-#define OUT_NAME "./ndata/TestMap"
+#define FILE_NAME "./data/TrainingMap"
+#define OUT_NAME "./ndata/TrainingMap"
 #define M 1000000
 #define BK 125000
 long hash_ids[8][8][500000];

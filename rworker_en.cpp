@@ -615,7 +615,7 @@ void SGD_MF()
 
     int iter_cnt = 0;
 
-    while ( new_rmse > 0.999 * old_rmse )
+    //while ( new_rmse > 0.999 * old_rmse )
     {
         vector<double> oldP = Pblocks[p_block_idx].eles;
         vector<double> oldQ = Qblocks[q_block_idx].eles;

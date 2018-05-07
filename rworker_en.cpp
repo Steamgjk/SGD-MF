@@ -418,13 +418,14 @@ void readData(int data_thread_id)
     long hash_id;
     double rate;
     long cnt = 0;
-    /*
-    while (1 == 1)
+
+    int t = 5;
+    while (t--)
     {
         printf("INi head_idx=%d  to_send_tail=%d\n", head_idx, to_send_tail );
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    **/
+
     while (head_idx < to_send_tail)
     {
         printf("head_idx=%d  to_send_tail=%d tail_idx=%d\n", head_idx, to_send_tail, tail_idx );

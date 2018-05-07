@@ -235,11 +235,11 @@ int main(int argc, const char * argv[])
             //0 is to right trans Q, 1 is up, trans p
             if (action == 0)
             {
-                send_this_p[i] = true;
+                send_this_p[i] = false;
             }
             else
             {
-                send_this_p[i] = false;
+                send_this_p[i] = true;
             }
             state_idx++;
         }
@@ -263,16 +263,19 @@ int main(int argc, const char * argv[])
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
 
-            if (send_this_p[i] == true)
-            {
-                to_send[to_send_tail] = p_to_process[i];
-                to_send_tail = (to_send_tail + 1) % QU_LEN;
-            }
-            else
-            {
-                to_send[to_send_tail] = q_to_process[i];
-                to_send_tail = (to_send_tail + 1) % QU_LEN;
-            }
+            /*
+                        if (send_this_p[i] == true)
+                        {
+                            to_send[to_send_tail] = p_to_process[i];
+                            to_send_tail = (to_send_tail + 1) % QU_LEN;
+                        }
+                        else
+                        {
+                            to_send[to_send_tail] = q_to_process[i];
+                            to_send_tail = (to_send_tail + 1) % QU_LEN;
+                        }
+                        **/
+            to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)

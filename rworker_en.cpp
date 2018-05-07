@@ -773,12 +773,12 @@ void sendTd(int send_thread_id)
                 {
                     printf("still fail\n");
                 }
-                getchar();
+                //getchar();
             }
 
 
             printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
-
+            getchar();
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;
@@ -843,7 +843,7 @@ void recvTd(int recv_thread_id)
                 {
                     printf("recv ret=%d\n", ret);
                 }
-                getchar();
+                //getchar();
                 cur_len += ret;
             }
             struct Block* pb = (struct Block*)(void*)blockBuf;
@@ -891,6 +891,8 @@ void recvTd(int recv_thread_id)
                     Pblocks[block_idx].eles[i] = data_eles[i];
                 }
             }
+            printf("recv complete\n");
+            getchar();
             free(blockBuf);
             free(dataBuf);
             to_recv_head = (to_recv_head + 1) % QU_LEN;

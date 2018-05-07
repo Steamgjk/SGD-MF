@@ -788,6 +788,99 @@ void sendTd(int send_thread_id)
 }
 void recvTd(int recv_thread_id)
 {
+
+
+    const char* ip = local_ips[recv_thread_id];
+    int port = local_ports[recv_thread_id];
+
+    int backlog = 5;
+
+    std::cout << "ip=" << ip << " port=" << port << " backlog=" << backlog  << std::endl;
+
+    int fd;
+    int check_ret;
+
+    fd = socket(PF_INET, SOCK_STREAM , 0);
+    assert(fd >= 0);
+
+    struct sockaddr_in address;
+    bzero(&address, sizeof(address));
+
+    //转换成网络地址
+    address.sin_port = htons(port);
+    address.sin_family = AF_INET;
+    //地址转换
+    inet_pton(AF_INET, ip, &address.sin_addr);
+    //设置socket buffer大小
+    int recvbuf = 4096;
+    int len = sizeof( recvbuf );
+    setsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, sizeof( recvbuf ) );
+    getsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, ( socklen_t* )&len );
+    printf( "the receive buffer size after settting is %d\n", recvbuf );
+
+
+
+    //绑定ip和端口
+    check_ret = bind(fd, (struct sockaddr*)&address, sizeof(address));
+    assert(check_ret >= 0);
+
+    //创建监听队列，用来存放待处理的客户连接
+    check_ret = listen(fd, backlog);
+    assert(check_ret >= 0);
+
+    struct sockaddr_in addressClient;
+    socklen_t clientLen = sizeof(addressClient);
+    //接受连接，阻塞函数
+    int connfd = accept(fd, (struct sockaddr*)&addressClient, &clientLen);
+    if (connfd < 0)
+    {
+        std::cout << "accept error";
+    }
+    else
+    {
+        //打印客户端信息
+        char showData[INET_ADDRSTRLEN];
+        std::cout << inet_ntop(AF_INET, &addressClient.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(addressClient.sin_port) << std::endl;
+
+        //接受数据
+        const int BUF_LEN = 1024;
+        char sockBuf[BUF_LEN];
+        size_t ret;
+
+        memset(sockBuf, '\0', BUF_LEN);
+        ret = recv(connfd, sockBuf, BUF_LEN - 1, 0);
+        printf("ret=%ld,msg=%s\n", ret, sockBuf);
+
+        memset(sockBuf, '\0', BUF_LEN);
+        ret = recv(connfd, sockBuf, BUF_LEN - 1, MSG_OOB);
+        printf("ret=%ld,msg=%s\n", ret, sockBuf);
+
+        memset(sockBuf, '\0', BUF_LEN);
+        ret = recv(connfd, sockBuf, BUF_LEN - 1, 0);
+        printf("ret=%ld,msg=%s\n", ret, sockBuf);
+
+        //获取本地socket信息
+        struct sockaddr_in tmpAddress;
+        clientLen = sizeof(tmpAddress);
+        getsockname(fd, (struct sockaddr*)&tmpAddress, &clientLen);
+        std::cout << inet_ntop(AF_INET, &tmpAddress.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(tmpAddress.sin_port) << std::endl;
+        //获取远端socket信息
+        getpeername(connfd, (struct sockaddr*)&tmpAddress, &clientLen );
+        std::cout << inet_ntop(AF_INET, &tmpAddress.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(tmpAddress.sin_port) << std::endl;
+
+
+
+        close(connfd);
+    }
+
+
+
+
+
+
+
+
+
     printf("recv_thread_id=%d\n", recv_thread_id);
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
 

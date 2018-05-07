@@ -821,6 +821,7 @@ void recvTd(int recv_thread_id)
                 {
                     printf("recv ret=%d\n", ret);
                 }
+                getchar();
                 cur_len += ret;
             }
             struct Block* pb = (struct Block*)(void*)blockBuf;

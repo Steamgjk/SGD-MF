@@ -789,49 +789,50 @@ void sendTd(int send_thread_id)
 void recvTd(int recv_thread_id)
 {
 
+    /**
+        const char* ip = local_ips[recv_thread_id];
+        int port = local_ports[recv_thread_id];
 
-    const char* ip = local_ips[recv_thread_id];
-    int port = local_ports[recv_thread_id];
+        int backlog = 5;
 
-    int backlog = 5;
+        std::cout << "ip=" << ip << " port=" << port << " backlog=" << backlog  << std::endl;
 
-    std::cout << "ip=" << ip << " port=" << port << " backlog=" << backlog  << std::endl;
+        int fd;
+        int check_ret;
 
-    int fd;
-    int check_ret;
+        fd = socket(PF_INET, SOCK_STREAM , 0);
+        assert(fd >= 0);
 
-    fd = socket(PF_INET, SOCK_STREAM , 0);
-    assert(fd >= 0);
+        struct sockaddr_in address;
+        bzero(&address, sizeof(address));
 
-    struct sockaddr_in address;
-    bzero(&address, sizeof(address));
-
-    //转换成网络地址
-    address.sin_port = htons(port);
-    address.sin_family = AF_INET;
-    //地址转换
-    inet_pton(AF_INET, ip, &address.sin_addr);
-    //设置socket buffer大小
-    int recvbuf = 4096;
-    int len = sizeof( recvbuf );
-    setsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, sizeof( recvbuf ) );
-    getsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, ( socklen_t* )&len );
-    printf( "the receive buffer size after settting is %d\n", recvbuf );
+        //转换成网络地址
+        address.sin_port = htons(port);
+        address.sin_family = AF_INET;
+        //地址转换
+        inet_pton(AF_INET, ip, &address.sin_addr);
+        //设置socket buffer大小
+        int recvbuf = 4096;
+        int len = sizeof( recvbuf );
+        setsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, sizeof( recvbuf ) );
+        getsockopt( fd, SOL_SOCKET, SO_RCVBUF, &recvbuf, ( socklen_t* )&len );
+        printf( "the receive buffer size after settting is %d\n", recvbuf );
 
 
+        //绑定ip和端口
+        check_ret = bind(fd, (struct sockaddr*)&address, sizeof(address));
+        assert(check_ret >= 0);
 
-    //绑定ip和端口
-    check_ret = bind(fd, (struct sockaddr*)&address, sizeof(address));
-    assert(check_ret >= 0);
+        //创建监听队列，用来存放待处理的客户连接
+        check_ret = listen(fd, backlog);
+        assert(check_ret >= 0);
 
-    //创建监听队列，用来存放待处理的客户连接
-    check_ret = listen(fd, backlog);
-    assert(check_ret >= 0);
-
-    struct sockaddr_in addressClient;
-    socklen_t clientLen = sizeof(addressClient);
-    //接受连接，阻塞函数
-    int connfd = accept(fd, (struct sockaddr*)&addressClient, &clientLen);
+        struct sockaddr_in addressClient;
+        socklen_t clientLen = sizeof(addressClient);
+        //接受连接，阻塞函数
+        int connfd = accept(fd, (struct sockaddr*)&addressClient, &clientLen);
+        **/
+    int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
     if (connfd < 0)
     {
         std::cout << "accept error";
@@ -876,9 +877,6 @@ void recvTd(int recv_thread_id)
 
 
     /*
-
-
-
 
 
         printf("recv_thread_id=%d\n", recv_thread_id);

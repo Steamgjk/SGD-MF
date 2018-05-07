@@ -682,6 +682,7 @@ int wait4connection(char*local_ip, int local_port)
     printf("thread %d listening at %s %d\n", thread_id, local_ip, local_port );
     //接受连接，阻塞函数
     int connfd = accept(fd, (struct sockaddr*)&addressClient, &clientLen);
+    printf("get connection from %s  %d\n", inet_ntoa(addressClient.sin_addr), addressClient.sin_port);
     return connfd;
 
 }

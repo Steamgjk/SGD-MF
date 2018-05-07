@@ -207,6 +207,11 @@ int main(int argc, const char * argv[])
     partitionP(DIM_NUM, Pblocks);
     partitionQ(DIM_NUM, Qblocks);
 
+    for (int ii = 0; ii < DIM_NUM; ii++)
+    {
+        printf("p %d  %d\n", ii, Pblocks[ii].block_id );
+        printf("q %d  %d\n", ii, Pblocks[ii].block_id );
+    }
 
     int block_to_process;
     int action_to_process;
@@ -252,7 +257,7 @@ int main(int argc, const char * argv[])
             SGD_MF();
 
             gettimeofday(&et, 0);
-            printf("write pidx  %d qidx %d\n", p_block_idx, q_block_idx );
+            printf("write pidx  %d qidx %d pid =%d  qid = %d\n", p_block_idx, q_block_idx, Pblocks[p_block_idx].block_id, Qblocks[q_block_idx].block_id );
             WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
 
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
@@ -908,7 +913,7 @@ void recvTd(int recv_thread_id)
                 cur_len += ret;
             }
             double* data_eles = (double*)(void*)dataBuf;
-
+            printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
 
             if (block_p_or_q == 0)
             {

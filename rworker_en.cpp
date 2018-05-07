@@ -274,7 +274,7 @@ int main(int argc, const char * argv[])
 
         }
         iter_cnt++;
-        if (iter_cnt == 900)
+        if (iter_cnt == 100)
         {
             printf("iter_cnt=%d\n", iter_cnt );
             exit(0);

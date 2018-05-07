@@ -428,7 +428,7 @@ void readData(int data_thread_id)
 
     while (1 == 1)
     {
-        printf("head_idx=%d  to_send_tail=%d tail_idx=%d\n", head_idx, to_send_tail, tail_idx );
+        //printf("head_idx=%d  to_send_tail=%d tail_idx=%d\n", head_idx, to_send_tail, tail_idx );
 
         if (tail_idx >= QU_LEN)
         {

@@ -718,6 +718,7 @@ void sendTd(int send_thread_id)
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
         if (to_send_head < to_send_tail)
         {
+            printf("come here send\n");
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
@@ -780,11 +781,12 @@ void recvTd(int recv_thread_id)
             while (cur_len < expected_len)
             {
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
-                printf("ret = %d\n", ret);
+                printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
                 if (ret < 0)
                 {
-                    printf("Mimatch!\n");
+                    printf("Mimatch! error=%d\n", errno);
                 }
+                getchar();
                 cur_len += ret;
             }
             struct Block* pb = (struct Block*)(void*)blockBuf;

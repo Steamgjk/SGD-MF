@@ -741,7 +741,7 @@ void sendTd(int send_thread_id)
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
-
+            printf("before send... stucsz=%ld data_sz=%ld \n", struct_sz, data_sz);
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
@@ -773,6 +773,7 @@ void recvTd(int recv_thread_id)
     char* dataBuf = NULL;
     size_t cur_len = 0;
     int ret = 0;
+    getchar();
     while (1 == 1)
     {
         //if (to_recv_head < to_recv_tail)
@@ -784,7 +785,7 @@ void recvTd(int recv_thread_id)
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;
-            getchar();
+
             while (cur_len < expected_len)
             {
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);

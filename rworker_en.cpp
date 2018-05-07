@@ -244,13 +244,13 @@ int main(int argc, const char * argv[])
 
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
-            printf("pidx = %d  qidx=%d to_recv_head=%d to_recv_tail=%d\n", p_block_idx, q_block_idx, to_recv_head, to_recv_tail );
+            //printf("pidx = %d  qidx=%d to_recv_head=%d to_recv_tail=%d\n", p_block_idx, q_block_idx, to_recv_head, to_recv_tail );
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
             SGD_MF();
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
+            //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
 
             if (send_this_p[i] == true)
             {
@@ -266,7 +266,7 @@ int main(int argc, const char * argv[])
             while (has_processed < to_recv_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
-                printf("to recv has_processed=%d to_recv_head=%d disk_read_tail_idx=%d\n", has_processed, to_recv_head, disk_read_tail_idx);
+                //printf("to recv has_processed=%d to_recv_head=%d disk_read_tail_idx=%d\n", has_processed, to_recv_head, disk_read_tail_idx);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
             //getchar();
@@ -816,7 +816,7 @@ void sendTd(int send_thread_id)
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld\n", thread_id, struct_sz, data_sz, ret, mksp);
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
             //getchar();
             free(buf);
 

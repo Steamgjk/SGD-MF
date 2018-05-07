@@ -748,6 +748,11 @@ void sendTd(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
+
+            ret = send(fd, "dddd", 4, 0);
+            printf("test ret = %d\n", ret );
+            getchar();
+
             while (remain_len > 0)
             {
                 if (to_send_len > remain_len)
@@ -785,7 +790,7 @@ void recvTd(int recv_thread_id)
     printf("recv_thread_id=%d\n", recv_thread_id);
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
 
-    printf("[Td:%d] worker get connection\n", recv_thread_id);
+    printf("[Td:%d] worker get connection  connfd=%d\n", recv_thread_id, connfd);
     int cnt = 0;
     size_t expected_len = sizeof(Block);
     char* blockBuf = NULL;
@@ -811,6 +816,10 @@ void recvTd(int recv_thread_id)
                 if (ret < 0)
                 {
                     printf("Mimatch! error=%d\n", errno);
+                }
+                else
+                {
+                    printf("recv ret=%d\n", ret);
                 }
                 cur_len += ret;
             }

@@ -757,10 +757,9 @@ void sendTd(int send_thread_id)
                 ret = send(fd, buf + sent_len, to_send_len, 0);
                 if (ret >= 0)
                 {
-                    printf("ok header is sent\n");
-
                     remain_len -= to_send_len;
                     sent_len += to_send_len;
+                    printf("remain_len = %ld\n", remain_len);
                 }
                 else
                 {

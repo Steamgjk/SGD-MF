@@ -378,7 +378,7 @@ void LoadStateConfig(char* fn)
     printf("\n+++State++\n");
     for (int i = 0; i < 100; i++)
     {
-        printf("%d\t", states[i]);
+        printf("%d:%d:%d\t", states[i], to_send[i], has_recved[i]);
     }
     printf("\n");
     //getchar();

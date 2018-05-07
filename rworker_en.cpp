@@ -264,7 +264,7 @@ int main(int argc, const char * argv[])
             }
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
-            while (has_processed < to_recv_head || has_processed >= disk_read_tail_idx)
+            while (has_processed >= to_recv_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
                 printf("to recv has_processed=%d to_recv_head=%d disk_read_tail_idx=%d\n", has_processed, to_recv_head, disk_read_tail_idx);

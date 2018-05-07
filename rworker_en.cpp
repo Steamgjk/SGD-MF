@@ -212,6 +212,7 @@ int main(int argc, const char * argv[])
     std::vector<int> q_to_process(GROUP_NUM);
     std::vector<bool> send_this_p(GROUP_NUM);
     //Init Mark
+    int iter_cnt = 0;
     while (1 == 1)
     {
         for (int i = 0; i < GROUP_NUM; i++)
@@ -264,8 +265,13 @@ int main(int argc, const char * argv[])
                 printf("to recv\n");
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
-            getchar();
+            //getchar();
 
+        }
+        iter_cnt++;
+        if (iter_cnt == 900)
+        {
+            exit(0);
         }
 
 
@@ -425,12 +431,12 @@ void readData(int data_thread_id)
 
         if (tail_idx >= QU_LEN)
         {
-            printf("break\n");
+            //printf("break\n");
             break;
         }
         if (head_idx >= to_send_tail)
         {
-            printf("head>tail  %d  %d\n", head_idx, to_send_tail);
+            //printf("head>tail  %d  %d\n", head_idx, to_send_tail);
             continue;
         }
         int data_idx = states[tail_idx];
@@ -439,7 +445,7 @@ void readData(int data_thread_id)
 
         if (TrainMaps[row][col].size() != 0)
         {
-            printf("Traing not empty\n");
+            //printf("Traing not empty\n");
             continue;
         }
         sprintf(fn, "%s%d", FILE_NAME, data_idx);

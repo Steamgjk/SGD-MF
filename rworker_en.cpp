@@ -342,7 +342,7 @@ void LoadStateConfig(char* fn)
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
         int row = thread_id * GROUP_NUM + gp;
-        int col = thread_id * GROUP_NUM + gp;
+        int col = DIM_NUM - 1 - ( thread_id * GROUP_NUM + gp);
         states[gp] = row * DIM_NUM + col;
         printf("state[%d] %d\n", gp, states[gp] );
     }

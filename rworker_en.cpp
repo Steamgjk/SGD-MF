@@ -331,13 +331,15 @@ void LoadStateConfig(char* fn)
             {
                 to_send[loc] = states[loc] % DIM_NUM;
                 to_recv[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
-                states[loc] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
+
+                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
             }
             else
             {
                 to_send[loc] = states[loc] / DIM_NUM;
                 to_recv[loc] = (to_send[loc]  + DIM_NUM - GROUP_NUM) % DIM_NUM;
-                states[loc] = ((states[loc] / DIM_NUM + DIM_NUM - 1) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
+
+                states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - 1) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
         }
 
@@ -797,22 +799,7 @@ void recvTd(int recv_thread_id)
         std::cout << "accept error";
         exit(-1);
     }
-    /*
-    else
-    {
-        //接受数据
-        const int BUF_LEN = 1024;
-        char sockBuf[BUF_LEN];
-        size_t ret;
-
-        memset(sockBuf, '\0', BUF_LEN);
-        ret = recv(connfd, sockBuf, BUF_LEN - 1, 0);
-        printf("ret=%ld,msg=%s\n", ret, sockBuf);
-    }
-    **/
     printf("[Td:%d] worker get connection  connfd=%d\n", recv_thread_id, connfd);
-
-
     int cnt = 0;
     size_t expected_len = sizeof(Block);
     char* blockBuf = NULL;

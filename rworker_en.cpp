@@ -281,7 +281,7 @@ int main(int argc, const char * argv[])
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
-                //printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
+                printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
                 //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
 
@@ -384,6 +384,11 @@ void LoadStateConfig(char* fn)
     for (int i = 0; i < 100; i++)
     {
         printf("%d\t", actions[i]);
+    }
+    printf("\n");
+    for (int i = 0; i < 100; i++)
+    {
+        printf("%d\t", states[i]);
     }
     printf("\n");
     /*

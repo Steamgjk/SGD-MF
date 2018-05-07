@@ -610,8 +610,8 @@ void SGD_MF()
 
     //printf("row_len=%d col_len=%d\n", row_len, col_len );
 
-    double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
-    double new_rmse = old_rmse;
+    //double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
+    //double new_rmse = old_rmse;
 
     int iter_cnt = 0;
 
@@ -644,6 +644,7 @@ void SGD_MF()
                 }
             }
         }
+        /*
         iter_cnt++;
         new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
         if (iter_cnt % 100 == 0)
@@ -655,6 +656,7 @@ void SGD_MF()
         {
             break;
         }
+        **/
     }
 
 }

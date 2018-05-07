@@ -252,7 +252,7 @@ int main(int argc, const char * argv[])
             SGD_MF();
 
             gettimeofday(&et, 0);
-
+            printf("write pidx  %d qidx %d\n", p_block_idx, q_block_idx );
             WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
 
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

@@ -356,14 +356,14 @@ void LoadStateConfig(char* fn)
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
 
-                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
+                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
             }
             else
             {
                 to_send[loc] = states[loc] / DIM_NUM;
                 has_recved[loc] = (to_send[loc]  + DIM_NUM - GROUP_NUM) % DIM_NUM;
 
-                states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - 1) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
+                states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - GROUP_NUM) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
         }
 
@@ -374,7 +374,7 @@ void LoadStateConfig(char* fn)
         printf("%d\t", states[i]);
     }
     printf("\n");
-    getchar();
+    //getchar();
 
 }
 void LoadData(int pre_read)

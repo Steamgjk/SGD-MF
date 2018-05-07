@@ -258,7 +258,11 @@ int main(int argc, const char * argv[])
 
             gettimeofday(&et, 0);
             //printf("write pidx  %d qidx %d pid =%d  qid = %d\n", p_block_idx, q_block_idx, Pblocks[p_block_idx].block_id, Qblocks[q_block_idx].block_id );
-            WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+            }
+
 
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
@@ -289,7 +293,7 @@ int main(int argc, const char * argv[])
 
         }
         iter_cnt++;
-        if (iter_cnt == 10)
+        if (iter_cnt == 900)
         {
             printf("iter_cnt=%d\n", iter_cnt );
             exit(0);
@@ -926,9 +930,9 @@ void recvTd(int recv_thread_id)
 
             while (cur_len < expected_len)
             {
-                printf("before recv...\n");
+                //printf("before recv...\n");
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
-                printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
+                //printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
                 if (ret < 0)
                 {
                     printf("Mimatch! error=%d\n", errno);

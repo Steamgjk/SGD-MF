@@ -266,7 +266,7 @@ int main(int argc, const char * argv[])
             while (has_processed < to_recv_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
-                printf("to recv\n");
+                printf("to recv has_processed=%d disk_read_tail_idx=%d\n", has_processed, disk_read_tail_idx);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
             //getchar();

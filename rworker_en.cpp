@@ -361,6 +361,7 @@ void LoadStateConfig(char* fn)
         {
             //0 is to right ,send Q and will  recv Q; 1 is up, send p and will  recv P
             int loc = i * GROUP_NUM + gp;
+            printf("loc [%d] act %d\n", loc, actions[loc]);
             if (actions[loc] == 0)
             {
                 to_send[loc] = states[loc] % DIM_NUM;

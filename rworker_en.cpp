@@ -743,7 +743,7 @@ void sendTd(int send_thread_id)
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
-            printf("before send... stucsz=%ld data_sz=%ld \n", struct_sz, data_sz);
+            //printf("before send... stucsz=%ld data_sz=%ld \n", struct_sz, data_sz);
             size_t total_len = struct_sz + data_sz;
             size_t sent_len = 0;
             size_t remain_len = total_len;
@@ -767,7 +767,7 @@ void sendTd(int send_thread_id)
                 {
                     remain_len -= to_send_len;
                     sent_len += to_send_len;
-                    printf("remain_len = %ld\n", remain_len);
+                    //printf("remain_len = %ld\n", remain_len);
                 }
                 else
                 {
@@ -777,8 +777,8 @@ void sendTd(int send_thread_id)
             }
 
 
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
-            getchar();
+            //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
+            //getchar();
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;
@@ -839,10 +839,6 @@ void recvTd(int recv_thread_id)
                 {
                     printf("Mimatch! error=%d\n", errno);
                 }
-                else
-                {
-                    printf("recv ret=%d\n", ret);
-                }
                 //getchar();
                 cur_len += ret;
             }
@@ -891,8 +887,8 @@ void recvTd(int recv_thread_id)
                     Pblocks[block_idx].eles[i] = data_eles[i];
                 }
             }
-            printf("recv complete\n");
-            getchar();
+            //printf("recv complete\n");
+            //getchar();
             free(blockBuf);
             free(dataBuf);
             to_recv_head = (to_recv_head + 1) % QU_LEN;

@@ -787,6 +787,12 @@ void sendTd(int send_thread_id)
         {
             //printf("come here send\n");
             int block_idx = to_send[to_send_head];
+            printf("\n++++INNN+++\n");
+            for (int i = 0; i < 20; i++)
+            {
+                printf("%d\t", to_send[i]);
+            }
+            printf("\n\n\n");
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
             size_t struct_sz = sizeof(Block);

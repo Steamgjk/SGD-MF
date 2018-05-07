@@ -244,7 +244,7 @@ int main(int argc, const char * argv[])
             SGD_MF();
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("calc time = %lld\n", mksp);
+            printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
 
             if (send_this_p[i] == true)
             {

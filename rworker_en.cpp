@@ -720,7 +720,7 @@ void sendTd(int send_thread_id)
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
         if (to_send_head < to_send_tail)
         {
-            printf("come here send\n");
+            //printf("come here send\n");
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
@@ -777,7 +777,7 @@ void sendTd(int send_thread_id)
             }
 
 
-            //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
             //getchar();
             free(buf);
 

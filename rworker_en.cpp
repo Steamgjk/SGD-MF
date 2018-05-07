@@ -426,12 +426,17 @@ void readData(int data_thread_id)
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    while (head_idx < to_send_tail)
+    while (1 == 1)
     {
         printf("head_idx=%d  to_send_tail=%d tail_idx=%d\n", head_idx, to_send_tail, tail_idx );
+
         if (tail_idx >= QU_LEN)
         {
             break;
+        }
+        if (head_idx >= to_send_tail)
+        {
+            continue;
         }
         int data_idx = states[tail_idx];
         int row = data_idx / DIM_NUM;

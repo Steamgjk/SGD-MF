@@ -743,7 +743,16 @@ void sendTd(int send_thread_id)
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
             printf("before send... stucsz=%ld data_sz=%ld \n", struct_sz, data_sz);
-            int ret = send(fd, buf, (struct_sz + data_sz), 0);
+            int ret = send(fd, buf, (struct_sz), 0);
+            if (ret >= 0)
+            {
+                printf("ok header is sent\n");
+            }
+            else
+            {
+                printf("still fail\n");
+            }
+            ret = send(fd, buf + struct_sz, (data_sz), 0);
             if (ret >= 0 )
             {
                 printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);

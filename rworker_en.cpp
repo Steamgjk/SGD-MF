@@ -863,8 +863,8 @@ void recvTd(int recv_thread_id)
         //获取本地socket信息
         struct sockaddr_in tmpAddress;
         clientLen = sizeof(tmpAddress);
-        getsockname(fd, (struct sockaddr*)&tmpAddress, &clientLen);
-        std::cout << inet_ntop(AF_INET, &tmpAddress.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(tmpAddress.sin_port) << std::endl;
+        //getsockname(fd, (struct sockaddr*)&tmpAddress, &clientLen);
+        //std::cout << inet_ntop(AF_INET, &tmpAddress.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(tmpAddress.sin_port) << std::endl;
         //获取远端socket信息
         getpeername(connfd, (struct sockaddr*)&tmpAddress, &clientLen );
         std::cout << inet_ntop(AF_INET, &tmpAddress.sin_addr, showData, INET_ADDRSTRLEN) << ":" << ntohs(tmpAddress.sin_port) << std::endl;

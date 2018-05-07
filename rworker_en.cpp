@@ -561,6 +561,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
         }
         pofs << endl;
     }
+    printf("fn:%s\n", fn );
     sprintf(fn, "./Rtrack/Qblock-%d-%d", iter_cnt, Qb.block_id);
     ofstream qofs(fn, ios::trunc);
     for (int h = 0; h < Qb.height; h++)
@@ -571,6 +572,8 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
         }
         qofs << endl;
     }
+    printf("fn:%s\n", fn );
+    getchar();
 }
 
 

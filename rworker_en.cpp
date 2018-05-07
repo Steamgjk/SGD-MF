@@ -875,99 +875,100 @@ void recvTd(int recv_thread_id)
 
 
 
+    /*
 
 
 
 
 
+        printf("recv_thread_id=%d\n", recv_thread_id);
+        int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
 
-    printf("recv_thread_id=%d\n", recv_thread_id);
-    int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
-
-    printf("[Td:%d] worker get connection  connfd=%d\n", recv_thread_id, connfd);
-    int cnt = 0;
-    size_t expected_len = sizeof(Block);
-    char* blockBuf = NULL;
-    char* dataBuf = NULL;
-    size_t cur_len = 0;
-    int ret = 0;
-    while (1 == 1)
-    {
-        //if (to_recv_head < to_recv_tail)
+        printf("[Td:%d] worker get connection  connfd=%d\n", recv_thread_id, connfd);
+        int cnt = 0;
+        size_t expected_len = sizeof(Block);
+        char* blockBuf = NULL;
+        char* dataBuf = NULL;
+        size_t cur_len = 0;
+        int ret = 0;
+        while (1 == 1)
         {
-
-            int block_idx = to_recv[to_recv_head];
-            int block_p_or_q = actions[to_recv_head];
-            printf("to_recv_head=%d block_idx=%d  block_p_or_q=%d\n", to_recv_head, block_idx, block_p_or_q );
-            //0 is to right trans/recv Q, 1 is up, trans p
-            cur_len = 0;
-            ret = 0;
-
-            while (cur_len < expected_len)
+            //if (to_recv_head < to_recv_tail)
             {
-                ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
-                //printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
-                if (ret < 0)
+
+                int block_idx = to_recv[to_recv_head];
+                int block_p_or_q = actions[to_recv_head];
+                printf("to_recv_head=%d block_idx=%d  block_p_or_q=%d\n", to_recv_head, block_idx, block_p_or_q );
+                //0 is to right trans/recv Q, 1 is up, trans p
+                cur_len = 0;
+                ret = 0;
+
+                while (cur_len < expected_len)
                 {
-                    printf("Mimatch! error=%d\n", errno);
+                    ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
+                    //printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
+                    if (ret < 0)
+                    {
+                        printf("Mimatch! error=%d\n", errno);
+                    }
+                    else
+                    {
+                        printf("recv ret=%d\n", ret);
+                    }
+                    getchar();
+                    cur_len += ret;
+                }
+                struct Block* pb = (struct Block*)(void*)blockBuf;
+                size_t data_sz = sizeof(double) * (pb->ele_num);
+                char* dataBuf = (char*)malloc(data_sz);
+
+                cur_len = 0;
+                ret = 0;
+                while (cur_len < data_sz)
+                {
+                    ret = recv(connfd, dataBuf + cur_len, data_sz - cur_len, 0);
+                    if (ret < 0)
+                    {
+                        printf("Mimatch!\n");
+                    }
+                    cur_len += ret;
+                }
+                double* data_eles = (double*)(void*)dataBuf;
+
+
+                if (block_p_or_q == 0)
+                {
+                    // recv q
+                    Qblocks[block_idx].block_id = pb->block_id;
+                    Qblocks[block_idx].sta_idx = pb->sta_idx;
+                    Qblocks[block_idx].height = pb->height;
+                    Qblocks[block_idx].ele_num = pb->ele_num;
+                    Qblocks[block_idx].eles.resize(pb->ele_num);
+                    Qblocks[block_idx].isP = pb->isP;
+                    for (int i = 0; i < pb->ele_num; i++)
+                    {
+                        Qblocks[block_idx].eles[i] = data_eles[i];
+                    }
                 }
                 else
                 {
-                    printf("recv ret=%d\n", ret);
+                    Pblocks[block_idx].block_id = pb->block_id;
+                    Pblocks[block_idx].sta_idx = pb->sta_idx;
+                    Pblocks[block_idx].height = pb->height;
+                    Pblocks[block_idx].ele_num = pb->ele_num;
+                    Pblocks[block_idx].eles.resize(pb->ele_num);
+                    Pblocks[block_idx].isP = pb->isP;
+                    for (int i = 0; i < pb->ele_num; i++)
+                    {
+                        Pblocks[block_idx].eles[i] = data_eles[i];
+                    }
                 }
-                getchar();
-                cur_len += ret;
+                free(blockBuf);
+                free(dataBuf);
+                to_recv_head = (to_recv_head + 1) % QU_LEN;
             }
-            struct Block* pb = (struct Block*)(void*)blockBuf;
-            size_t data_sz = sizeof(double) * (pb->ele_num);
-            char* dataBuf = (char*)malloc(data_sz);
-
-            cur_len = 0;
-            ret = 0;
-            while (cur_len < data_sz)
-            {
-                ret = recv(connfd, dataBuf + cur_len, data_sz - cur_len, 0);
-                if (ret < 0)
-                {
-                    printf("Mimatch!\n");
-                }
-                cur_len += ret;
-            }
-            double* data_eles = (double*)(void*)dataBuf;
-
-
-            if (block_p_or_q == 0)
-            {
-                // recv q
-                Qblocks[block_idx].block_id = pb->block_id;
-                Qblocks[block_idx].sta_idx = pb->sta_idx;
-                Qblocks[block_idx].height = pb->height;
-                Qblocks[block_idx].ele_num = pb->ele_num;
-                Qblocks[block_idx].eles.resize(pb->ele_num);
-                Qblocks[block_idx].isP = pb->isP;
-                for (int i = 0; i < pb->ele_num; i++)
-                {
-                    Qblocks[block_idx].eles[i] = data_eles[i];
-                }
-            }
-            else
-            {
-                Pblocks[block_idx].block_id = pb->block_id;
-                Pblocks[block_idx].sta_idx = pb->sta_idx;
-                Pblocks[block_idx].height = pb->height;
-                Pblocks[block_idx].ele_num = pb->ele_num;
-                Pblocks[block_idx].eles.resize(pb->ele_num);
-                Pblocks[block_idx].isP = pb->isP;
-                for (int i = 0; i < pb->ele_num; i++)
-                {
-                    Pblocks[block_idx].eles[i] = data_eles[i];
-                }
-            }
-            free(blockBuf);
-            free(dataBuf);
-            to_recv_head = (to_recv_head + 1) % QU_LEN;
         }
-    }
+        **/
 }
 
 void partitionP(int portion_num,  Block* Pblocks)

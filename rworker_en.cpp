@@ -263,6 +263,7 @@ int main(int argc, const char * argv[])
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
             has_processed++;
+            printf("processed success has_processed=%d\n", has_processed );
             while (has_processed < to_recv_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait

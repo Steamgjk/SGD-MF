@@ -170,7 +170,7 @@ void readData(int data_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-void WriteLog(Block&Pb, Block&Qb);
+void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadActionConfig(char* fn);
 void LoadStateConfig(char* fn);
 void getTestMap(map<long, double>& TestMap, int block_id);

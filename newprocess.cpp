@@ -67,7 +67,7 @@ int main()
 			tails[i][j] = 0;
 		}
 	}
-	for (int i = 0 ; i < 63; i++)
+	for (int i = 0 ; i < 64; i++)
 	{
 		std::thread write_td(write_data, i);
 		write_td.detach();

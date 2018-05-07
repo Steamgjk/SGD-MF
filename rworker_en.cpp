@@ -743,7 +743,7 @@ void sendTd(int send_thread_id)
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Id:%d] send success \n", thread_id);
+                printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
             }
             free(buf);
 
@@ -780,6 +780,7 @@ void recvTd(int recv_thread_id)
             while (cur_len < expected_len)
             {
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
+                printf("ret = %d\n", ret);
                 if (ret < 0)
                 {
                     printf("Mimatch!\n");

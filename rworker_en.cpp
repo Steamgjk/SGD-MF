@@ -440,6 +440,7 @@ void readData(int data_thread_id)
             continue;
         }
         sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        printf("read fn =%s\n", fn );
         ifstream ifs(fn);
         if (!ifs.is_open())
         {

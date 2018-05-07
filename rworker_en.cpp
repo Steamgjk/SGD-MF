@@ -850,7 +850,7 @@ void recvTd(int recv_thread_id)
 
             int block_idx = to_recv[to_recv_head];
             int block_p_or_q = actions[to_recv_head];
-            printf("to_recv_head=%d block_idx=%d  block_p_or_q=%d\n", to_recv_head, block_idx, block_p_or_q );
+            //printf("to_recv_head=%d block_idx=%d  block_p_or_q=%d\n", to_recv_head, block_idx, block_p_or_q );
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;
@@ -923,7 +923,7 @@ void recvTd(int recv_thread_id)
             free(dataBuf);
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("recv full %lld\n", mksp );
+            printf("recv success time = %lld, to_recv_head=%d\n", mksp, to_recv_head );
             to_recv_head = (to_recv_head + 1) % QU_LEN;
         }
     }

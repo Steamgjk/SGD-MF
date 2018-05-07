@@ -244,7 +244,7 @@ int main(int argc, const char * argv[])
             SGD_MF();
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("time = %lld\n", mksp);
+            printf("calc time = %lld\n", mksp);
 
             if (send_this_p[i] == true)
             {
@@ -831,7 +831,7 @@ void recvTd(int recv_thread_id)
             blockBuf = (char*)malloc(sizeof(Block));
 
             struct timeval st, et, tspan;
-            gettimeofday(&st, 0);
+
 
             while (cur_len < expected_len)
             {
@@ -850,6 +850,8 @@ void recvTd(int recv_thread_id)
 
             cur_len = 0;
             ret = 0;
+
+            gettimeofday(&st, 0);
             while (cur_len < data_sz)
             {
                 ret = recv(connfd, dataBuf + cur_len, data_sz - cur_len, 0);

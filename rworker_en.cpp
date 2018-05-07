@@ -359,7 +359,7 @@ void LoadData(int pre_read)
     long hash_id;
     double rate;
     long cnt = 0;
-    for (int i = 0; i < pre_read; i++)
+    for (int i = 0; i < 1; i++)
     {
         int data_idx = states[i];
         int row = data_idx / DIM_NUM;

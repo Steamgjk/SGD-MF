@@ -790,7 +790,7 @@ void sendTd(int send_thread_id)
             {
                 //send q
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
-                printf("send q block_idx=%d realid %d\n", block_idx, Qblocks[block_idx].block_id);
+                printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
                 buf = (char*)malloc(struct_sz + data_sz);
                 memcpy(buf, &(Qblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);

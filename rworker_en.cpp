@@ -154,6 +154,10 @@ int to_recv[QU_LEN];
 int to_recv_head, to_recv_tail;
 
 int has_processed;
+
+int disk_read_head_idx = 0;
+int disk_read_tail_idx = CACHE_NUM;
+
 std::map<long, double> TrainMaps[100][100];
 std::map<long, double> TestMaps[100][100];
 //0 is to right trans Q, 1 is up, trans p
@@ -259,7 +263,7 @@ int main(int argc, const char * argv[])
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
             has_processed++;
-            while (has_processed < to_recv_head)
+            while (has_processed < to_recv_head || has_processed >= tail_idx)
             {
                 //Wait
                 printf("to recv\n");
@@ -271,6 +275,7 @@ int main(int argc, const char * argv[])
         iter_cnt++;
         if (iter_cnt == 900)
         {
+            printf("iter_cnt=%d\n", iter_cnt );
             exit(0);
         }
 
@@ -365,7 +370,7 @@ void LoadData(int pre_read)
     long hash_id;
     double rate;
     long cnt = 0;
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < pre_read; i++)
     {
         int data_idx = states[i];
         int row = data_idx / DIM_NUM;
@@ -418,8 +423,7 @@ void LoadData(int pre_read)
 }
 void readData(int data_thread_id)
 {
-    int head_idx = 0;
-    int tail_idx = CACHE_NUM;
+
     char fn[100];
     long hash_id;
     double rate;
@@ -429,12 +433,12 @@ void readData(int data_thread_id)
     {
         //printf("head_idx=%d  to_send_tail=%d tail_idx=%d\n", head_idx, to_send_tail, tail_idx );
 
-        if (tail_idx >= QU_LEN)
+        if (disk_read_tail_idx >= QU_LEN)
         {
             //printf("break\n");
             break;
         }
-        if (head_idx >= to_send_tail)
+        if (disk_read_head_idx >= to_send_tail)
         {
             //printf("head>tail  %d  %d\n", head_idx, to_send_tail);
             continue;
@@ -449,7 +453,7 @@ void readData(int data_thread_id)
             continue;
         }
         sprintf(fn, "%s%d", FILE_NAME, data_idx);
-        printf("read fn =%s\n", fn );
+        //printf("read fn =%s\n", fn );
         ifstream ifs(fn);
         if (!ifs.is_open())
         {
@@ -461,11 +465,13 @@ void readData(int data_thread_id)
         {
             ifs >> hash_id >> rate;
             TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            /*
             cnt++;
             if (cnt % 100000 == 0)
             {
                 printf("Train cnt = %ld\n", cnt);
             }
+            **/
         }
         sprintf(fn, "%s%d", TEST_NAME, data_idx);
         ifstream ifs2(fn);
@@ -485,13 +491,13 @@ void readData(int data_thread_id)
                 printf("Test cnt = %ld\n", cnt);
             }
         }
-        tail_idx++;
+        disk_read_tail_idx++;
         data_idx = states[head_idx];
         row = data_idx / DIM_NUM;
         col = data_idx % DIM_NUM;
         TrainMaps[row][col].clear();
         TestMaps[row][col].clear();
-        head_idx++;
+        disk_read_head_idx++;
     }
     printf("Exit read data\n");
 

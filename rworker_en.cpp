@@ -280,7 +280,7 @@ int main(int argc, const char * argv[])
             exit(0);
         }
 
-
+        printf("Processing has_processed=%d\n", has_processed );
     }
 }
 

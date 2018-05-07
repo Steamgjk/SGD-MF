@@ -248,7 +248,12 @@ int main(int argc, const char * argv[])
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
             SGD_MF();
+
             gettimeofday(&et, 0);
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+            }
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
 
@@ -268,13 +273,14 @@ int main(int argc, const char * argv[])
             {
                 //Wait
                 printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
+
             //getchar();
 
         }
         iter_cnt++;
-        if (iter_cnt == 100)
+        if (iter_cnt == 900)
         {
             printf("iter_cnt=%d\n", iter_cnt );
             exit(0);
@@ -541,10 +547,11 @@ void getTestMap(map<long, double>& TestMap, int block_id)
 }
 
 
-void WriteLog(Block&Pb, Block&Qb)
+
+void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
 {
     char fn[100];
-    sprintf(fn, "Pblock-%d", Pb.block_id);
+    sprintf(fn, "./Rtrack/Pblock-%d-%d", iter_cnt, Pb.block_id);
     ofstream pofs(fn, ios::trunc);
     for (int h = 0; h < Pb.height; h++)
     {
@@ -554,7 +561,7 @@ void WriteLog(Block&Pb, Block&Qb)
         }
         pofs << endl;
     }
-    sprintf(fn, "Qblock-%d", Qb.block_id);
+    sprintf(fn, "./Rtrack/Qblock-%d-%d", iter_cnt, Qb.block_id);
     ofstream qofs(fn, ios::trunc);
     for (int h = 0; h < Qb.height; h++)
     {
@@ -565,6 +572,7 @@ void WriteLog(Block&Pb, Block&Qb)
         qofs << endl;
     }
 }
+
 
 
 

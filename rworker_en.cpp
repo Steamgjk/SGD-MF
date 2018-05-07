@@ -749,10 +749,11 @@ void sendTd(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
-
+            /*
             ret = send(fd, "dddd", 4, 0);
             printf("test ret = %d\n", ret );
             getchar();
+            **/
 
             while (remain_len > 0)
             {

@@ -715,7 +715,7 @@ void sendTd(int send_thread_id)
     int send_cnt = 0;
     while (1 == 1)
     {
-        printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
+        //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
         if (to_send_head < to_send_tail)
         {
             int block_idx = to_send[to_send_head];
@@ -769,8 +769,10 @@ void recvTd(int recv_thread_id)
     {
         //if (to_recv_head < to_recv_tail)
         {
+
             int block_idx = to_recv[to_recv_head];
             int block_p_or_q = actions[to_recv_head];
+            printf("to_recv_head=%d block_idx=%d  block_p_or_q=%d\n", to_recv_head, block_idx, block_p_or_q );
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;

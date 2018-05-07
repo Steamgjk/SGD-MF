@@ -799,7 +799,7 @@ void sendTd(int send_thread_id)
             {
                 //send p
                 data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
-                printf("send p block_idx=%d realid %d\n", block_idx, Pblocks[block_idx].block_id);
+                printf("to_send_head =%d send p block_idx=%d realid %d\n", to_send_head, block_idx, Pblocks[block_idx].block_id);
                 buf = (char*)malloc(struct_sz + data_sz);
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);

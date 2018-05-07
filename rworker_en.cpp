@@ -250,10 +250,9 @@ int main(int argc, const char * argv[])
             SGD_MF();
 
             gettimeofday(&et, 0);
-            if (iter_cnt % 10 == 0)
-            {
-                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
-            }
+
+            WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
 
@@ -280,7 +279,7 @@ int main(int argc, const char * argv[])
 
         }
         iter_cnt++;
-        if (iter_cnt == 20)
+        if (iter_cnt == 10)
         {
             printf("iter_cnt=%d\n", iter_cnt );
             exit(0);

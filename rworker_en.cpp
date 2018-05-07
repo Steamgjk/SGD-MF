@@ -807,7 +807,7 @@ void recvTd(int recv_thread_id)
             while (cur_len < expected_len)
             {
                 ret = recv(connfd, blockBuf + cur_len, expected_len - cur_len, 0);
-                printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
+                //printf("ret = %d cur_len=%ld expected_len=%ld\n", ret, cur_len, expected_len);
                 if (ret < 0)
                 {
                     printf("Mimatch! error=%d\n", errno);

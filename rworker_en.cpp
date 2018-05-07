@@ -191,6 +191,7 @@ int main(int argc, const char * argv[])
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     LoadData(CACHE_NUM);
+
     std::thread data_read_thread(readData, thread_id);
     data_read_thread.detach();
 
@@ -417,7 +418,12 @@ void readData(int data_thread_id)
     long hash_id;
     double rate;
     long cnt = 0;
-    printf("INi head_idx=%d  to_send_tail=%d\n", head_idx, to_send_tail );
+    while (1 == 1)
+    {
+        printf("INi head_idx=%d  to_send_tail=%d\n", head_idx, to_send_tail );
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
     while (head_idx < to_send_tail)
     {
         printf("head_idx=%d  to_send_tail=%d\n", head_idx, to_send_tail );

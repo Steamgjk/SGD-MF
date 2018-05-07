@@ -231,7 +231,7 @@ int main(int argc, const char * argv[])
             //printf("block_to_process %d\n", block_to_process );
             p_to_process[i] = block_to_process / (DIM_NUM);
             q_to_process[i] = block_to_process % (DIM_NUM);
-            printf("block_to_process %d  p %d q %d\n", block_to_process, p_to_process[i], q_to_process[i]  );
+            //printf("block_to_process %d  p %d q %d\n", block_to_process, p_to_process[i], q_to_process[i]  );
             //0 is to right trans Q, 1 is up, trans p
             if (action == 0)
             {
@@ -257,7 +257,7 @@ int main(int argc, const char * argv[])
             SGD_MF();
 
             gettimeofday(&et, 0);
-            printf("write pidx  %d qidx %d pid =%d  qid = %d\n", p_block_idx, q_block_idx, Pblocks[p_block_idx].block_id, Qblocks[q_block_idx].block_id );
+            //printf("write pidx  %d qidx %d pid =%d  qid = %d\n", p_block_idx, q_block_idx, Pblocks[p_block_idx].block_id, Qblocks[q_block_idx].block_id );
             WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
 
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
@@ -378,12 +378,14 @@ void LoadStateConfig(char* fn)
         }
 
     }
+    /*
     printf("\n+++State++\n");
     for (int i = 0; i < 100; i++)
     {
         printf("%d:%d:%d\t", states[i], to_send[i], has_recved[i]);
     }
     printf("\n");
+    **/
     //getchar();
 
 }
@@ -416,11 +418,13 @@ void LoadData(int pre_read)
         {
             ifs >> hash_id >> rate;
             TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            /*
             cnt++;
             if (cnt % 100000 == 0)
             {
                 printf("Train cnt = %ld\n", cnt);
             }
+            **/
         }
         sprintf(fn, "%s%d", TEST_NAME, data_idx);
         printf("fn=%s\n", fn );
@@ -435,11 +439,13 @@ void LoadData(int pre_read)
         {
             ifs2 >> hash_id >> rate;
             TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
+            /*
             cnt++;
             if (cnt % 100000 == 0)
             {
                 printf("Test cnt = %ld\n", cnt);
             }
+            **/
         }
 
     }
@@ -777,12 +783,14 @@ void sendTd(int send_thread_id)
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
     int send_cnt = 0;
+    /*
     printf("\n+++++++\n");
     for (int i = 0; i < 20; i++)
     {
         printf("%d\t", to_send[i]);
     }
     printf("\n\n\n");
+    **/
     while (1 == 1)
     {
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
@@ -790,12 +798,14 @@ void sendTd(int send_thread_id)
         {
             //printf("come here send\n");
             int block_idx = to_send[to_send_head];
+            /*
             printf("\n++++INNN+++\n");
             for (int i = 0; i < 20; i++)
             {
                 printf("%d\t", to_send[i]);
             }
             printf("\n\n\n");
+            **/
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
             size_t struct_sz = sizeof(Block);
@@ -805,7 +815,7 @@ void sendTd(int send_thread_id)
             {
                 //send q
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
-                printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
+                //printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
                 buf = (char*)malloc(struct_sz + data_sz);
                 memcpy(buf, &(Qblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
@@ -814,7 +824,7 @@ void sendTd(int send_thread_id)
             {
                 //send p
                 data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
-                printf("to_send_head =%d send p block_idx=%d realid %d\n", to_send_head, block_idx, Pblocks[block_idx].block_id);
+                //printf("to_send_head =%d send p block_idx=%d realid %d\n", to_send_head, block_idx, Pblocks[block_idx].block_id);
                 buf = (char*)malloc(struct_sz + data_sz);
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
@@ -930,7 +940,7 @@ void recvTd(int recv_thread_id)
                 cur_len += ret;
             }
             double* data_eles = (double*)(void*)dataBuf;
-            printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
+            //printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
 
             if (block_p_or_q == 0)
             {

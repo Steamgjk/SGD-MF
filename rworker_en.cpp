@@ -425,10 +425,12 @@ void readData(int data_thread_id)
 
         if (tail_idx >= QU_LEN)
         {
+            printf("break\n");
             break;
         }
         if (head_idx >= to_send_tail)
         {
+            printf("head>tail  %d  %d\n", head_idx, to_send_tail);
             continue;
         }
         int data_idx = states[tail_idx];
@@ -437,6 +439,7 @@ void readData(int data_thread_id)
 
         if (TrainMaps[row][col].size() != 0)
         {
+            printf("Traing not empty\n");
             continue;
         }
         sprintf(fn, "%s%d", FILE_NAME, data_idx);

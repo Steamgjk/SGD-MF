@@ -741,8 +741,7 @@ void sendTd(int send_thread_id)
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
-            printf("stop send....\n");
-            getchar();
+
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
@@ -752,6 +751,8 @@ void sendTd(int send_thread_id)
             {
                 printf("[Id:%d] send fail stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
             }
+            printf("qstop send....\n");
+            getchar();
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;

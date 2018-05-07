@@ -443,7 +443,7 @@ void readData(int data_thread_id)
             //printf("head>tail  %d  %d\n", head_idx, to_send_tail);
             continue;
         }
-        int data_idx = states[tail_idx];
+        int data_idx = states[disk_read_tail_idx];
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
 
@@ -492,7 +492,7 @@ void readData(int data_thread_id)
             }
         }
         disk_read_tail_idx++;
-        data_idx = states[head_idx];
+        data_idx = states[disk_read_head_idx];
         row = data_idx / DIM_NUM;
         col = data_idx % DIM_NUM;
         TrainMaps[row][col].clear();

@@ -439,7 +439,7 @@ void readData(int data_thread_id)
             //printf("break\n");
             break;
         }
-        if (disk_read_head_idx >= to_send_tail)
+        if (disk_read_head_idx >= has_processed)
         {
             //printf("head>tail  %d  %d\n", head_idx, to_send_tail);
             continue;

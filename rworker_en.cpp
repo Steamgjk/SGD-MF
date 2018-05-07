@@ -754,6 +754,7 @@ void sendTd(int send_thread_id)
                 {
                     to_send_len = remain_len;
                 }
+                printf("sending...\n");
                 ret = send(fd, buf + sent_len, to_send_len, 0);
                 if (ret >= 0)
                 {
@@ -770,8 +771,6 @@ void sendTd(int send_thread_id)
 
             printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
 
-            printf("qstop send....\n");
-            getchar();
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;
@@ -792,7 +791,6 @@ void recvTd(int recv_thread_id)
     char* dataBuf = NULL;
     size_t cur_len = 0;
     int ret = 0;
-    getchar();
     while (1 == 1)
     {
         //if (to_recv_head < to_recv_tail)
@@ -813,7 +811,6 @@ void recvTd(int recv_thread_id)
                 {
                     printf("Mimatch! error=%d\n", errno);
                 }
-                getchar();
                 cur_len += ret;
             }
             struct Block* pb = (struct Block*)(void*)blockBuf;

@@ -743,24 +743,34 @@ void sendTd(int send_thread_id)
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
             }
             printf("before send... stucsz=%ld data_sz=%ld \n", struct_sz, data_sz);
-            int ret = send(fd, buf, (struct_sz), 0);
-            if (ret >= 0)
+            size_t total_len = stucsz + data_sz;
+            size_t sent_len = 0;
+            size_t remain_len = total_len;
+            int ret = -1;
+            size_t to_send_len = 4096;
+            while (remain_len > 0)
             {
-                printf("ok header is sent\n");
+                if (to_send_len > remain_len)
+                {
+                    to_send_len = remain_len;
+                }
+                ret = send(fd, buf + sent_len, to_send_len, 0);
+                if (ret >= 0)
+                {
+                    printf("ok header is sent\n");
+
+                    remain_len -= to_send_len;
+                    sent_len += to_send_len;
+                }
+                else
+                {
+                    printf("still fail\n");
+                }
             }
-            else
-            {
-                printf("still fail\n");
-            }
-            ret = send(fd, buf + struct_sz, (data_sz), 0);
-            if (ret >= 0 )
-            {
-                printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
-            }
-            else
-            {
-                printf("[Id:%d] send fail stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
-            }
+
+
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
+
             printf("qstop send....\n");
             getchar();
             free(buf);

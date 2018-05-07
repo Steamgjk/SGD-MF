@@ -766,6 +766,7 @@ void sendTd(int send_thread_id)
                 {
                     printf("still fail\n");
                 }
+                getchar();
             }
 
 

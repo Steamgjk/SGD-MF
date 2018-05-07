@@ -223,6 +223,7 @@ int main(int argc, const char * argv[])
         {
             block_to_process = states[state_idx];
             action = actions[state_idx];
+            printf("block_to_process %d\n", block_to_process );
             p_to_process[i] = block_to_process / (DIM_NUM);
             q_to_process[i] = block_to_process % (DIM_NUM);
             //0 is to right trans Q, 1 is up, trans p

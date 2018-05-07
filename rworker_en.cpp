@@ -746,6 +746,10 @@ void sendTd(int send_thread_id)
             {
                 printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
             }
+            else
+            {
+                printf("[Id:%d] send fail stucsz=%ld data_sz=%ld %d\n", thread_id, struct_sz, data_sz, ret);
+            }
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;

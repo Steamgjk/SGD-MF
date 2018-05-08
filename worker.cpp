@@ -151,6 +151,8 @@ void recvTd(int recv_thread_id);
 //void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
 
+void testhello(int th);
+
 void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRating();
@@ -233,7 +235,14 @@ int main(int argc, const char * argv[])
     }
 
 }
-
+void testhello(int th)
+{
+    while (th--)
+    {
+        printf("test hello\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+}
 void LoadRating()
 {
     char fn[100];
@@ -459,7 +468,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
-        int times_thresh = 1000;
+        int times_thresh = 3000;
         //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         //for (size_t ss = 0; ss < sample_sz; ss++)
         vector<long> hash_ids;
@@ -473,7 +482,10 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         }
         int tsz = hash_ids.size();
         int rand_idx = -1;
-
+        printf("launch new thread...\n");
+        //multiple thread...
+        std::thread test(testhello, 100);
+        test.detach();
         while (times_thresh--)
         {
             rand_idx = random() % tsz;

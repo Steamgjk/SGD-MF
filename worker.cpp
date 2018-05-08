@@ -459,7 +459,7 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
-        int times_thresh = 3000;
+        int times_thresh = 1000;
         //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         //for (size_t ss = 0; ss < sample_sz; ss++)
         vector<long> hash_ids;

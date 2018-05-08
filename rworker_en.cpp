@@ -207,6 +207,15 @@ int main(int argc, const char * argv[])
     partitionP(DIM_NUM, Pblocks);
     partitionQ(DIM_NUM, Qblocks);
 
+    for (int i = 0; i < DIM_NUM; i++)
+    {
+        for (int j = 0; j < Pblocks[i].ele_num; j++)
+        {
+            Pblocks[i].ele_num[j] = drand48();
+            Qblocks[i].ele_num[j] = drand48();
+        }
+    }
+    printf("Initial\n");
     for (int ii = 0; ii < DIM_NUM; ii++)
     {
         printf("p %d  %d\n", ii, Pblocks[ii].block_id );
@@ -730,7 +739,7 @@ void SGD_MF()
             long real_hash_idx = hash_sample[ss];
             long i = real_hash_idx / M - row_sta_idx;
             long j = real_hash_idx % M - col_sta_idx;
-            printf("p=%d  q=%d i=%ld j = %ld  real=%ld row_sta_idx=%ld col_sta_idx=%ld\n", p_block_idx, q_block_idx, i, j, real_hash_idx, row_sta_idx, col_sta_idx );
+            //printf("p=%d  q=%d i=%ld j = %ld  real=%ld row_sta_idx=%ld col_sta_idx=%ld\n", p_block_idx, q_block_idx, i, j, real_hash_idx, row_sta_idx, col_sta_idx );
             error = rate_sample[ss];
             //if (iter != TrainMaps[p_block_idx][q_block_idx].end())
             {

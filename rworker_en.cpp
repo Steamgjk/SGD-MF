@@ -211,8 +211,8 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].ele_num[j] = drand48();
-            Qblocks[i].ele_num[j] = drand48();
+            Pblocks[i].eles[j] = drand48();
+            Qblocks[i].eles[j] = drand48();
         }
     }
     printf("Initial\n");

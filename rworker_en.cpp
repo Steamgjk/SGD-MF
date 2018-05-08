@@ -690,13 +690,32 @@ void SGD_MF()
     //double new_rmse = old_rmse;
 
     int iter_cnt = 0;
+    std::vector<long> hash_sample;
+    std::vector<double> rate_sample;
+    map<long, double>::iterator iter = TrainMaps[p_block_idx][q_block_idx].begin();
+    srand(time(0));
+    while (iter != TrainMaps[p_block_idx][q_block_idx].end())
+    {
+        if (rand() % 1000 < 10)
+        {
+            hash_sample.push_back(iter->first);
+            rate_sample.push_back(iter->second);
+        }
+        iter++;
+    }
 
-    //while ( new_rmse > 0.999 * old_rmse )
+
+    size_t sample_sz = hash_sample.size();
+
+//while ( new_rmse > 0.999 * old_rmse )
     {
         vector<double> oldP = Pblocks[p_block_idx].eles;
         vector<double> oldQ = Qblocks[q_block_idx].eles;
-        for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
+
+        //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
+        for (size_t ss = 0; ss < sample_sz; ss++)
         {
+            /*
             long i = c_row_idx;
             long j = rand() % col_len;
 
@@ -706,9 +725,13 @@ void SGD_MF()
 
             map<long, double>::iterator iter;
             iter = TrainMaps[p_block_idx][q_block_idx].find(real_hash_idx);
-            if (iter != TrainMaps[p_block_idx][q_block_idx].end())
+            **/
+
+            long real_hash_idx = hash_sample[ss];
+            error = rate_sample[ss];
+            //if (iter != TrainMaps[p_block_idx][q_block_idx].end())
             {
-                error = iter->second;
+                //error = iter->second;
                 for (int k = 0; k < K; ++k)
                 {
                     error -= oldP[i * K + k] * oldQ[j * K + k];

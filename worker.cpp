@@ -261,9 +261,6 @@ void LoadRating()
             }
         }
     }
-
-
-    printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
 }
 void LoadTestRating()
 {
@@ -296,6 +293,7 @@ void LoadTestRating()
 
 void LoadRmatrix(int file_no, map<long, double>& myMap)
 {
+    char fn[100];
     sprintf(fn, "%s%d", FILE_NAME, file_no);
     ifstream ifs(fn);
     if (!ifs.is_open())

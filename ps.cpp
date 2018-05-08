@@ -401,8 +401,6 @@ void LoadRating()
         }
     }
 
-
-    printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
 }
 void LoadTestRating()
 {

@@ -200,7 +200,7 @@ int main(int argc, const char * argv[])
         {
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
             //P[i][j] = drand48() / 1.7;
-            P[i][j] = drand48();
+            P[i][j] = drand48() * 0.4;
             //P[i][j] = drand48() * 0.38;
             //P[i][j] =  ((double)(rand() % 100) ) / 400 ;
 
@@ -213,7 +213,7 @@ int main(int argc, const char * argv[])
         {
             //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
             //Q[i][j] = drand48() / 1.7;
-            Q[i][j] = drand48();
+            Q[i][j] = drand48() * 0.4;
             //Q[i][j] = drand48() * 0.38 ;
             //Q[i][j] =  ((double)(rand() % 100) ) / 400 ;
 

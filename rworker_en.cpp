@@ -258,10 +258,11 @@ int main(int argc, const char * argv[])
 
             gettimeofday(&et, 0);
             //printf("write pidx  %d qidx %d pid =%d  qid = %d\n", p_block_idx, q_block_idx, Pblocks[p_block_idx].block_id, Qblocks[q_block_idx].block_id );
-            if (iter_cnt % 10 == 0)
-            {
+            /*
+            if(iter_cnt%10 == 0){
                 WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
             }
+            **/
 
 
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
@@ -719,6 +720,15 @@ void SGD_MF()
                 }
             }
         }
+        int test_cnt = 0;
+        for (int i = 0; i < Pblocks[p_block_idx].eles.size(); i++)
+        {
+            if (Pblocks[p_block_idx].eles[i] != 0)
+            {
+                test_cnt++;
+            }
+        }
+        printf("test_cnt=%d\n", test_cnt );
         /*
         iter_cnt++;
         new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);

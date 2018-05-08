@@ -678,7 +678,7 @@ void SGD_MF()
 {
     double error = 0;
     int row_sta_idx = Pblocks[p_block_idx].sta_idx;
-    int col_sta_idx = Qblocks[p_block_idx].sta_idx;
+    int col_sta_idx = Qblocks[q_block_idx].sta_idx;
     int row_len = Pblocks[p_block_idx].height;
     int col_len = Qblocks[q_block_idx].height;
     int Psz =  Pblocks[p_block_idx].height * K;

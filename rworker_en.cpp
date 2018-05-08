@@ -699,6 +699,7 @@ void SGD_MF()
     //double new_rmse = old_rmse;
 
     int iter_cnt = 0;
+    /*
     std::vector<long> hash_sample;
     std::vector<double> rate_sample;
     map<long, double>::iterator iter = TrainMaps[p_block_idx][q_block_idx].begin();
@@ -713,18 +714,18 @@ void SGD_MF()
         iter++;
     }
 
-
     size_t sample_sz = hash_sample.size();
-
+    **/
+    int update_num = 0;
 //while ( new_rmse > 0.999 * old_rmse )
     {
         vector<double> oldP = Pblocks[p_block_idx].eles;
         vector<double> oldQ = Qblocks[q_block_idx].eles;
 
-        //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
-        for (size_t ss = 0; ss < sample_sz; ss++)
+        for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
+            //for (size_t ss = 0; ss < sample_sz; ss++)
         {
-            /*
+
             long i = c_row_idx;
             long j = rand() % col_len;
 
@@ -734,16 +735,17 @@ void SGD_MF()
 
             map<long, double>::iterator iter;
             iter = TrainMaps[p_block_idx][q_block_idx].find(real_hash_idx);
-            **/
 
-            long real_hash_idx = hash_sample[ss];
-            long i = real_hash_idx / M - row_sta_idx;
-            long j = real_hash_idx % M - col_sta_idx;
+            /*
+                        long real_hash_idx = hash_sample[ss];
+                        long i = real_hash_idx / M - row_sta_idx;
+                        long j = real_hash_idx % M - col_sta_idx;
+                        **/
             //printf("p=%d  q=%d i=%ld j = %ld  real=%ld row_sta_idx=%ld col_sta_idx=%ld\n", p_block_idx, q_block_idx, i, j, real_hash_idx, row_sta_idx, col_sta_idx );
-            error = rate_sample[ss];
-            //if (iter != TrainMaps[p_block_idx][q_block_idx].end())
+            //error = rate_sample[ss];
+            if (iter != TrainMaps[p_block_idx][q_block_idx].end())
             {
-                //error = iter->second;
+                error = iter->second;
                 for (int k = 0; k < K; ++k)
                 {
                     error -= oldP[i * K + k] * oldQ[j * K + k];
@@ -753,12 +755,13 @@ void SGD_MF()
                     Pblocks[p_block_idx].eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
                     Qblocks[q_block_idx].eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
                 }
+                update_num++;
             }
         }
         int test_cnt = 0;
         for (int i = 0; i < Pblocks[p_block_idx].eles.size(); i++)
         {
-            if (Pblocks[p_block_idx].eles[i] != 0)
+            if (Pblocks[p_block_idx].eles[i] - oldP[i]  != 0)
             {
                 test_cnt++;
             }

@@ -455,36 +455,65 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     {
         updateQ.eles[ii] = 0;
     }
+
     {
         vector<double> oldP = minP.eles;
         vector<double> oldQ = minQ.eles;
-
-        for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
-            //for (size_t ss = 0; ss < sample_sz; ss++)
+        int times_thresh = 3000;
+        //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
+        //for (size_t ss = 0; ss < sample_sz; ss++)
+        vector<long> hash_ids;
+        std::vector<long> rates;
+        map<long, double>::iterator myiter = RMap.begin();
+        while (myiter != RMap.end())
         {
+            hash_ids.push_back(myiter->first);
+            rates.push_back(myiter->second);
+            myiter++;
+        }
+        int tsz = hash_ids.size();
+        int rand_idx = -1;
 
-            long i = c_row_idx;
-            long j = rand() % col_len;
-
-            long real_row_idx = i + row_sta_idx;
-            long real_col_idx = j + col_sta_idx;
-            long real_hash_idx = real_row_idx * M + real_col_idx;
-
-            map<long, double>::iterator iter = RMap.find(real_hash_idx);
-
-            if (iter != RMap.end())
+        while (times_thresh--)
+        {
+            rand_idx = random() % tsz;
+            long real_hash_idx = hash_ids[rand_idx];
+            long i = real_hash_idx / M - row_sta_idx;
+            long j = real_hash_idx % M - col_sta_idx;
+            error = rates[rand_idx];
+            for (int k = 0; k < K; ++k)
             {
-                error = iter->second;
-                for (int k = 0; k < K; ++k)
-                {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    updateP.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
-                    updateQ.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
-                }
+                error -= oldP[i * K + k] * oldQ[j * K + k];
             }
+            for (int k = 0; k < K; ++k)
+            {
+                updateP.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
+                updateQ.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
+            }
+
+            /*
+                        long i = c_row_idx;
+                        long j = rand() % col_len;
+                        long real_row_idx = i + row_sta_idx;
+                        long real_col_idx = j + col_sta_idx;
+                        long real_hash_idx = real_row_idx * M + real_col_idx;
+
+                        map<long, double>::iterator iter = RMap.find(real_hash_idx);
+
+                        if (iter != RMap.end())
+                        {
+                            error = iter->second;
+                            for (int k = 0; k < K; ++k)
+                            {
+                                error -= oldP[i * K + k] * oldQ[j * K + k];
+                            }
+                            for (int k = 0; k < K; ++k)
+                            {
+                                updateP.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
+                                updateQ.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
+                            }
+                        }
+                        **/
         }
         int test_cnt = 0;
         for (int i = 0; i < updateP.eles.size(); i++)

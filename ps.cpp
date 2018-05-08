@@ -382,7 +382,7 @@ void LoadRating()
         ifstream ifs(fn);
         if (!ifs.is_open())
         {
-            printf("fail to open the file %s\n", FILE_NAME);
+            printf("fail to open the file %s\n", fn);
             exit(-1);
         }
         int cnt = 0;

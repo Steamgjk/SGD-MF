@@ -153,9 +153,9 @@ void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int mi
 
 void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
-void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len);
 void LoadRating();
 void LoadTestRating();
+void LoadRmatrix(int file_no, map<long, double>& myMap);
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
 int thread_id = -1;
@@ -176,8 +176,8 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
-    LoadRating();
-    LoadTestRating();
+    //LoadRating();
+    //LoadTestRating();
     printf("Load Rating Success\n");
 
 
@@ -234,52 +234,84 @@ int main(int argc, const char * argv[])
 
 }
 
-
 void LoadRating()
 {
-    ifstream ifs(FILE_NAME);
-    if (!ifs.is_open())
+    char fn[100];
+    for (int f_no = 0; f_no < 64; f_no++)
     {
-        printf("fail to open the file %s\n", FILE_NAME);
-        exit(-1);
-    }
-    int cnt = 0;
-    int temp = 0;
-    long hash_idx = 0;
-    double ra = 0;
-    while (!ifs.eof())
-    {
-        ifs >> hash_idx >> ra;
-        RMap.insert(pair<long, double>(hash_idx, ra));
-        //KeyVec.insert(hash_idx);
-        cnt++;
-        if (cnt % 1000000 == 0)
+        sprintf(fn, "%s%d", FILE_NAME, f_no);
+        ifstream ifs(fn);
+        if (!ifs.is_open())
         {
-            printf("cnt=%d\n", cnt );
+            printf("fail to open the file %s\n", fn);
+            exit(-1);
+        }
+        int cnt = 0;
+        int temp = 0;
+        long hash_idx = 0;
+        double ra = 0;
+        while (!ifs.eof())
+        {
+            ifs >> hash_idx >> ra;
+            RMap.insert(pair<long, double>(hash_idx, ra));
+            cnt++;
+            if (cnt % 1000000 == 0)
+            {
+                printf("cnt = %ld\n", cnt );
+            }
         }
     }
 
+
     printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
 }
-
 void LoadTestRating()
 {
-    ifstream ifs(TEST_NAME);
+    char fn[100];
+    for (int f_no = 0; f_no < 64; f_no++)
+    {
+        sprintf(fn, "%s%d", TEST_NAME, f_no);
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open the file %s\n", TEST_NAME);
+            exit(-1);
+        }
+        int cnt = 0;
+        int temp = 0;
+        long hash_idx = 0;
+        double ra = 0;
+        while (!ifs.eof())
+        {
+            ifs >> hash_idx >> ra;
+            TestMap.insert(pair<long, double>(hash_idx, ra));
+            cnt++;
+            if (cnt % 10000 == 0)
+            {
+                printf("cnt = %ld\n", cnt );
+            }
+        }
+    }
+}
+
+void LoadRmatrix(int file_no, map<long, double>& myMap)
+{
+    sprintf(fn, "%s%d", FILE_NAME, file_no);
+    ifstream ifs(fn);
     if (!ifs.is_open())
     {
-        printf("fail to open the file %s\n", TEST_NAME);
+        printf("fail to open the file %s\n", fn);
         exit(-1);
     }
     int cnt = 0;
-    int temp = 0;
     long hash_idx = 0;
     double ra = 0;
     while (!ifs.eof())
     {
         ifs >> hash_idx >> ra;
-        TestMap.insert(pair<long, double>(hash_idx, ra));
+        myMap.insert(pair<long, double>(hash_idx, ra));
         cnt++;
-        if (cnt % 10000 == 0)
+        if (cnt % 1000000 == 0)
         {
             printf("cnt = %ld\n", cnt );
         }
@@ -309,67 +341,6 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
         }
         qofs << endl;
     }
-}
-
-void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
-{
-    //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
-
-
-    ifstream ifs(FILE_NAME);
-    if (!ifs.is_open())
-    {
-        printf("fail to open the file %s\n", FILE_NAME);
-        exit(-1);
-    }
-    string temp;
-    for (int i = 0; i < row_sta_idx; i++)
-    {
-        getline(ifs, temp);
-        //cout << "temp:\t" << temp << endl;
-    }
-    //printf("check cc 1\n");
-    int line_no = row_sta_idx;
-    double temp_db;
-    int total_num = row_len * col_len;
-    int cnt = 0;
-    //printf("check cc 2\n");
-
-    for (int i = row_sta_idx; i < row_sta_idx + row_len; i++)
-    {
-        if (i % 100 == 0)
-        {
-            printf("getMinR i = %d\n", i );
-        }
-        for (int j = 0 ; j < col_sta_idx; j++)
-        {
-            ifs >> temp_db;
-            //cout << "tf " << temp_db << endl;
-        }
-        //cout << endl;
-        for (int j = col_sta_idx; j < col_sta_idx + col_len; j++)
-        {
-            //printf("j=%d cnt=%d minR=%p\n", j, cnt, minR);
-            //ifs >> temp_db;
-            //minR[cnt] = temp_db;
-            //printf("temp_db=%lf\n", temp_db );
-            ifs >> minR[cnt];
-            //cout << "minR " << minR[cnt] << endl;
-            cnt++;
-        }
-        //cout << endl;
-        //getchar();
-        //printf("com here\n");
-        //getchar();
-        for (int j = col_sta_idx + col_len; j < M; j++)
-        {
-            ifs >> temp_db;
-            //cout << "tfb " << temp_db << endl;
-            //getchar();
-        }
-        //getchar();
-    }
-    //printf("Returned  \n");
 }
 
 
@@ -463,6 +434,19 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     updateQ.ele_num = Qsz;
     updateP.block_id = minP.block_id;
     updateQ.block_id = minQ.block_id;
+
+    int r1 = minP.block_id * 2;
+    int c1 = minQ.block_id * 2;
+    int f1 = r1 * 8 + c1;
+    int f2 = r1 * 8 + c1 + 1;
+    int f3 = (r1 + 1) * 8 + c1;
+    int f4 = (r1 + 1) * 8 + c1 + 1;
+    RMap.clear();
+    LoadRmatrix(f1, RMap);
+    LoadRmatrix(f2, RMap);
+    LoadRmatrix(f3, RMap);
+    LoadRmatrix(f4, RMap);
+
 
     int ii = 0;
     for (ii = 0; ii < Psz; ii++)

@@ -728,8 +728,8 @@ void SGD_MF()
             **/
 
             long real_hash_idx = hash_sample[ss];
-            long i = real_hash_idx / M;
-            long j = real_hash_idx % M;
+            long i = real_hash_idx / M - row_sta_idx;
+            long j = real_hash_idx % M - col_sta_idx;
             error = rate_sample[ss];
             //if (iter != TrainMaps[p_block_idx][q_block_idx].end())
             {

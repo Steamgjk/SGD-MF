@@ -170,7 +170,7 @@ vector<long> KeyVec;
 int main(int argc, const char * argv[])
 {
 
-    int thresh_log = 10;
+    int thresh_log = 900;
     thread_id = atoi(argv[1]);
     if (argc >= 3)
     {
@@ -220,7 +220,7 @@ int main(int argc, const char * argv[])
 
                 long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
                 printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
-                WriteLog(Pblock, Qblock, iter_cnt);
+                //WriteLog(Pblock, Qblock, iter_cnt);
                 exit(0);
             }
 

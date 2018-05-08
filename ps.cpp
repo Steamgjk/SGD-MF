@@ -357,7 +357,7 @@ int main(int argc, const char * argv[])
                 //printf("Qupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
             }
             // printf("Update Finish, Can Distribute\n");
-            /*
+
             //if (iter_t % 10 == 0)
             {
                 double rmse = CalcRMSE();
@@ -365,7 +365,7 @@ int main(int argc, const char * argv[])
                 log_ofs << rmse << endl;
 
             }
-            **/
+
             recvCount = 0;
         }
         iter_t++;

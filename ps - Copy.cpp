@@ -37,21 +37,12 @@ using namespace std;
 
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
-/*
 #define FILE_NAME "./traina.txt"
 #define TEST_NAME "./testa.txt"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-**/
-
-#define FILE_NAME "./data/TrainingMap-"
-#define TEST_NAME "./data/TestMap-"
-#define N 1000000
-#define M 1000000
-#define K  100 //主题个数
-
-int WORKER_NUM = 4;
+int WORKER_NUM = 1;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
 char* remote_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
@@ -375,60 +366,49 @@ int main(int argc, const char * argv[])
 }
 void LoadRating()
 {
-    char fn[100];
-    for (int f_no = 0; f_no < 64; f_no++)
+    ifstream ifs(FILE_NAME);
+    if (!ifs.is_open())
     {
-        sprintf(fn, "%s%d", FILE_NAME, f_no);
-        ifstream ifs(fn);
-        if (!ifs.is_open())
+        printf("fail to open the file %s\n", FILE_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        RMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+        if (cnt % 1000000 == 0)
         {
-            printf("fail to open the file %s\n", FILE_NAME);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            RMap.insert(pair<long, double>(hash_idx, ra));
-            cnt++;
-            if (cnt % 1000000 == 0)
-            {
-                printf("cnt = %ld\n", cnt );
-            }
+            printf("cnt = %ld\n", cnt );
         }
     }
-
 
     printf("cnt=%d sizeof(long)=%ld\n", cnt, sizeof(long));
 }
 void LoadTestRating()
 {
-    char fn[100];
-    for (int f_no = 0; f_no < 64; f_no++)
+    ifstream ifs(TEST_NAME);
+    if (!ifs.is_open())
     {
-        sprintf(fn, "%s%d", TEST_NAME, f_no);
-        ifstream ifs(fn);
-        if (!ifs.is_open())
+        printf("fail to open the file %s\n", TEST_NAME);
+        exit(-1);
+    }
+    int cnt = 0;
+    int temp = 0;
+    long hash_idx = 0;
+    double ra = 0;
+    while (!ifs.eof())
+    {
+        ifs >> hash_idx >> ra;
+        TestMap.insert(pair<long, double>(hash_idx, ra));
+        cnt++;
+        if (cnt % 10000 == 0)
         {
-            printf("fail to open the file %s\n", TEST_NAME);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            TestMap.insert(pair<long, double>(hash_idx, ra));
-            cnt++;
-            if (cnt % 10000 == 0)
-            {
-                printf("cnt = %ld\n", cnt );
-            }
+            printf("cnt = %ld\n", cnt );
         }
     }
 }

@@ -505,9 +505,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             }
         }
         int test_cnt = 0;
-        for (int i = 0; i < Pblocks[p_block_idx].eles.size(); i++)
+        for (int i = 0; i < updateP.eles.size(); i++)
         {
-            if (Pblocks[p_block_idx].eles[i] - oldP[i]  != 0)
+            if ( updateP.eles[i] != 0)
             {
                 test_cnt++;
             }

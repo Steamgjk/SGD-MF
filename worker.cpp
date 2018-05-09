@@ -499,7 +499,7 @@ void CalcUpdt(int thread_id)
                 }
             }
             StartCalcUpdt[thread_id] = false;
-            //printf("finish %d\n",  thread_id);
+            printf("finish %d  %ld %ld\n",  thread_id, rtsz, ctsz);
 
         }
     }

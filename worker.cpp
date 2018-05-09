@@ -426,7 +426,8 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 }
 void submf()
 {
-    //printf("begin submf\n");
+    double yita = 0.2;
+    double theta = 0.05;
     double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;
@@ -512,33 +513,10 @@ void submf()
             }
             for (int k = 0; k < K; ++k)
             {
-                Pupdt.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
-                Qupdt.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
+                Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
             }
 
-            /*
-                        long i = c_row_idx;
-                        long j = rand() % col_len;
-                        long real_row_idx = i + row_sta_idx;
-                        long real_col_idx = j + col_sta_idx;
-                        long real_hash_idx = real_row_idx * M + real_col_idx;
-
-                        map<long, double>::iterator iter = RMap.find(real_hash_idx);
-
-                        if (iter != RMap.end())
-                        {
-                            error = iter->second;
-                            for (int k = 0; k < K; ++k)
-                            {
-                                error -= oldP[i * K + k] * oldQ[j * K + k];
-                            }
-                            for (int k = 0; k < K; ++k)
-                            {
-                                updateP.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
-                                updateQ.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
-                            }
-                        }
-                        **/
         }
         int test_cnt = 0;
         for (int i = 0; i < Pupdt.eles.size(); i++)

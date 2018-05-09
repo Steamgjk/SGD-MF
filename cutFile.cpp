@@ -84,7 +84,7 @@ int main()
 		srow = row_idx / row_unit;
 		scol = col_idx / col_unit;
 		file_idx = srow * PORTION_NUM + scol;
-		printf("fff %ld\n", file_idx );
+		printf("fff %d %d %d %d%ld\n", file_idx, srow, scol, row_idx, col_idx );
 		ofs_test[file_idx] << hash_id << " " << rate;
 
 	}

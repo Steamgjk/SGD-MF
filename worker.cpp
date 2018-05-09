@@ -167,6 +167,7 @@ void LoadTestRating();
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
+vector<bool> StartCalcUpdt;
 void CalcUpdt(int thread_id);
 int thread_id = -1;
 
@@ -196,6 +197,11 @@ int main(int argc, const char * argv[])
     //LoadTestRating();
     printf("Load Rating Success\n");
 
+    StartCalcUpdt.resize(WORKER_THREAD_NUM);
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        StartCalcUpdt[i] = false;
+    }
 
     memset(&start, 0, sizeof(struct timeval));
     memset(&stop, 0, sizeof(struct timeval));
@@ -206,6 +212,20 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
+
+    std::vector<thread> td_vec;
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        //std::thread td(CalcUpdt, i);
+        td_vec.push_back(std::thread(CalcUpdt, i));
+    }
+    //printf("come here\n");
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        td_vec[i].detach();
+        printf("%d  has detached\n", i );
+    }
+
 
 
     //double* minR = (double*)malloc(sizeof(double) * 1000);
@@ -438,45 +458,53 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 }
 void CalcUpdt(int thread_id)
 {
-
-    int times_thresh = 1000;
-    int row_sta_idx = Pblock.sta_idx;
-    int col_sta_idx = Qblock.sta_idx;
-    size_t rtsz = hash_for_row_threads[thread_id].size();
-    size_t ctsz = hash_for_col_threads[thread_id].size();
-    int rand_idx = -1;
-    while (times_thresh--)
+    while (1 == 1)
     {
-        rand_idx = random() % rtsz;
-        long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
-        long i = real_hash_idx / M - row_sta_idx;
-        long j = real_hash_idx % M - col_sta_idx;
-        double error = rates_for_row_threads[thread_id][rand_idx];
-        for (int k = 0; k < K; ++k)
+        if (StartCalcUpdt[thread_id])
         {
-            error -= oldP[i * K + k] * oldQ[j * K + k];
-        }
-        for (int k = 0; k < K; ++k)
-        {
-            Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
-        }
+            int times_thresh = 1000;
+            int row_sta_idx = Pblock.sta_idx;
+            int col_sta_idx = Qblock.sta_idx;
+            size_t rtsz = hash_for_row_threads[thread_id].size();
+            size_t ctsz = hash_for_col_threads[thread_id].size();
+            int rand_idx = -1;
+            while (times_thresh--)
+            {
+                rand_idx = random() % rtsz;
+                long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
+                long i = real_hash_idx / M - row_sta_idx;
+                long j = real_hash_idx % M - col_sta_idx;
+                double error = rates_for_row_threads[thread_id][rand_idx];
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                }
 
-        rand_idx = random() % ctsz;
-        real_hash_idx = hash_for_col_threads[thread_id][rand_idx];
-        i = real_hash_idx / M - row_sta_idx;
-        j = real_hash_idx % M - col_sta_idx;
-        error = rates_for_col_threads[thread_id][rand_idx];
-        for (int k = 0; k < K; ++k)
-        {
-            error -= oldP[i * K + k] * oldQ[j * K + k];
-        }
-        for (int k = 0; k < K; ++k)
-        {
-            Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                rand_idx = random() % ctsz;
+                real_hash_idx = hash_for_col_threads[thread_id][rand_idx];
+                i = real_hash_idx / M - row_sta_idx;
+                j = real_hash_idx % M - col_sta_idx;
+                error = rates_for_col_threads[thread_id][rand_idx];
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                }
+            }
+            StartCalcUpdt[thread_id] = false;
+            printf("finish %d\n",  thread_id);
+
         }
     }
 
-    printf("finish %d\n",  thread_id);
+
 }
 void submf()
 {
@@ -570,21 +598,41 @@ void submf()
         gettimeofday(&beg, 0);
         //std::thread td(CalcUpdt, 0);
         //td.join();
-
-        std::vector<thread> td_vec;
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        /*
+                std::vector<thread> td_vec;
+                for (int i = 0; i < WORKER_THREAD_NUM; i++)
+                {
+                    //std::thread td(CalcUpdt, i);
+                    td_vec.push_back(std::thread(CalcUpdt, i));
+                }
+                //printf("come here\n");
+                for (int i = 0; i < WORKER_THREAD_NUM; i++)
+                {
+                    td_vec[i].join();
+                    printf("%d  has joined\n", i );
+                }
+        **/
+        bool canbreak = true;
+        for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
-            //std::thread td(CalcUpdt, i);
-            td_vec.push_back(std::thread(CalcUpdt, i));
+            StartCalcUpdt[ii] = true;
         }
-        printf("come here\n");
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        while (1 == 1)
         {
-            td_vec[i].join();
-            printf("%d  has joined\n", i );
+            for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
+            {
+                if (StartCalcUpdt[ii])
+                {
+                    canbreak = false;
+                }
+            }
+            if (canbreak)
+            {
+                break;
+            }
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-
-        printf("ccc\n");
+        //printf("ccc\n");
         gettimeofday(&ed, 0);
         long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf("thesh = %d  time = %lld\n", times_thresh, mksp);

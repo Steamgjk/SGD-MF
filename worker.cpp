@@ -149,7 +149,7 @@ bool canSend = false;
 bool hasRecved = false;
 int block_seq[SEQ_LEN];
 
-double yita = 0.2;
+double yita = 0.002;
 double theta = 0.05;
 
 int wait4connection(char*local_ip, int local_port);
@@ -508,7 +508,7 @@ void CalcUpdt(int thread_id)
 }
 void submf()
 {
-    printf("enter submf\n");
+    //printf("enter submf\n");
     double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;

@@ -353,6 +353,16 @@ void CalcUpdt(int td_id)
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
                     Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
                     Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
+                    if (i * K + k >= Pblocks[p_block_idx].eles.size())
+                    {
+                        printf("i=%d K=%d k=%d sum=%d sz=%ld\n", i, K, k, i * K + k, Pblocks[p_block_idx].eles.size() );
+                        exit(1);
+                    }
+                    if (j * K + k >= Qblocks[q_block_idx].eles.size()  )
+                    {
+                        printf("j=%d K=%d k=%d sum=%d sz=%ld\n", j, K, k, j * K + k, Qblocks[q_block_idx].eles.size());
+                        exit(1);
+                    }
                     error -= Pvec[k] * Qvec[k];
                 }
                 for (int k = 0; k < K; ++k)

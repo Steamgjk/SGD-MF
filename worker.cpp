@@ -508,7 +508,7 @@ void CalcUpdt(int thread_id)
 }
 void submf()
 {
-
+    printf("enter submf\n");
     double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;

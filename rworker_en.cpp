@@ -353,7 +353,7 @@ void CalcUpdt(int td_id)
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
                     Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
                     Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
-                    error -= Pvec[i * K + k] * Qvec[j * K + k];
+                    error -= Pvec[k] * Qvec[k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
@@ -372,7 +372,7 @@ void CalcUpdt(int td_id)
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
                     Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
                     Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
-                    error -= Pvec[i * K + k] * Qvec[j * K + k];
+                    error -= Pvec[k] * Qvec[k];
                 }
                 for (int k = 0; k < K; ++k)
                 {

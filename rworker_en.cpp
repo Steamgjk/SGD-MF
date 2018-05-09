@@ -216,6 +216,13 @@ int main(int argc, const char * argv[])
     LoadStateConfig(state_name);
     LoadData(CACHE_NUM);
 
+    StartCalcUpdt.resize(WORKER_THREAD_NUM);
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        StartCalcUpdt[i] = false;
+    }
+
+
     std::thread data_read_thread(readData, thread_id);
     data_read_thread.detach();
 
@@ -241,6 +248,21 @@ int main(int argc, const char * argv[])
         printf("p %d  %d\n", ii, Pblocks[ii].block_id );
         printf("q %d  %d\n", ii, Pblocks[ii].block_id );
     }
+
+
+    std::vector<thread> td_vec;
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        //std::thread td(CalcUpdt, i);
+        td_vec.push_back(std::thread(CalcUpdt, i));
+    }
+    //printf("come here\n");
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        td_vec[i].detach();
+        printf("%d  has detached\n", i );
+    }
+
 
     int block_to_process;
     int action_to_process;

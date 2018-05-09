@@ -65,7 +65,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define ThreshIter 1000
 #define SEQ_LEN 5000
-#define WORKER_THREAD_NUM 10
+#define WORKER_THREAD_NUM 30
 
 struct Block
 {
@@ -462,7 +462,7 @@ void CalcUpdt(int thread_id)
     {
         if (StartCalcUpdt[thread_id])
         {
-            int times_thresh = 1000;
+            int times_thresh = 100;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz = hash_for_row_threads[thread_id].size();

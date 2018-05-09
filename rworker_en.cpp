@@ -370,7 +370,9 @@ void CalcUpdt(int td_id)
             {
                 rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
                 ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
-                printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
+                //printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
+                printf(" 0000000\n");
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             while (rtsz == 0);
 
@@ -597,7 +599,7 @@ void readData(int data_thread_id)
         }
         if (disk_read_head_idx >= has_processed)
         {
-            //printf("head>tail  %d  %d\n", head_idx, to_send_tail);
+            printf("head>=has_processed  %d  %d\n", disk_read_head_idx, has_processed);
             continue;
         }
         int data_idx = states[disk_read_tail_idx];

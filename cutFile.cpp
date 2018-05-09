@@ -52,8 +52,11 @@ int main()
 			int file_no =  i * PORTION_NUM + j;
 			sprintf(filena, "%s%d", OUT_TRIAIN, file_no);
 			ofs_train[file_no].open(filena, ios::trunc);
+			sprintf(filena, "%s%d", OUT_TEST, file_no);
+			ofs_test[file_no].open(filena, ios::trunc);
 		}
 	}
+	printf("ok\n");
 	long row_idx, col_idx, srow, scol, file_idx;
 	while (!ifs_train.eof())
 	{

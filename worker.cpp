@@ -476,11 +476,13 @@ void CalcUpdt(int thread_id)
                 double error = rates_for_row_threads[thread_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                    //error -= oldP[i * K + k] * oldQ[j * K + k];
+                    error -= Pblock[i * K + k] * Qblock[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    //Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    Pupdt.eles[i * K + k] += yita * (error * Qblock[j * K + k] - theta * Pblock[i * K + k]);
                 }
 
                 rand_idx = random() % ctsz;
@@ -490,11 +492,13 @@ void CalcUpdt(int thread_id)
                 error = rates_for_col_threads[thread_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                    //error -= oldP[i * K + k] * oldQ[j * K + k];
+                    error -= Pblock[i * K + k] * Qblock[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    //Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    Qupdt.eles[j * K + k] += yita * (error * Pblock[i * K + k] - theta * Qblock[j * K + k]);
                 }
             }
             StartCalcUpdt[thread_id] = false;
@@ -554,8 +558,8 @@ void submf()
         int times_thresh = 1000;
         //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         //for (size_t ss = 0; ss < sample_sz; ss++)
-        oldP = Pblock.eles;
-        oldQ = Qblock.eles;
+        //oldP = Pblock.eles;
+        //oldQ = Qblock.eles;
 
         hash_ids.clear();
         rates.clear();

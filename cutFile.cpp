@@ -69,6 +69,14 @@ int main()
 
 		srow = row_idx / row_unit;
 		scol = col_idx / col_unit;
+		if (srow >= PORTION_NUM)
+		{
+			srow = PORTION_NUM - 1;
+		}
+		if (scol >= PORTION_NUM)
+		{
+			scol = PORTION_NUM - 1;
+		}
 		file_idx = srow * PORTION_NUM + scol;
 		//printf("file_idx=%ld\n", file_idx );
 		ofs_train[file_idx] << hash_id << " " << rate;
@@ -83,8 +91,16 @@ int main()
 
 		srow = row_idx / row_unit;
 		scol = col_idx / col_unit;
+		if (srow >= PORTION_NUM)
+		{
+			srow = PORTION_NUM - 1;
+		}
+		if (scol >= PORTION_NUM)
+		{
+			scol = PORTION_NUM - 1;
+		}
 		file_idx = srow * PORTION_NUM + scol;
-		printf("fff %d %d %d %ld %ld\n", file_idx, srow, scol, row_idx, col_idx );
+		//printf("fff %d %d %d %ld %ld\n", file_idx, srow, scol, row_idx, col_idx );
 		ofs_test[file_idx] << hash_id << " " << rate;
 
 	}

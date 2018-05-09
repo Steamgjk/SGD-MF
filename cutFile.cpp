@@ -34,11 +34,13 @@
 #include <queue>
 #include <random>
 using namespace std;
+//g++  -g   cutFile.cpp -o cutFile -pthread -std=c++11
 int main()
 {
 	ifstream ifs_train(FILE_NAME);
 	ifstream ifs_test(TEST_NAME);
 	ofstream ofs_train[PORTION_NUM * PORTION_NUM];
+	ofstream ofs_test[PORTION_NUM * PORTION_NUM];
 	long hash_id;
 	double rate;
 	char filena[100];

@@ -502,7 +502,7 @@ void CalcUpdt(int thread_id)
                 }
             }
             StartCalcUpdt[thread_id] = false;
-            printf("finish %d  %ld %ld\n",  thread_id, rtsz, ctsz);
+            //printf("finish %d  %ld %ld\n",  thread_id, rtsz, ctsz);
 
         }
     }
@@ -538,6 +538,10 @@ void submf()
     int f3 = (r1 + 1) * 8 + c1;
     int f4 = (r1 + 1) * 8 + c1 + 1;
     RMap.clear();
+    struct timeval beg, ed;
+    memset(&beg, 0, sizeof(struct timeval));
+    memset(&ed, 0, sizeof(struct timeval));
+    gettimeofday(&beg, 0);
     LoadRmatrix(f1, RMap);
     LoadRmatrix(f2, RMap);
     LoadRmatrix(f3, RMap);
@@ -595,10 +599,7 @@ void submf()
         //std::thread test(testhello, 10);
         //test.join();
 
-        struct timeval beg, ed;
-        memset(&beg, 0, sizeof(struct timeval));
-        memset(&ed, 0, sizeof(struct timeval));
-        gettimeofday(&beg, 0);
+
         //std::thread td(CalcUpdt, 0);
         //td.join();
         /*

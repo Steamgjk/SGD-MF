@@ -1,11 +1,11 @@
 #!/bin/sh
 rm ps worker rworker rworker_en
-g++  -g  -std=c++11  -pthread ps.cpp -o ps
-g++  -g  -std=c++11  -pthread worker.cpp -o worker
-g++  -g  -std=c++11  -pthread rworker.cpp -o rworker
-g++  -g  -std=c++11  -pthread rworker_en.cpp -o rworker_en
-g++  -g  -std=c++11  -pthread genSeq.cpp -o genSeq
-g++  -g  -std=c++11  -pthread PartitionMap.cpp -o PartitionMap
-g++  -g  -std=c++11  -pthread genRingSeq.cpp -o genRingSeq
-g++  -g  -std=c++11  -pthread genMatrix.cpp -o genMatrix
-g++  -g  -std=c++11  -pthread genNewMatrix.cpp -o genNewMatrix
+g++  -g   ps.cpp -o ps -pthread -std=c++11
+g++  -g   worker.cpp -o worker -pthread -std=c++11
+g++  -g   rworker.cpp -o rworker -pthread -std=c++11
+g++  -g   rworker_en.cpp -o rworker_en -pthread -std=c++11
+g++  -g   genSeq.cpp -o genSeq -pthread -std=c++11
+g++  -g   PartitionMap.cpp -o PartitionMap -pthread -std=c++11
+g++  -g   genRingSeq.cpp -o genRingSeq -pthread -std=c++11
+g++  -g   genMatrix.cpp -o genMatrix -pthread -std=c++11
+g++  -g   genNewMatrix.cpp -o genNewMatrix -pthread -std=c++11

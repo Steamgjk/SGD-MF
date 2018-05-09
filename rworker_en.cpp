@@ -340,8 +340,8 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             int times_thresh = 100;
-            int row_sta_idx = Pblock.sta_idx;
-            int col_sta_idx = Qblock.sta_idx;
+            int row_sta_idx = Pblocks[p_block_idx].sta_idx;
+            int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
             size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             int rand_idx = -1;

@@ -366,6 +366,7 @@ void CalcUpdt(int td_id)
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
             size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
+            printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
             int rand_idx = -1;
             while (times_thresh--)
             {
@@ -526,7 +527,7 @@ void LoadData(int pre_read)
         {
             continue;
         }
-        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        sprintf(fn, "%s%d:[%d][%d]", FILE_NAME, data_idx, row, col);
         printf("fn=%s\n", fn );
         ifstream ifs(fn);
         if (!ifs.is_open())
@@ -551,6 +552,10 @@ void LoadData(int pre_read)
             hash_for_col_threads[row][col][cidx].push_back(hash_id);
             rates_for_col_threads[row][col][cidx].push_back(rate);
 
+        }
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            printf("row=%d  col=%d i=%d sz =%ld  szc=%ld\n", row, col, i, hash_for_row_threads[row][col][i].size();  hash_for_col_threads[row][col][i].size()  );
         }
 
 

@@ -615,7 +615,7 @@ void readData(int data_thread_id)
         int col = data_idx % DIM_NUM;
 
         //if (TrainMaps[row][col].size() == 0)
-        if (hash_for_row_threads[row][col][0].size() != 0)
+        if (hash_for_row_threads[row][col][0].size() == 0)
         {
 
             sprintf(fn, "%s%d", FILE_NAME, data_idx);
@@ -792,16 +792,16 @@ void SGD_MF()
         oldP = Pblocks[p_block_idx].eles;
         oldQ = Qblocks[q_block_idx].eles;
 
+
+        for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
+        {
+            StartCalcUpdt[ii] = true;
+        }
         struct timeval beg, ed;
         memset(&beg, 0, sizeof(struct timeval));
         memset(&ed, 0, sizeof(struct timeval));
         gettimeofday(&beg, 0);
         bool canbreak = true;
-        for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
-        {
-            StartCalcUpdt[ii] = true;
-        }
-
         while (1 == 1)
         {
             canbreak = true;

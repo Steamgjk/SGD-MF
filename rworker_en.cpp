@@ -371,10 +371,11 @@ void CalcUpdt(int td_id)
                 rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
                 ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
                 //printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
-                printf(" 0000000  p_block_idx=%d  q_block_idx=%d \n", p_block_idx, q_block_idx);
+
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 if (rtsz == 0)
                 {
+                    printf(" 0000000  p_block_idx=%d  q_block_idx=%d \n", p_block_idx, q_block_idx);
                     exit(0);
                 }
             }

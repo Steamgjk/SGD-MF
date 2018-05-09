@@ -439,10 +439,12 @@ void CalcUpdt(int thread_id)
     int times_thresh = 1000;
     int row_sta_idx = Pblock.sta_idx;
     int col_sta_idx = Qblock.sta_idx;
-
+    size_t rtsz = hash_for_row_threads[thread_id].size();
+    size_t ctsz = hash_for_col_threads[thread_id].size();
+    int rand_idx = -1;
     while (times_thresh--)
     {
-        rand_idx = random() % tsz;
+        rand_idx = random() % rtsz;
         long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
         long i = real_hash_idx / M - row_sta_idx;
         long j = real_hash_idx % M - col_sta_idx;
@@ -455,6 +457,8 @@ void CalcUpdt(int thread_id)
         {
             Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
         }
+
+        rand_idx = random() % ctsz;
         real_hash_idx = hash_for_col_threads[thread_id][rand_idx];
         i = real_hash_idx / M - row_sta_idx;
         j = real_hash_idx % M - col_sta_idx;

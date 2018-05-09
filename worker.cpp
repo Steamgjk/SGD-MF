@@ -436,6 +436,7 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 }
 void CalcUpdt(int thread_id)
 {
+    /*
     int times_thresh = 1000;
     int row_sta_idx = Pblock.sta_idx;
     int col_sta_idx = Qblock.sta_idx;
@@ -472,6 +473,7 @@ void CalcUpdt(int thread_id)
             Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
         }
     }
+    **/
     printf("finish %d\n",  thread_id);
 }
 void submf()

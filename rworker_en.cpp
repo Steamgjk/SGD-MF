@@ -59,6 +59,9 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 #define QU_LEN 5000
 #define ThreshIter 100
 
+
+#define WORKER_THREAD_NUM 30
+
 int GROUP_NUM = 2;
 int DIM_NUM = 4;
 int WORKER_NUM = 2;
@@ -70,6 +73,7 @@ int process_tail[WORKER_TD];
 
 double yita = 0.002;
 double theta = 0.05;
+vector<bool> StartCalcUpdt;
 
 struct Block
 {

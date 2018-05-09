@@ -167,12 +167,11 @@ void LoadTestRating();
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
-vector<bool> StartCalcUpdt;
 void CalcUpdt(int thread_id);
+
 int thread_id = -1;
-
 struct timeval start, stop, diff;
-
+vector<bool> StartCalcUpdt;
 
 //double* minR = (double*)malloc(sizeof(double) * Rsz);
 map<long, double> RMap;

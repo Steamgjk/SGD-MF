@@ -68,6 +68,9 @@ int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
 int process_tail[WORKER_TD];
 
+double yita = 0.002;
+double theta = 0.05;
+
 struct Block
 {
     int block_id;
@@ -142,6 +145,11 @@ struct Updates
 struct Block Pblocks[CAP];
 struct Block Qblocks[CAP];
 
+struct Updates Pupdt;
+struct Updates Qupdt;
+vector<double> oldP;
+vector<double> oldQ;
+
 struct timeval start, stop, diff;
 
 int states[QU_LEN];
@@ -160,6 +168,13 @@ int disk_read_tail_idx = CACHE_NUM;
 
 std::map<long, double> TrainMaps[100][100];
 std::map<long, double> TestMaps[100][100];
+
+std::vector<long> hash_for_row_threads[10][10][WORKER_THREAD_NUM];
+std::vector<double> rates_for_row_threads[10][10][WORKER_THREAD_NUM];
+
+std::vector<long> hash_for_col_threads[10][10][WORKER_THREAD_NUM];
+std::vector<double> rates_for_col_threads[10][10][WORKER_THREAD_NUM];
+
 //0 is to right trans Q, 1 is up, trans p
 
 int wait4connection(char*local_ip, int local_port);
@@ -169,7 +184,7 @@ void readData(int data_thread_id);
 
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
-void submf(double *minR, Block& minP, Block& minQ, int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
+
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadActionConfig(char* fn);
 void LoadStateConfig(char* fn);
@@ -178,6 +193,7 @@ void getBlockRates(map<long, double>& BlockMap, int block_id);
 void SGD_MF();
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 void LoadData(int pre_read);
+void CalcUpdt(int td_id);
 
 int thread_id = -1;
 int p_block_idx;
@@ -313,6 +329,57 @@ int main(int argc, const char * argv[])
     }
 }
 
+void CalcUpdt(int td_id, int row, int col)
+{
+    while (1 == 1)
+    {
+        if (StartCalcUpdt[td_id])
+        {
+            int times_thresh = 100;
+            int row_sta_idx = Pblock.sta_idx;
+            int col_sta_idx = Qblock.sta_idx;
+            size_t rtsz = hash_for_row_threads[td_id].size();
+            size_t ctsz = hash_for_col_threads[td_id].size();
+            int rand_idx = -1;
+            while (times_thresh--)
+            {
+                rand_idx = random() % rtsz;
+                long real_hash_idx = hash_for_row_threads[row][col][td_id][rand_idx];
+                long i = real_hash_idx / M - row_sta_idx;
+                long j = real_hash_idx % M - col_sta_idx;
+                double error = rates_for_row_threads[row][col][rand_idx];
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                }
+
+                rand_idx = random() % ctsz;
+                real_hash_idx = hash_for_col_threads[row][col][rand_idx];
+                i = real_hash_idx / M - row_sta_idx;
+                j = real_hash_idx % M - col_sta_idx;
+                error = rates_for_col_threads[row][col][td_id][rand_idx];
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                }
+            }
+            StartCalcUpdt[td_id] = false;
+            printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);
+
+        }
+    }
+
+
+}
+
 void LoadActionConfig(char* fn)
 {
     //Should init both send_action and recv_action //same
@@ -428,7 +495,8 @@ void LoadData(int pre_read)
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
 
-        if (TrainMaps[row][col].size() != 0)
+        //if (TrainMaps[row][col].size() != 0)
+        if (hash_for_row_threads[row][col].size() != 0)
         {
             continue;
         }
@@ -441,39 +509,24 @@ void LoadData(int pre_read)
             exit(-1);
         }
         cnt = 0;
+
+        long ridx, cidx;
+
         while (!ifs.eof())
         {
             ifs >> hash_id >> rate;
-            TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
-            /*
-            cnt++;
-            if (cnt % 100000 == 0)
-            {
-                printf("Train cnt = %ld\n", cnt);
-            }
-            **/
+            //TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+
+            ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+            cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+
+            hash_for_row_threads[row][col][ridx].push_back(hash_id);
+            rates_for_row_threads[row][col][ridx].push_back(rate);
+            hash_for_col_threads[row][col][cidx].push_back(hash_id);
+            rates_for_col_threads[row][col][cidx].push_back(rate);
+
         }
-        sprintf(fn, "%s%d", TEST_NAME, data_idx);
-        printf("fn=%s\n", fn );
-        ifstream ifs2(fn);
-        cnt = 0;
-        if (!ifs2.is_open())
-        {
-            printf("fail to open %s\n", fn );
-            exit(-1);
-        }
-        while (!ifs2.eof())
-        {
-            ifs2 >> hash_id >> rate;
-            TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
-            /*
-            cnt++;
-            if (cnt % 100000 == 0)
-            {
-                printf("Test cnt = %ld\n", cnt);
-            }
-            **/
-        }
+
 
     }
 }
@@ -503,7 +556,8 @@ void readData(int data_thread_id)
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
 
-        if (TrainMaps[row][col].size() == 0)
+        //if (TrainMaps[row][col].size() == 0)
+        if (hash_for_row_threads[row][col].size() != 0)
         {
 
             sprintf(fn, "%s%d", FILE_NAME, data_idx);
@@ -515,43 +569,36 @@ void readData(int data_thread_id)
                 exit(-1);
             }
             cnt = 0;
+            long ridx, cidx;
             while (!ifs.eof())
             {
                 ifs >> hash_id >> rate;
-                TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
-                /*
-                cnt++;
-                if (cnt % 100000 == 0)
-                {
-                    printf("Train cnt = %ld\n", cnt);
-                }
-                **/
+                //TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
+
+                ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+                hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                rates_for_row_threads[row][col][ridx].push_back(rate);
+                hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                rates_for_col_threads[row][col][cidx].push_back(rate);
+
             }
-            sprintf(fn, "%s%d", TEST_NAME, data_idx);
-            ifstream ifs2(fn);
-            cnt = 0;
-            if (!ifs2.is_open())
-            {
-                printf("fail to open %s\n", fn );
-                exit(-1);
-            }
-            while (!ifs2.eof())
-            {
-                ifs2 >> hash_id >> rate;
-                TestMaps[row][col].insert(pair<long, double>(hash_id, rate));
-                cnt++;
-                if (cnt % 100000 == 0)
-                {
-                    printf("Test cnt = %ld\n", cnt);
-                }
-            }
+
         }
         disk_read_tail_idx++;
         data_idx = states[disk_read_head_idx];
         row = data_idx / DIM_NUM;
         col = data_idx % DIM_NUM;
-        TrainMaps[row][col].clear();
-        TestMaps[row][col].clear();
+        //TrainMaps[row][col].clear();
+        //TestMaps[row][col].clear();
+        for (int kk = 0; kk < WORKER_THREAD_NUM; kk++)
+        {
+            hash_for_row_threads[row][col][kk].clear();
+            rates_for_row_threads[row][col][kk].clear();
+            hash_for_col_threads[row][col][kk].clear();
+            rates_for_col_threads[row][col][kk].clear();
+        }
+
         disk_read_head_idx++;
     }
     printf("Exit read data\n");
@@ -666,23 +713,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
     return rmse;
 }
 
-void CalcSGD(int worker_td)
-{
-    int row_sta_idx = Pblocks[p_block_idx].sta_idx;
-    int col_sta_idx = Qblocks[p_block_idx].sta_idx;
-    int row_len = Pblocks[p_block_idx].height;
-    int col_len = Qblocks[q_block_idx].height;
-    int row_unit_len = row_len / WORKER_TD;
-    int col_unit_len = col_len / WORKER_TD;
 
-    while (process_tail[worker_td] <= process_head[worker_td])
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
-
-
-
-}
 void SGD_MF()
 {
     double error = 0;
@@ -693,80 +724,89 @@ void SGD_MF()
     int Psz =  Pblocks[p_block_idx].height * K;
     int Qsz = Qblocks[q_block_idx].height * K;
 
-    //printf("row_len=%d col_len=%d\n", row_len, col_len );
-
-    //double old_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
-    //double new_rmse = old_rmse;
-
     int iter_cnt = 0;
-    /*
-    std::vector<long> hash_sample;
-    std::vector<double> rate_sample;
-    map<long, double>::iterator iter = TrainMaps[p_block_idx][q_block_idx].begin();
-    srand(time(0));
-    while (iter != TrainMaps[p_block_idx][q_block_idx].end())
-    {
-        if (rand() % 1000 < 10)
-        {
-            hash_sample.push_back(iter->first);
-            rate_sample.push_back(iter->second);
-        }
-        iter++;
-    }
-
-    size_t sample_sz = hash_sample.size();
-    **/
     int update_num = 0;
-//while ( new_rmse > 0.999 * old_rmse )
+
     {
-        vector<double> oldP = Pblocks[p_block_idx].eles;
-        vector<double> oldQ = Qblocks[q_block_idx].eles;
+        oldP = Pblocks[p_block_idx].eles;
+        oldQ = Qblocks[q_block_idx].eles;
 
-        for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
-            //for (size_t ss = 0; ss < sample_sz; ss++)
+        struct timeval beg, ed;
+        memset(&beg, 0, sizeof(struct timeval));
+        memset(&ed, 0, sizeof(struct timeval));
+        gettimeofday(&beg, 0);
+        bool canbreak = true;
+        for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
-
-            long i = c_row_idx;
-            long j = rand() % col_len;
-
-            long real_row_idx = i + row_sta_idx;
-            long real_col_idx = j + col_sta_idx;
-            long real_hash_idx = real_row_idx * M + real_col_idx;
-
-            map<long, double>::iterator iter;
-            iter = TrainMaps[p_block_idx][q_block_idx].find(real_hash_idx);
-
-            /*
-                        long real_hash_idx = hash_sample[ss];
-                        long i = real_hash_idx / M - row_sta_idx;
-                        long j = real_hash_idx % M - col_sta_idx;
-                        **/
-            //printf("p=%d  q=%d i=%ld j = %ld  real=%ld row_sta_idx=%ld col_sta_idx=%ld\n", p_block_idx, q_block_idx, i, j, real_hash_idx, row_sta_idx, col_sta_idx );
-            //error = rate_sample[ss];
-            if (iter != TrainMaps[p_block_idx][q_block_idx].end())
-            {
-                error = iter->second;
-                for (int k = 0; k < K; ++k)
-                {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    Pblocks[p_block_idx].eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
-                    Qblocks[q_block_idx].eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
-                }
-                update_num++;
-            }
+            StartCalcUpdt[ii] = true;
         }
-        int test_cnt = 0;
-        for (int i = 0; i < Pblocks[p_block_idx].eles.size(); i++)
+
+        while (1 == 1)
         {
-            if (Pblocks[p_block_idx].eles[i] - oldP[i]  != 0)
+            canbreak = true;
+            for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
             {
-                test_cnt++;
+
+                if (StartCalcUpdt[ii])
+                {
+                    //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
+                    canbreak = false;
+                }
+
             }
+            if (canbreak)
+            {
+                break;
+            }
+            //printf("?break?  %d\n", canbreak);
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
-        printf("test_cnt=%d\n", test_cnt );
+        //printf("ccc\n");
+        gettimeofday(&ed, 0);
+        long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf("thesh = %d  time = %lld\n", times_thresh, mksp);
+
+        /*
+                for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
+                    //for (size_t ss = 0; ss < sample_sz; ss++)
+                {
+
+                    long i = c_row_idx;
+                    long j = rand() % col_len;
+
+                    long real_row_idx = i + row_sta_idx;
+                    long real_col_idx = j + col_sta_idx;
+                    long real_hash_idx = real_row_idx * M + real_col_idx;
+
+                    map<long, double>::iterator iter;
+                    iter = TrainMaps[p_block_idx][q_block_idx].find(real_hash_idx);
+
+
+                    if (iter != TrainMaps[p_block_idx][q_block_idx].end())
+                    {
+                        error = iter->second;
+                        for (int k = 0; k < K; ++k)
+                        {
+                            error -= oldP[i * K + k] * oldQ[j * K + k];
+                        }
+                        for (int k = 0; k < K; ++k)
+                        {
+                            Pblocks[p_block_idx].eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
+                            Qblocks[q_block_idx].eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
+                        }
+                        update_num++;
+                    }
+                }
+                int test_cnt = 0;
+                for (int i = 0; i < Pblocks[p_block_idx].eles.size(); i++)
+                {
+                    if (Pblocks[p_block_idx].eles[i] - oldP[i]  != 0)
+                    {
+                        test_cnt++;
+                    }
+                }
+                printf("test_cnt=%d\n", test_cnt );
+                **/
         /*
         iter_cnt++;
         new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);

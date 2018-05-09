@@ -527,8 +527,8 @@ void LoadData(int pre_read)
         {
             continue;
         }
-        sprintf(fn, "%s%d:[%d][%d]", FILE_NAME, data_idx, row, col);
-        printf("fn=%s\n", fn );
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        printf("fn=%s  :[%d][%d]\n", fn, row, col );
         ifstream ifs(fn);
         if (!ifs.is_open())
         {

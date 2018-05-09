@@ -617,6 +617,7 @@ void submf()
         {
             StartCalcUpdt[ii] = true;
         }
+        printf("come here\n");
         while (1 == 1)
         {
             for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)

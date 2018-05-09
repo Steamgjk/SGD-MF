@@ -600,6 +600,7 @@ void readData(int data_thread_id)
         if (disk_read_head_idx >= has_processed)
         {
             printf("head>=has_processed  %d  %d\n", disk_read_head_idx, has_processed);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             continue;
         }
         int data_idx = states[disk_read_tail_idx];

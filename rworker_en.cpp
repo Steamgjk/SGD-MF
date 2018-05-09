@@ -653,8 +653,9 @@ void SGD_MF()
         oldP = Pblocks[p_block_idx].eles;
         oldQ = Qblocks[q_block_idx].eles;
         gettimeofday(&ed, 0);
-        printf(" copy time = %lld\n", mksp);
+
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf(" copy time = %lld\n", mksp);
         gettimeofday(&beg, 0);
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {

@@ -70,14 +70,14 @@ int main()
 		srow = row_idx / row_unit;
 		scol = col_idx / col_unit;
 		file_idx = srow * PORTION_NUM + scol;
-		printf("file_idx=%ld\n", file_idx );
+		//printf("file_idx=%ld\n", file_idx );
 		ofs_train[file_idx] << hash_id << " " << rate;
 
 	}
 	printf("ok\n");
 	while (!ifs_test.eof())
 	{
-		ifs_train >> hash_id >> rate;
+		ifs_test >> hash_id >> rate;
 		row_idx = hash_id / M;
 		col_idx = hash_id % M;
 

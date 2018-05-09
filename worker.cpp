@@ -443,7 +443,7 @@ void CalcUpdt(int thread_id, double yita, double theta)
         long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
         long i = real_hash_idx / M - row_sta_idx;
         long j = real_hash_idx % M - col_sta_idx;
-        error = rates_for_row_threads[thread_id][rand_idx];
+        double error = rates_for_row_threads[thread_id][rand_idx];
         for (int k = 0; k < K; ++k)
         {
             error -= oldP[i * K + k] * oldQ[j * K + k];

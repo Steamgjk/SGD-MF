@@ -567,12 +567,13 @@ void submf()
         std::vector<thread> td_vec(10);
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            td_vec.push_back(std::thread(CalcUpdt, i));
+            std::thread td(CalcUpdt, i);
+            td_vec.push_back(std::move(td));
         }
         printf("come here\n");
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            td_vec[i].detach();
+            td_vec[i].join();
 
         }
         gettimeofday(&ed, 0);

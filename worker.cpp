@@ -426,7 +426,7 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 }
 void submf()
 {
-    double yita = 0.2;
+    double yita = 0.1;
     double theta = 0.05;
     double error = 0;
     int minN = Pblock.height;

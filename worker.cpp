@@ -559,8 +559,8 @@ void submf()
         int rand_idx = -1;
         //printf("launch new thread...\n");
         //multiple thread...
-        std::thread test(testhello, 100);
-        test.detach();
+        std::thread test(testhello, 10);
+        test.join();
         struct timeval beg, ed;
         memset(&beg, 0, sizeof(struct timeval));
         memset(&ed, 0, sizeof(struct timeval));

@@ -60,13 +60,14 @@ int main()
 	long row_idx, col_idx, srow, scol, file_idx;
 	while (!ifs_train.eof())
 	{
+
 		ifs_train >> hash_id >> rate;
 		row_idx = hash_id / M;
 		col_idx = hash_id % M;
 
 		srow = row_idx / PORTION_NUM;
 		scol = col_idx / PORTION_NUM;
-		file_idx = row_idx * PORTION_NUM + scol;
+		file_idx = srow * PORTION_NUM + scol;
 
 		ofs_train[file_idx] << hash_id << " " << rate;
 
@@ -80,7 +81,7 @@ int main()
 
 		srow = row_idx / PORTION_NUM;
 		scol = col_idx / PORTION_NUM;
-		file_idx = row_idx * PORTION_NUM + scol;
+		file_idx = srow * PORTION_NUM + scol;
 
 		ofs_test[file_idx] << hash_id << " " << rate;
 

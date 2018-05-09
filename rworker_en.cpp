@@ -500,7 +500,7 @@ void LoadData(int pre_read)
         int col = data_idx % DIM_NUM;
 
         //if (TrainMaps[row][col].size() != 0)
-        if (hash_for_row_threads[row][col].size() != 0)
+        if (hash_for_row_threads[row][col][0].size() != 0)
         {
             continue;
         }
@@ -561,7 +561,7 @@ void readData(int data_thread_id)
         int col = data_idx % DIM_NUM;
 
         //if (TrainMaps[row][col].size() == 0)
-        if (hash_for_row_threads[row][col].size() != 0)
+        if (hash_for_row_threads[row][col][0].size() != 0)
         {
 
             sprintf(fn, "%s%d", FILE_NAME, data_idx);

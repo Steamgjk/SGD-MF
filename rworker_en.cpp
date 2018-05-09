@@ -481,7 +481,7 @@ void LoadData(int pre_read)
             for (int col_sta = phy_col; col_sta < phy_col  + (2 / GROUP_NUM); col_sta++)
             {
                 //if (TrainMaps[row][col].size() != 0)
-                data_idx = row_sta * DIM_NUM + col_sta;
+                data_idx = row_sta * DIM_NUM * (2 / GROUP_NUM) + col_sta;
                 sprintf(fn, "%s%d", FILE_NAME, data_idx);
                 printf("fn=%s  :[%d][%d]\n", fn, row_sta, col_sta );
                 ifstream ifs(fn);
@@ -554,7 +554,7 @@ void readData(int data_thread_id)
                 for (int col_sta = phy_col; col_sta < phy_col  + (2 / GROUP_NUM); col_sta++)
                 {
 
-                    data_idx = row_sta * DIM_NUM + col_sta;
+                    data_idx = row_sta * DIM_NUM * (2 / GROUP_NUM) + col_sta;
                     sprintf(fn, "%s%d", FILE_NAME, data_idx);
                     //printf("read fn =%s\n", fn );
                     ifstream ifs(fn);

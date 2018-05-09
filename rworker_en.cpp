@@ -242,21 +242,14 @@ int main(int argc, const char * argv[])
             Qblocks[i].eles[j] = drand48();
         }
     }
-    printf("Initial\n");
-    for (int ii = 0; ii < DIM_NUM; ii++)
-    {
-        printf("p %d  %d\n", ii, Pblocks[ii].block_id );
-        printf("q %d  %d\n", ii, Pblocks[ii].block_id );
-    }
+
 
 
     std::vector<thread> td_vec;
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
-        //std::thread td(CalcUpdt, i);
         td_vec.push_back(std::thread(CalcUpdt, i));
     }
-    //printf("come here\n");
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
         td_vec[i].detach();
@@ -302,43 +295,26 @@ int main(int argc, const char * argv[])
 
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
-            //printf("pidx = %d  qidx=%d recved_head=%d recved_tail=%d\n", p_block_idx, q_block_idx, recved_head, recved_tail );
+
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
             SGD_MF();
 
             gettimeofday(&et, 0);
-            //printf("write pidx  %d qidx %d pid =%d  qid = %d\n", p_block_idx, q_block_idx, Pblocks[p_block_idx].block_id, Qblocks[q_block_idx].block_id );
-            /*
-            if(iter_cnt%10 == 0){
-                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
-            }
-            **/
+
 
 
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
 
-            /*
-                        if (send_this_p[i] == true)
-                        {
-                            to_send[to_send_tail] = p_to_process[i];
-                            to_send_tail = (to_send_tail + 1) % QU_LEN;
-                        }
-                        else
-                        {
-                            to_send[to_send_tail] = q_to_process[i];
-                            to_send_tail = (to_send_tail + 1) % QU_LEN;
-                        }
-                        **/
             to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
-                printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
 
             //getchar();
@@ -366,31 +342,9 @@ void CalcUpdt(int td_id)
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
             size_t ctsz;
-            do
-            {
-                rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
-                ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
-                //printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
+            rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
+            ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                if (rtsz == 0)
-                {
-                    printf(" 0000000  p_block_idx=%d  q_block_idx=%d \n", p_block_idx, q_block_idx);
-                    exit(0);
-                }
-            }
-            while (rtsz == 0);
-
-
-            if (rtsz == 0 || ctsz == 0)
-            {
-                printf("\n\n++++++++++++++++++++++++++++++\n");
-                for (int i = 0; i < WORKER_THREAD_NUM; i++)
-                {
-                    printf("p_block_idx=%d q_block_idx=%d  i=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, i, hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size() );
-                }
-                //getchar();
-            }
             int rand_idx = -1;
             while (times_thresh--)
             {
@@ -523,15 +477,7 @@ void LoadStateConfig(char* fn)
         printf("%d\t", states[i]);
     }
     printf("\n");
-    /*
-    printf("\n+++State++\n");
-    for (int i = 0; i < 100; i++)
-    {
-        printf("%d:%d:%d\t", states[i], to_send[i], has_recved[i]);
-    }
-    printf("\n");
-    **/
-    //getchar();
+
 
 }
 void LoadData(int pre_read)
@@ -577,12 +523,7 @@ void LoadData(int pre_read)
             rates_for_col_threads[row][col][cidx].push_back(rate);
 
         }
-        /*
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
-        {
-            printf("row=%d  col=%d i=%d sz =%ld  szc=%ld\n", row, col, i, hash_for_row_threads[row][col][i].size(),  hash_for_col_threads[row][col][i].size()  );
-        }
-        **/
+
 
 
     }
@@ -606,8 +547,8 @@ void readData(int data_thread_id)
         }
         if (disk_read_head_idx >= has_processed)
         {
-            printf("head>=has_processed  %d  %d\n", disk_read_head_idx, has_processed);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("head>=has_processed  %d  %d\n", disk_read_head_idx, has_processed);
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             continue;
         }
         int data_idx = states[disk_read_tail_idx];
@@ -643,7 +584,7 @@ void readData(int data_thread_id)
             }
 
         }
-        printf("read [%d][%d]\n", row, col  );
+        //printf("read [%d][%d]\n", row, col  );
 
         disk_read_tail_idx++;
         data_idx = states[disk_read_head_idx];
@@ -658,7 +599,7 @@ void readData(int data_thread_id)
             hash_for_col_threads[row][col][kk].clear();
             rates_for_col_threads[row][col][kk].clear();
         }
-        printf("free [%d][%d]\n", row, col );
+        //printf("free [%d][%d]\n", row, col );
         disk_read_head_idx++;
 
     }

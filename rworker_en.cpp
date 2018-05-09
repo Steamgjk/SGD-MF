@@ -358,7 +358,7 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     //Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
-                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * Qvec[j * K + k] - theta * Pvec[i * K + k]);
+                    Pblocks[p_block_idx].eles[k] += yita * (error * Qvec[k] - theta * Pvec[k]);
 
                 }
 
@@ -377,7 +377,7 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     //Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
-                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * Pvec[i * K + k] - theta * Qvec[j * K + k]);
+                    Qblocks[q_block_idx].eles[k] += yita * (error * Pvec[k] - theta * Qvec[k]);
                 }
             }
             StartCalcUpdt[td_id] = false;

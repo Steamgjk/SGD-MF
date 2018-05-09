@@ -617,22 +617,25 @@ void submf()
         {
             StartCalcUpdt[ii] = true;
         }
-        printf("come here\n");
+
         while (1 == 1)
         {
+            canbreak = true;
             for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
             {
+
                 if (StartCalcUpdt[ii])
                 {
-                    printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
+                    //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
                     canbreak = false;
                 }
+
             }
             if (canbreak)
             {
                 break;
             }
-            printf("?break?  %d\n", canbreak);
+            //printf("?break?  %d\n", canbreak);
             //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         //printf("ccc\n");

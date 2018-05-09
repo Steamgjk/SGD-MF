@@ -355,7 +355,7 @@ void CalcUpdt(int td_id)
                     Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
                     if (i * K + k >= Pblocks[p_block_idx].eles.size())
                     {
-                        printf("i=%d K=%d k=%d sum=%d sz=%ld\n", i, K, k, i * K + k, Pblocks[p_block_idx].eles.size() );
+                        printf("i=%d K=%d k=%d sum=%d sz=%ld p_block_idx=%d q_block_idx=%d, rr=%ld cc=%ld row_sta_idx=%ld col_sta_idx=%ld\n", i, K, k, i * K + k, Pblocks[p_block_idx].eles.size(), p_block_idx, q_block_idx, real_hash_idx / M, real_hash_idx % M, row_sta_idx, col_sta_idx );
                         exit(1);
                     }
                     if (j * K + k >= Qblocks[q_block_idx].eles.size()  )

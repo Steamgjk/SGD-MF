@@ -139,6 +139,10 @@ struct Block Pblock;
 struct Block Qblock;
 struct Updates Pupdt;
 struct Updates Qupdt;
+vector<double> oldP;
+vector<double> oldQ;
+vector<long> hash_ids;
+std::vector<long> rates;
 
 bool canSend = false;
 bool hasRecved = false;
@@ -149,8 +153,8 @@ int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 //void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
-
+//void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
+void submf();
 void testhello(int th);
 
 void LoadConfig(char*filename);
@@ -214,7 +218,7 @@ int main(int argc, const char * argv[])
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
 
-            submf(Pblock, Qblock, Pupdt, Qupdt, K);
+            submf();
             iter_cnt++;
             if (iter_cnt == thresh_log )
             {
@@ -420,30 +424,30 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 
 
 }
-void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int minK, int steps, float alpha , float beta)
+void submf()
 {
     //printf("begin submf\n");
     double error = 0;
-    int minN = minP.height;
-    int minM = minQ.height;
+    int minN = Pblock.height;
+    int minM = Qblock.height;
 
-    int row_sta_idx = minP.sta_idx;
-    int col_sta_idx = minQ.sta_idx;
-    int row_len = minP.height;
-    int col_len = minQ.height;
+    int row_sta_idx = Pblock.sta_idx;
+    int col_sta_idx = Qblock.sta_idx;
+    int row_len = Pblock.height;
+    int col_len = Qblock.height;
 
-    int Psz =  minP.height * minK;
-    int Qsz = minQ.height * minK;
+    int Psz = Pblock.height * minK;
+    int Qsz = Qblock.height * minK;
     //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
-    updateP.eles.resize(Psz);
-    updateP.ele_num = Psz;
-    updateQ.eles.resize(Qsz);
-    updateQ.ele_num = Qsz;
-    updateP.block_id = minP.block_id;
-    updateQ.block_id = minQ.block_id;
+    Pupdt.eles.resize(Psz);
+    Pupdt.ele_num = Psz;
+    Qupdt.eles.resize(Qsz);
+    Qupdt.ele_num = Qsz;
+    Pupdt.block_id = Pblock.block_id;
+    Qupdt.block_id = Qblock.block_id;
 
-    int r1 = minP.block_id * 2;
-    int c1 = minQ.block_id * 2;
+    int r1 = Pblock.block_id * 2;
+    int c1 = Qblock.block_id * 2;
     int f1 = r1 * 8 + c1;
     int f2 = r1 * 8 + c1 + 1;
     int f3 = (r1 + 1) * 8 + c1;
@@ -458,21 +462,22 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
     int ii = 0;
     for (ii = 0; ii < Psz; ii++)
     {
-        updateP.eles[ii] = 0;
+        Pupdt.eles[ii] = 0;
     }
     for ( ii = 0; ii < Qsz; ii++)
     {
-        updateQ.eles[ii] = 0;
+        Qupdt.eles[ii] = 0;
     }
 
     {
-        vector<double> oldP = minP.eles;
-        vector<double> oldQ = minQ.eles;
         int times_thresh = 3000;
         //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         //for (size_t ss = 0; ss < sample_sz; ss++)
-        vector<long> hash_ids;
-        std::vector<long> rates;
+        oldP = Pblock.eles;
+        oldQ = Qblock.eles;
+
+        hash_ids.clear();
+        rates.clear();
         map<long, double>::iterator myiter = RMap.begin();
         while (myiter != RMap.end())
         {
@@ -482,10 +487,18 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
         }
         int tsz = hash_ids.size();
         int rand_idx = -1;
-        printf("launch new thread...\n");
+        //printf("launch new thread...\n");
         //multiple thread...
-        std::thread test(testhello, 100);
-        test.detach();
+        //std::thread test(testhello, 100);
+        //test.detach();
+        /*
+        std::vector<thread> td_vec(10);
+        for (int i = 0; i < 10; i++)
+        {
+            td_vec.push_back(std::thread(CalcUpdt,));
+        }
+        **/
+
         while (times_thresh--)
         {
             rand_idx = random() % tsz;
@@ -499,8 +512,8 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
             }
             for (int k = 0; k < K; ++k)
             {
-                updateP.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
-                updateQ.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
+                Pupdt.eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
+                Qupdt.eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
             }
 
             /*
@@ -528,9 +541,9 @@ void submf(Block & minP, Block & minQ, Updates & updateP, Updates & updateQ, int
                         **/
         }
         int test_cnt = 0;
-        for (int i = 0; i < updateP.eles.size(); i++)
+        for (int i = 0; i < Pupdt.eles.size(); i++)
         {
-            if ( updateP.eles[i] != 0)
+            if ( Pupdt.eles[i] != 0)
             {
                 test_cnt++;
             }

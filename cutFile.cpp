@@ -58,6 +58,8 @@ int main()
 	}
 	printf("ok\n");
 	long row_idx, col_idx, srow, scol, file_idx;
+	long row_unit = N / PORTION_NUM;
+	long col_unit = M / PORTION_NUM;
 	while (!ifs_train.eof())
 	{
 
@@ -65,8 +67,8 @@ int main()
 		row_idx = hash_id / M;
 		col_idx = hash_id % M;
 
-		srow = row_idx / PORTION_NUM;
-		scol = col_idx / PORTION_NUM;
+		srow = row_idx / row_unit;
+		scol = col_idx / col_unit;
 		file_idx = srow * PORTION_NUM + scol;
 		printf("file_idx=%ld\n", file_idx );
 		ofs_train[file_idx] << hash_id << " " << rate;
@@ -79,8 +81,8 @@ int main()
 		row_idx = hash_id / M;
 		col_idx = hash_id % M;
 
-		srow = row_idx / PORTION_NUM;
-		scol = col_idx / PORTION_NUM;
+		srow = row_idx / row_unit;
+		scol = col_idx / col_unit;
 		file_idx = srow * PORTION_NUM + scol;
 
 		ofs_test[file_idx] << hash_id << " " << rate;

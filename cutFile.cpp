@@ -79,7 +79,7 @@ int main()
 		}
 		file_idx = srow * PORTION_NUM + scol;
 		//printf("file_idx=%ld\n", file_idx );
-		ofs_train[file_idx] << hash_id << " " << rate;
+		ofs_train[file_idx] << hash_id << " " << rate << endl;
 
 	}
 	printf("ok\n");
@@ -101,7 +101,7 @@ int main()
 		}
 		file_idx = srow * PORTION_NUM + scol;
 		//printf("fff %d %d %d %ld %ld\n", file_idx, srow, scol, row_idx, col_idx );
-		ofs_test[file_idx] << hash_id << " " << rate;
+		ofs_test[file_idx] << hash_id << " " << rate << endl;
 
 	}
 	printf("kkk\n");

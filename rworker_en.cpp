@@ -644,20 +644,25 @@ void SGD_MF()
 
     int iter_cnt = 0;
     int update_num = 0;
-
+    struct timeval beg, ed;
+    long long mksp;
+    memset(&beg, 0, sizeof(struct timeval));
+    memset(&ed, 0, sizeof(struct timeval));
     {
+        gettimeofday(&beg, 0);
         oldP = Pblocks[p_block_idx].eles;
         oldQ = Qblocks[q_block_idx].eles;
-
-
+        gettimeofday(&ed, 0);
+        printf(" copy time = %lld\n", mksp);
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        gettimeofday(&beg, 0);
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
             StartCalcUpdt[ii] = true;
         }
-        struct timeval beg, ed;
-        memset(&beg, 0, sizeof(struct timeval));
-        memset(&ed, 0, sizeof(struct timeval));
-        gettimeofday(&beg, 0);
+
+
+
         bool canbreak = true;
         while (1 == 1)
         {
@@ -678,7 +683,7 @@ void SGD_MF()
 
         }
         gettimeofday(&ed, 0);
-        long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf(" SGD time = %lld\n", mksp);
     }
 

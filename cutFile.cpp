@@ -62,7 +62,7 @@ int main()
 
 		srow = row_idx / PORTION_NUM;
 		scol = col_idx / PORTION_NUM;
-		file_idx = row * PORTION_NUM + scol;
+		file_idx = row_idx * PORTION_NUM + scol;
 
 		ofs_train[file_idx] << hash_id << " " << rate;
 
@@ -76,7 +76,7 @@ int main()
 
 		srow = row_idx / PORTION_NUM;
 		scol = col_idx / PORTION_NUM;
-		file_idx = row * PORTION_NUM + scol;
+		file_idx = row_idx * PORTION_NUM + scol;
 
 		ofs_test[file_idx] << hash_id << " " << rate;
 

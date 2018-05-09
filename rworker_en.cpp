@@ -768,7 +768,7 @@ void SGD_MF()
         //printf("ccc\n");
         gettimeofday(&ed, 0);
         long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("thesh = %d  time = %lld\n", times_thresh, mksp);
+        printf(" time = %lld\n", mksp);
 
         /*
                 for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)

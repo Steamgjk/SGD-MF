@@ -364,10 +364,12 @@ void CalcUpdt(int td_id)
             int times_thresh = 100;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
+            size_t rtsz;
+            size_t ctsz;
             do
             {
-                size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
-                size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
+                rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
+                ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
                 printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
             }
             while (rtsz == 0);

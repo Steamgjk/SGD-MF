@@ -471,7 +471,7 @@ void submf()
     }
 
     {
-        int times_thresh = 3000;
+        int times_thresh = 1000;
         //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
         //for (size_t ss = 0; ss < sample_sz; ss++)
         oldP = Pblock.eles;
@@ -499,6 +499,11 @@ void submf()
             td_vec.push_back(std::thread(CalcUpdt,));
         }
         **/
+        struct timeval beg, ed;
+        memset(&beg, 0, sizeof(struct timeval));
+        memset(&ed, 0, sizeof(struct timeval));
+
+        gettimeofday(&beg, 0);
 
         while (times_thresh--)
         {
@@ -518,6 +523,10 @@ void submf()
             }
 
         }
+        gettimeofday(&ed, 0);
+        long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf("thesh = %d  time = %lld\n", times_thresh, mksp);
+
         int test_cnt = 0;
         for (int i = 0; i < Pupdt.eles.size(); i++)
         {

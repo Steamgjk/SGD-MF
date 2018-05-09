@@ -569,10 +569,10 @@ void submf()
         {
             td_vec.push_back(std::thread(CalcUpdt, i));
         }
-
+        printf("come here\n");
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            td_vec[i].join();
+            td_vec[i].detach();
 
         }
         gettimeofday(&ed, 0);

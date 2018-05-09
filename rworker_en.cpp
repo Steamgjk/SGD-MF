@@ -555,7 +555,7 @@ void LoadData(int pre_read)
         }
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            printf("row=%d  col=%d i=%d sz =%ld  szc=%ld\n", row, col, i, hash_for_row_threads[row][col][i].size();  hash_for_col_threads[row][col][i].size()  );
+            printf("row=%d  col=%d i=%d sz =%ld  szc=%ld\n", row, col, i, hash_for_row_threads[row][col][i].size(),  hash_for_col_threads[row][col][i].size()  );
         }
 
 

@@ -594,6 +594,7 @@ void readData(int data_thread_id)
         col = data_idx % DIM_NUM;
         //TrainMaps[row][col].clear();
         //TestMaps[row][col].clear();
+        /*
         for (int kk = 0; kk < WORKER_THREAD_NUM; kk++)
         {
             hash_for_row_threads[row][col][kk].clear();
@@ -602,6 +603,7 @@ void readData(int data_thread_id)
             rates_for_col_threads[row][col][kk].clear();
         }
         printf("free [%d][%d]\n", row, col );
+        **/
         disk_read_head_idx++;
 
 

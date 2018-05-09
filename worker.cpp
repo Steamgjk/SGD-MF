@@ -65,7 +65,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define ThreshIter 1000
 #define SEQ_LEN 5000
-#define WORKER_THREAD_NUM 1
+#define WORKER_THREAD_NUM 10
 
 struct Block
 {
@@ -206,6 +206,8 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
+
+
     //double* minR = (double*)malloc(sizeof(double) * 1000);
     int iter_cnt = 0;
     bool isstart = false;
@@ -569,7 +571,7 @@ void submf()
         //std::thread td(CalcUpdt, 0);
         //td.join();
 
-        std::vector<thread> td_vec(10);
+        std::vector<thread> td_vec;
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
             //std::thread td(CalcUpdt, i);

@@ -632,7 +632,8 @@ void submf()
             {
                 break;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            printf("?break?  %d\n", canbreak);
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         //printf("ccc\n");
         gettimeofday(&ed, 0);

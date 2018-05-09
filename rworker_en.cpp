@@ -470,13 +470,15 @@ void LoadData(int pre_read)
         int data_idx = states[i];
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
+        int phy_row = row * (2 / GROUP_NUM);
+        int phy_col = col * (2 / GROUP_NUM);
         if (hash_for_row_threads[row][col][0].size() != 0)
         {
             continue;
         }
-        for (int row_sta = row * (2 / GROUP_NUM); row_sta < row * (2 / GROUP_NUM) + GROUP_NUM; row_sta++)
+        for (int row_sta = phy_row; row_sta < phy_row + (2 / GROUP_NUM); row_sta++)
         {
-            for (int col_sta = col * (2 / GROUP_NUM); col_sta < col * (2 / GROUP_NUM)  + GROUP_NUM; col_sta++)
+            for (int col_sta = phy_col; col_sta < phy_col  + (2 / GROUP_NUM); col_sta++)
             {
                 //if (TrainMaps[row][col].size() != 0)
                 data_idx = row_sta * DIM_NUM + col_sta;
@@ -543,9 +545,11 @@ void readData(int data_thread_id)
         //if (TrainMaps[row][col].size() == 0)
         if (hash_for_row_threads[row][col][0].size() == 0)
         {
-            for (int row_sta = row * (2 / GROUP_NUM); row_sta < row * (2 / GROUP_NUM) + GROUP_NUM; row_sta++)
+            int phy_row = row * (2 / GROUP_NUM);
+            int phy_col = col * (2 / GROUP_NUM);
+            for (int row_sta = phy_row; row_sta < phy_row + (2 / GROUP_NUM); row_sta++)
             {
-                for (int col_sta = col * (2 / GROUP_NUM); col_sta < col * (2 / GROUP_NUM)  + GROUP_NUM; col_sta++)
+                for (int col_sta = phy_col; col_sta < phy_col  + (2 / GROUP_NUM); col_sta++)
                 {
 
                     data_idx = row_sta * DIM_NUM + col_sta;

@@ -325,6 +325,8 @@ int main(int argc, const char * argv[])
 
 void CalcUpdt(int td_id)
 {
+    std::vector<double> Pvec(K);
+    std::vector<double> Qvec(K);
     while (1 == 1)
     {
         if (StartCalcUpdt[td_id])
@@ -345,13 +347,19 @@ void CalcUpdt(int td_id)
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+
                 for (int k = 0; k < K; ++k)
                 {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                    //error -= oldP[i * K + k] * oldQ[j * K + k];
+                    Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
+                    Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
+                    error -= Pvec[i * K + k] * Qvec[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    //Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * Qvec[j * K + k] - theta * Pvec[i * K + k]);
+
                 }
 
                 rand_idx = random() % ctsz;
@@ -361,11 +369,15 @@ void CalcUpdt(int td_id)
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                    //error -= oldP[i * K + k] * oldQ[j * K + k];
+                    Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
+                    Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
+                    error -= Pvec[i * K + k] * Qvec[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    //Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * Pvec[i * K + k] - theta * Qvec[j * K + k]);
                 }
             }
             StartCalcUpdt[td_id] = false;
@@ -650,8 +662,8 @@ void SGD_MF()
     memset(&ed, 0, sizeof(struct timeval));
     {
         gettimeofday(&beg, 0);
-        oldP = Pblocks[p_block_idx].eles;
-        oldQ = Qblocks[q_block_idx].eles;
+        //oldP = Pblocks[p_block_idx].eles;
+        //oldQ = Qblocks[q_block_idx].eles;
         gettimeofday(&ed, 0);
 
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;

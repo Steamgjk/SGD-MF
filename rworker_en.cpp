@@ -170,8 +170,6 @@ int has_processed;
 int disk_read_head_idx = 0;
 int disk_read_tail_idx = CACHE_NUM;
 
-std::map<long, double> TrainMaps[100][100];
-std::map<long, double> TestMaps[100][100];
 
 std::vector<long> hash_for_row_threads[10][10][WORKER_THREAD_NUM];
 std::vector<double> rates_for_row_threads[10][10][WORKER_THREAD_NUM];
@@ -238,11 +236,10 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].eles[j] = drand48();
-            Qblocks[i].eles[j] = drand48();
+            Pblocks[i].eles[j] = drand48() * 0.3;
+            Qblocks[i].eles[j] = drand48() * 0.3;
         }
     }
-
 
 
     std::vector<thread> td_vec;
@@ -253,7 +250,7 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
         td_vec[i].detach();
-        printf("%d  has detached\n", i );
+        //printf("%d  has detached\n", i );
     }
 
 
@@ -288,7 +285,6 @@ int main(int argc, const char * argv[])
             state_idx++;
         }
 
-        //random_shuffle(p_to_process.begin(), p_to_process.end());
 
         for (int i = 0; i < GROUP_NUM; i++)
         {
@@ -299,13 +295,10 @@ int main(int argc, const char * argv[])
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
             SGD_MF();
-
             gettimeofday(&et, 0);
 
-
-
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            //printf("calc time = %lld to_send_tail=%d\n", mksp, to_send_tail);
+            printf("calc time = %lld\n", mksp);
 
             to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
@@ -317,7 +310,6 @@ int main(int argc, const char * argv[])
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
 
-            //getchar();
 
         }
         iter_cnt++;
@@ -387,23 +379,6 @@ void CalcUpdt(int td_id)
 
 void LoadActionConfig(char* fn)
 {
-    //Should init both send_action and recv_action //same
-    /*
-    ifstream ifs(fn);
-    if (!ifs.is_open())
-    {
-        printf("fail to open the file %s\n", fn);
-        exit(-1);
-    }
-    int cnt = 0;
-    int act = 0;
-    while (!ifs.eof())
-    {
-        ifs >> act;
-        actions[cnt] = act;
-        cnt++;
-    }
-    **/
     int loc = 0;
     for (int i = 0; i < SEQ_LEN; i++ )
     {
@@ -418,24 +393,6 @@ void LoadActionConfig(char* fn)
 }
 void LoadStateConfig(char* fn)
 {
-    //Should init both to_send and to_recv //recv gained from action
-    /*
-    ifstream ifs(fn);
-    if (!ifs.is_open())
-    {
-        printf("fail to open the file %s\n", fn);
-        exit(-1);
-    }
-
-    int st = 0;
-    int cnt = 0;
-    while (!ifs.eof())
-    {
-        ifs >> st;
-        states[cnt] = st;
-        cnt++;
-    }
-    **/
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
         int row = thread_id * GROUP_NUM + gp;
@@ -524,8 +481,6 @@ void LoadData(int pre_read)
 
         }
 
-
-
     }
 }
 void readData(int data_thread_id)
@@ -606,44 +561,6 @@ void readData(int data_thread_id)
     printf("Exit read data\n");
 
 }
-void getBlockRates(map<long, double>& BlockMap, int block_id)
-{
-    char fn[100];
-    sprintf(fn, "BlockRate-%d", block_id);
-    ifstream ifs(fn);
-    if (!ifs.is_open())
-    {
-        printf("fail to open the file %s\n", fn);
-        exit(-1);
-    }
-    long hash_id;
-    double rate;
-    while (!ifs.eof())
-    {
-        ifs >> hash_id >> rate;
-        BlockMap.insert(pair<long, double>(hash_id, rate));
-    }
-}
-
-void getTestMap(map<long, double>& TestMap, int block_id)
-{
-    char fn[100];
-    sprintf(fn, "TestRate-%d", block_id);
-    ifstream ifs(fn);
-    if (!ifs.is_open())
-    {
-        printf("fail to open the file %s\n", fn);
-        exit(-1);
-    }
-    long hash_id;
-    double rate;
-    while (!ifs.eof())
-    {
-        ifs >> hash_id >> rate;
-        TestMap.insert(pair<long, double>(hash_id, rate));
-    }
-}
-
 
 
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
@@ -696,7 +613,6 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ)
 
         for (int k = 0; k < K; k++)
         {
-            //printf("hashs=%ld row_idx=%ld col_idx=%ld M=%ld row_sta_idx=%ld col_sta_idx=%ld Pidx = %ld  Qidx = %ld pbid=%d qid=%d\n", real_hash_idx, row_idx, col_idx, M, row_sta_idx, col_sta_idx, row_idx * K + k, col_idx * K + k, minP.block_id, minQ.block_id );
             sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
         }
 
@@ -751,7 +667,6 @@ void SGD_MF()
 
                 if (StartCalcUpdt[ii])
                 {
-                    //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
                     canbreak = false;
                 }
 
@@ -760,68 +675,11 @@ void SGD_MF()
             {
                 break;
             }
-            //printf("?break?  %d\n", canbreak);
-            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         }
-        //printf("ccc\n");
         gettimeofday(&ed, 0);
         long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf(" time = %lld\n", mksp);
-
-        /*
-                for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
-                    //for (size_t ss = 0; ss < sample_sz; ss++)
-                {
-
-                    long i = c_row_idx;
-                    long j = rand() % col_len;
-
-                    long real_row_idx = i + row_sta_idx;
-                    long real_col_idx = j + col_sta_idx;
-                    long real_hash_idx = real_row_idx * M + real_col_idx;
-
-                    map<long, double>::iterator iter;
-                    iter = TrainMaps[p_block_idx][q_block_idx].find(real_hash_idx);
-
-
-                    if (iter != TrainMaps[p_block_idx][q_block_idx].end())
-                    {
-                        error = iter->second;
-                        for (int k = 0; k < K; ++k)
-                        {
-                            error -= oldP[i * K + k] * oldQ[j * K + k];
-                        }
-                        for (int k = 0; k < K; ++k)
-                        {
-                            Pblocks[p_block_idx].eles[i * K + k] += 0.002 * (error * oldQ[j * K + k] - 0.05 * oldP[i * K + k]);
-                            Qblocks[q_block_idx].eles[j * K + k] += 0.002 * (error * oldP[i * K + k] - 0.05 * oldQ[j * K + k]);
-                        }
-                        update_num++;
-                    }
-                }
-                int test_cnt = 0;
-                for (int i = 0; i < Pblocks[p_block_idx].eles.size(); i++)
-                {
-                    if (Pblocks[p_block_idx].eles[i] - oldP[i]  != 0)
-                    {
-                        test_cnt++;
-                    }
-                }
-                printf("test_cnt=%d\n", test_cnt );
-                **/
-        /*
-        iter_cnt++;
-        new_rmse = CalcRMSE(TestMaps[p_block_idx][q_block_idx], Pblocks[p_block_idx], Qblocks[q_block_idx]);
-        if (iter_cnt % 100 == 0)
-        {
-            printf("old_rmse = %lf new_rmse=%lf itercnt=%d\n", old_rmse, new_rmse, iter_cnt );
-        }
-
-        if (iter_cnt > 10)
-        {
-            break;
-        }
-        **/
+        printf(" SGD time = %lld\n", mksp);
     }
 
 }
@@ -890,14 +748,7 @@ void sendTd(int send_thread_id)
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
     int send_cnt = 0;
-    /*
-    printf("\n+++++++\n");
-    for (int i = 0; i < 20; i++)
-    {
-        printf("%d\t", to_send[i]);
-    }
-    printf("\n\n\n");
-    **/
+
     while (1 == 1)
     {
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
@@ -905,14 +756,6 @@ void sendTd(int send_thread_id)
         {
             //printf("come here send\n");
             int block_idx = to_send[to_send_head];
-            /*
-            printf("\n++++INNN+++\n");
-            for (int i = 0; i < 20; i++)
-            {
-                printf("%d\t", to_send[i]);
-            }
-            printf("\n\n\n");
-            **/
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
             size_t struct_sz = sizeof(Block);
@@ -942,15 +785,8 @@ void sendTd(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
-            /*
-            ret = send(fd, "dddd", 4, 0);
-            printf("test ret = %d\n", ret );
-            getchar();
-            **/
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
-
-
             while (remain_len > 0)
             {
                 if (to_send_len > remain_len)
@@ -969,7 +805,6 @@ void sendTd(int send_thread_id)
                 {
                     printf("still fail\n");
                 }
-                //getchar();
             }
 
             gettimeofday(&et, 0);
@@ -1036,7 +871,6 @@ void recvTd(int recv_thread_id)
 
             cur_len = 0;
             ret = 0;
-
             gettimeofday(&st, 0);
             while (cur_len < data_sz)
             {

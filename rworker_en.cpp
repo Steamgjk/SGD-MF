@@ -474,7 +474,7 @@ void LoadData(int pre_read)
         {
             continue;
         }
-        for (int row_sta = row * (2 / GROUP_NUM); row_sta < row * (2 / GROUP_NUM) + GROUP_NUM, row_sta++)
+        for (int row_sta = row * (2 / GROUP_NUM); row_sta < row * (2 / GROUP_NUM) + GROUP_NUM; row_sta++)
         {
             for (int col_sta = col * (2 / GROUP_NUM); col_sta < col * (2 / GROUP_NUM)  + GROUP_NUM; col_sta++)
             {
@@ -543,7 +543,7 @@ void readData(int data_thread_id)
         //if (TrainMaps[row][col].size() == 0)
         if (hash_for_row_threads[row][col][0].size() == 0)
         {
-            for (int row_sta = row * (2 / GROUP_NUM); row_sta < row * (2 / GROUP_NUM) + GROUP_NUM, row_sta++)
+            for (int row_sta = row * (2 / GROUP_NUM); row_sta < row * (2 / GROUP_NUM) + GROUP_NUM; row_sta++)
             {
                 for (int col_sta = col * (2 / GROUP_NUM); col_sta < col * (2 / GROUP_NUM)  + GROUP_NUM; col_sta++)
                 {

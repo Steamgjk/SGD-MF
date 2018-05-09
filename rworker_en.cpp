@@ -369,6 +369,7 @@ void CalcUpdt(int td_id)
             printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
             if (rtsz == 0 || ctsz == 0)
             {
+                printf("\n\n++++++++++++++++++++++++++++++\n");
                 for (int i = 0; i < WORKER_THREAD_NUM; i++)
                 {
                     printf("p_block_idx=%d q_block_idx=%d  i=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, i, hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size() );

@@ -364,9 +364,15 @@ void CalcUpdt(int td_id)
             int times_thresh = 100;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
-            size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
-            size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
-            printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
+            do
+            {
+                size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
+                size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
+                printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
+            }
+            while (rtsz == 0);
+
+
             if (rtsz == 0 || ctsz == 0)
             {
                 printf("\n\n++++++++++++++++++++++++++++++\n");
@@ -625,6 +631,8 @@ void readData(int data_thread_id)
             }
 
         }
+        printf("read [%d][%d]\n", row, col  );
+
         disk_read_tail_idx++;
         data_idx = states[disk_read_head_idx];
         row = data_idx / DIM_NUM;
@@ -638,8 +646,9 @@ void readData(int data_thread_id)
             hash_for_col_threads[row][col][kk].clear();
             rates_for_col_threads[row][col][kk].clear();
         }
-
+        printf("free [%d][%d]\n", row, col );
         disk_read_head_idx++;
+
     }
     printf("Exit read data\n");
 

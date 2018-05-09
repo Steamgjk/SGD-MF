@@ -436,8 +436,8 @@ void submf()
     int row_len = Pblock.height;
     int col_len = Qblock.height;
 
-    int Psz = Pblock.height * minK;
-    int Qsz = Qblock.height * minK;
+    int Psz = Pblock.height * K;
+    int Qsz = Qblock.height * K;
     //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
     Pupdt.eles.resize(Psz);
     Pupdt.ele_num = Psz;

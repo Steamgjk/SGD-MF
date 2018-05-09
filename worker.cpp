@@ -780,6 +780,7 @@ void sendTd(int send_thread_id)
                 //printf("[Id:%d] send success \n", thread_id);
             }
             **/
+            size_t total_len = struct_sz + data_sz;
             struct timeval st, et, tspan;
             size_t sent_len = 0;
             size_t remain_len = total_len;
@@ -808,12 +809,12 @@ void sendTd(int send_thread_id)
                 }
                 //getchar();
             }
-
-
             free(buf);
+
 
             struct_sz = sizeof(Qupdt);
             data_sz = sizeof(double) * Qupdt.eles.size();
+            total_len = struct_sz + data_sz;
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qupdt), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qupdt.eles[0]), data_sz);

@@ -147,8 +147,10 @@ std::vector<long> rates;
 
 bool canSend = false;
 bool hasRecved = false;
-
 int block_seq[SEQ_LEN];
+
+double yita = 0.2;
+double theta = 0.05;
 
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
@@ -165,7 +167,7 @@ void LoadTestRating();
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
-void CalcUpdt(int thread_id, double yita, double theta);
+void CalcUpdt(int thread_id);
 int thread_id = -1;
 
 struct timeval start, stop, diff;
@@ -432,10 +434,11 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 
 
 }
-void CalcUpdt(int thread_id, double yita, double theta)
+void CalcUpdt(int thread_id)
 {
     int times_thresh = 1000;
-
+    int row_sta_idx = Pblock.sta_idx;
+    int col_sta_idx = Qblock.sta_idx;
 
     while (times_thresh--)
     {
@@ -469,8 +472,7 @@ void CalcUpdt(int thread_id, double yita, double theta)
 }
 void submf()
 {
-    double yita = 0.2;
-    double theta = 0.05;
+
     double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;
@@ -559,7 +561,7 @@ void submf()
         std::vector<thread> td_vec(10);
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            td_vec.push_back(std::thread(CalcUpdt, i, yita, theta));
+            td_vec.push_back(std::thread(CalcUpdt, i));
         }
 
         for (int i = 0; i < WORKER_THREAD_NUM; i++)

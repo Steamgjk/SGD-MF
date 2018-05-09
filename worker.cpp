@@ -561,18 +561,19 @@ void submf()
         //multiple thread...
         //std::thread test(testhello, 10);
         //test.join();
-        std::thread td(CalcUpdt, 0);
-        td.join();
+
         struct timeval beg, ed;
         memset(&beg, 0, sizeof(struct timeval));
         memset(&ed, 0, sizeof(struct timeval));
         gettimeofday(&beg, 0);
-        /*
+        //std::thread td(CalcUpdt, 0);
+        //td.join();
+
         std::vector<thread> td_vec(10);
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            std::thread td(CalcUpdt, i);
-            td_vec.push_back(std::move(td));
+            //std::thread td(CalcUpdt, i);
+            td_vec.push_back(std::thread(CalcUpdt, i));
         }
         printf("come here\n");
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -580,7 +581,7 @@ void submf()
             td_vec[i].join();
             printf("%d  has joined\n", i );
         }
-        **/
+
         printf("ccc\n");
         gettimeofday(&ed, 0);
         long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;

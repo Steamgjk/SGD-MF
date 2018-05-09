@@ -65,6 +65,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define ThreshIter 1000
 #define SEQ_LEN 5000
+#define WORKER_THREAD_NUM 10
 
 struct Block
 {
@@ -164,6 +165,7 @@ void LoadTestRating();
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void  FilterDataSet(map<long, double>& TestMap, long row_sta_idx, long row_len, long col_sta_idx, long col_len);
 double CalcRMSE(map<long, double>& TestMap, Block & minP, Block & minQ);
+void CalcUpdt(int thread_id, double yita, double theta);
 int thread_id = -1;
 
 struct timeval start, stop, diff;
@@ -172,7 +174,13 @@ struct timeval start, stop, diff;
 //double* minR = (double*)malloc(sizeof(double) * Rsz);
 map<long, double> RMap;
 map<long, double> TestMap;
-vector<long> KeyVec;
+
+std::vector<long> hash_for_row_threads[WORKER_THREAD_NUM];
+std::vector<double> rates_for_row_threads[WORKER_THREAD_NUM];
+
+std::vector<long> hash_for_col_threads[WORKER_THREAD_NUM];
+std::vector<double> rates_for_col_threads[WORKER_THREAD_NUM];
+
 int main(int argc, const char * argv[])
 {
 
@@ -424,6 +432,41 @@ void  FilterDataSet(map<long, double>& RTestMap, long row_sta_idx, long row_len,
 
 
 }
+void CalcUpdt(int thread_id, double yita, double theta)
+{
+    int times_thresh = 1000;
+
+
+    while (times_thresh--)
+    {
+        rand_idx = random() % tsz;
+        long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
+        long i = real_hash_idx / M - row_sta_idx;
+        long j = real_hash_idx % M - col_sta_idx;
+        error = rates_for_row_threads[thread_id][rand_idx];
+        for (int k = 0; k < K; ++k)
+        {
+            error -= oldP[i * K + k] * oldQ[j * K + k];
+        }
+        for (int k = 0; k < K; ++k)
+        {
+            Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+        }
+        real_hash_idx = hash_for_col_threads[thread_id][rand_idx];
+        i = real_hash_idx / M - row_sta_idx;
+        j = real_hash_idx % M - col_sta_idx;
+        error = rates_for_col_threads[thread_id][rand_idx];
+        for (int k = 0; k < K; ++k)
+        {
+            error -= oldP[i * K + k] * oldQ[j * K + k];
+        }
+        for (int k = 0; k < K; ++k)
+        {
+            Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+        }
+    }
+    printf("finish %d\n",  thread_id);
+}
 void submf()
 {
     double yita = 0.2;
@@ -480,10 +523,28 @@ void submf()
         hash_ids.clear();
         rates.clear();
         map<long, double>::iterator myiter = RMap.begin();
+        long ridx = 0;
+        long cidx = 0;
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            hash_for_row_threads.clear();
+            hash_for_col_threads.clear();
+            rates_for_row_threads.clear();
+            rates_for_col_threads.clear();
+        }
         while (myiter != RMap.end())
         {
-            hash_ids.push_back(myiter->first);
-            rates.push_back(myiter->second);
+            //hash_ids.push_back(myiter->first);
+            //rates.push_back(myiter->second);
+
+            ridx = ((myiter->first) / M) % WORKER_THREAD_NUM;
+            cidx = ((myiter->first) % M) % WORKER_THREAD_NUM;
+
+            hash_for_row_threads[ridx].push_back(myiter->first);
+            rates_for_row_threads[ridx].push_back(myiter->second);
+            hash_for_col_threads[cidx].push_back(myiter->first);
+            rates_for_col_threads[cidx].push_back(myiter->second);
+
             myiter++;
         }
         int tsz = hash_ids.size();
@@ -492,16 +553,25 @@ void submf()
         //multiple thread...
         //std::thread test(testhello, 100);
         //test.detach();
-        /*
-        std::vector<thread> td_vec(10);
-        for (int i = 0; i < 10; i++)
-        {
-            td_vec.push_back(std::thread(CalcUpdt,));
-        }
-        **/
         struct timeval beg, ed;
         memset(&beg, 0, sizeof(struct timeval));
         memset(&ed, 0, sizeof(struct timeval));
+        std::vector<thread> td_vec(10);
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            td_vec.push_back(std::thread(CalcUpdt, i, yita, theta));
+        }
+
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            td_vec[i].join();
+
+        }
+        gettimeofday(&ed, 0);
+        long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf("thesh = %d  time = %lld\n", times_thresh, mksp);
+        /*
+
 
         gettimeofday(&beg, 0);
 
@@ -527,6 +597,8 @@ void submf()
         long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf("thesh = %d  time = %lld\n", times_thresh, mksp);
 
+        **/
+        /*
         int test_cnt = 0;
         for (int i = 0; i < Pupdt.eles.size(); i++)
         {
@@ -538,7 +610,7 @@ void submf()
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf("test_cnt=%d  time = %lld\n", test_cnt, mksp );
-
+        **/
     }
 
 

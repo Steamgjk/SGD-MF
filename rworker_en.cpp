@@ -373,6 +373,7 @@ void CalcUpdt(int td_id)
                 {
                     printf("p_block_idx=%d q_block_idx=%d  i=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, i, hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size() );
                 }
+                getchar();
             }
             int rand_idx = -1;
             while (times_thresh--)

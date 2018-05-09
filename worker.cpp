@@ -65,7 +65,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define ThreshIter 1000
 #define SEQ_LEN 5000
-#define WORKER_THREAD_NUM 10
+#define WORKER_THREAD_NUM 1
 
 struct Block
 {

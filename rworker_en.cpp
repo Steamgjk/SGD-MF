@@ -338,7 +338,11 @@ void CalcUpdt(int td_id)
             size_t ctsz;
             rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
-
+            if (rtsz == 0)
+            {
+                printf("p %d q %d\n", p_block_idx, q_block_idx );
+                exit(0);
+            }
             int rand_idx = -1;
             while (times_thresh--)
             {
@@ -507,7 +511,7 @@ void LoadData(int pre_read)
                     hash_for_col_threads[row][col][cidx].push_back(hash_id);
                     rates_for_col_threads[row][col][cidx].push_back(rate);
                     printf("row=%d col=%d rr=%ld cc=%ld\n", row, col, ((hash_id) / M), ((hash_id) % M)  );
-                    break;
+                    //break;
 
                 }
             }
@@ -582,7 +586,7 @@ void readData(int data_thread_id)
                 }
             }
         }
-        //printf("read [%d][%d]\n", row, col  );
+        printf("read [%d][%d]\n", row, col  );
 
         disk_read_tail_idx++;
         data_idx = states[disk_read_head_idx];
@@ -597,7 +601,7 @@ void readData(int data_thread_id)
             hash_for_col_threads[row][col][kk].clear();
             rates_for_col_threads[row][col][kk].clear();
         }
-        //printf("free [%d][%d]\n", row, col );
+        printf("free [%d][%d]\n", row, col );
         disk_read_head_idx++;
 
 

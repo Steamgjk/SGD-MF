@@ -62,7 +62,7 @@ int local_ports[10] = {5511, 5512, 5513, 5514};
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 2;
+int GROUP_NUM = 1;
 int DIM_NUM = 4;
 int WORKER_NUM = 2;
 int CACHE_NUM = 20;
@@ -151,8 +151,8 @@ struct Block Qblocks[CAP];
 
 struct Updates Pupdt;
 struct Updates Qupdt;
-vector<double> oldP;
-vector<double> oldQ;
+//vector<double> oldP;
+//vector<double> oldQ;
 
 struct timeval start, stop, diff;
 
@@ -661,20 +661,12 @@ void SGD_MF()
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
     {
-        gettimeofday(&beg, 0);
-        //oldP = Pblocks[p_block_idx].eles;
-        //oldQ = Qblocks[q_block_idx].eles;
-        gettimeofday(&ed, 0);
 
-        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf(" copy time = %lld\n", mksp);
         gettimeofday(&beg, 0);
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
             StartCalcUpdt[ii] = true;
         }
-
-
 
         bool canbreak = true;
         while (1 == 1)

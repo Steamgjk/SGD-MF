@@ -574,8 +574,9 @@ void submf()
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
             td_vec[i].join();
-
+            printf("%d  has joined\n", i );
         }
+        printf("ccc\n");
         gettimeofday(&ed, 0);
         long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf("thesh = %d  time = %lld\n", times_thresh, mksp);

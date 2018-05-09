@@ -527,10 +527,10 @@ void submf()
         long cidx = 0;
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            hash_for_row_threads.clear();
-            hash_for_col_threads.clear();
-            rates_for_row_threads.clear();
-            rates_for_col_threads.clear();
+            hash_for_row_threads[i].clear();
+            hash_for_col_threads[i].clear();
+            rates_for_row_threads[i].clear();
+            rates_for_col_threads[i].clear();
         }
         while (myiter != RMap.end())
         {

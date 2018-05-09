@@ -499,7 +499,7 @@ void CalcUpdt(int thread_id)
                 }
             }
             StartCalcUpdt[thread_id] = false;
-            printf("finish %d\n",  thread_id);
+            //printf("finish %d\n",  thread_id);
 
         }
     }
@@ -741,8 +741,6 @@ void sendTd(int send_thread_id)
 
     struct sockaddr_in address;
     bzero(&address, sizeof(address));
-    int sendbuf = 4096;
-    int len = sizeof( sendbuf );
     //转换成网络地址
     address.sin_port = htons(remote_port);
     address.sin_family = AF_INET;
@@ -775,11 +773,43 @@ void sendTd(int send_thread_id)
             char* buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Pupdt), struct_sz);
             memcpy(buf + struct_sz, (char*) & (Pupdt.eles[0]), data_sz);
+            /*
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
                 //printf("[Id:%d] send success \n", thread_id);
             }
+            **/
+            struct timeval st, et, tspan;
+            size_t sent_len = 0;
+            size_t remain_len = total_len;
+            int ret = -1;
+            size_t to_send_len = 4096;
+            gettimeofday(&st, 0);
+
+
+            while (remain_len > 0)
+            {
+                if (to_send_len > remain_len)
+                {
+                    to_send_len = remain_len;
+                }
+                //printf("sending...\n");
+                ret = send(fd, buf + sent_len, to_send_len, 0);
+                if (ret >= 0)
+                {
+                    remain_len -= to_send_len;
+                    sent_len += to_send_len;
+                    //printf("remain_len = %ld\n", remain_len);
+                }
+                else
+                {
+                    printf("still fail\n");
+                }
+                //getchar();
+            }
+
+
             free(buf);
 
             struct_sz = sizeof(Qupdt);
@@ -787,14 +817,44 @@ void sendTd(int send_thread_id)
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qupdt), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qupdt.eles[0]), data_sz);
+            /*
             ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
                 //printf("[Id:%d] send success \n", thread_id);
             }
+            **/
+
+            sent_len = 0;
+            remain_len = total_len;
+            ret = -1;
+            to_send_len = 4096;
+            while (remain_len > 0)
+            {
+                if (to_send_len > remain_len)
+                {
+                    to_send_len = remain_len;
+                }
+                //printf("sending...\n");
+                ret = send(fd, buf + sent_len, to_send_len, 0);
+                if (ret >= 0)
+                {
+                    remain_len -= to_send_len;
+                    sent_len += to_send_len;
+                    //printf("remain_len = %ld\n", remain_len);
+                }
+                else
+                {
+                    printf("still fail\n");
+                }
+                //getchar();
+            }
+
+
             free(buf);
-            //printf("Here we pause...\n");
-            //getchar();
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+            printf("send two blocks mksp=%lld\n", mksp );
             canSend = false;
         }
     }

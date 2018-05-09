@@ -477,12 +477,12 @@ void CalcUpdt(int thread_id)
                 for (int k = 0; k < K; ++k)
                 {
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
-                    error -= Pblock[i * K + k] * Qblock[j * K + k];
+                    error -= Pblock.eles[i * K + k] * Qblock.eles[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
                     //Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
-                    Pupdt.eles[i * K + k] += yita * (error * Qblock[j * K + k] - theta * Pblock[i * K + k]);
+                    Pupdt.eles[i * K + k] += yita * (error * Qblock.eles[j * K + k] - theta * Pblock.eles[i * K + k]);
                 }
 
                 rand_idx = random() % ctsz;
@@ -493,12 +493,12 @@ void CalcUpdt(int thread_id)
                 for (int k = 0; k < K; ++k)
                 {
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
-                    error -= Pblock[i * K + k] * Qblock[j * K + k];
+                    error -= Pblock.eles[i * K + k] * Qblock.eles[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)
                 {
                     //Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
-                    Qupdt.eles[j * K + k] += yita * (error * Pblock[i * K + k] - theta * Qblock[j * K + k]);
+                    Qupdt.eles[j * K + k] += yita * (error * Pblock.eles[i * K + k] - theta * Qblock.eles[j * K + k]);
                 }
             }
             StartCalcUpdt[thread_id] = false;

@@ -423,7 +423,7 @@ void CalcUpdt(int td_id)
                 }
             }
             StartCalcUpdt[td_id] = false;
-            printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);
+            //printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);
 
         }
     }

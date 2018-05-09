@@ -367,6 +367,13 @@ void CalcUpdt(int td_id)
             size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
             size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
+            if (rtsz == 0 || ctsz == 0)
+            {
+                for (int i = 0; i < WORKER_THREAD_NUM; i++)
+                {
+                    printf("p_block_idx=%d q_block_idx=%d  i=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, i, hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size() );
+                }
+            }
             int rand_idx = -1;
             while (times_thresh--)
             {

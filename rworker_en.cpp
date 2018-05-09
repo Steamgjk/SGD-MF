@@ -373,6 +373,10 @@ void CalcUpdt(int td_id)
                 //printf("p_block_idx=%d q_block_idx=%d  td_id=%d sz=%ld  szc=%ld\n", p_block_idx, q_block_idx, td_id, rtsz, ctsz );
                 printf(" 0000000  p_block_idx=%d  q_block_idx=%d \n", p_block_idx, q_block_idx);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                if (rtsz == 0)
+                {
+                    exit(0);
+                }
             }
             while (rtsz == 0);
 

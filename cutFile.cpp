@@ -68,7 +68,7 @@ int main()
 		srow = row_idx / PORTION_NUM;
 		scol = col_idx / PORTION_NUM;
 		file_idx = srow * PORTION_NUM + scol;
-
+		printf("file_idx=%ld\n", file_idx );
 		ofs_train[file_idx] << hash_id << " " << rate;
 
 	}

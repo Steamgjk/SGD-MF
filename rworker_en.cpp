@@ -333,7 +333,7 @@ int main(int argc, const char * argv[])
     }
 }
 
-void CalcUpdt(int td_id, int row, int col)
+void CalcUpdt(int td_id)
 {
     while (1 == 1)
     {
@@ -342,16 +342,16 @@ void CalcUpdt(int td_id, int row, int col)
             int times_thresh = 100;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
-            size_t rtsz = hash_for_row_threads[td_id].size();
-            size_t ctsz = hash_for_col_threads[td_id].size();
+            size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
+            size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             int rand_idx = -1;
             while (times_thresh--)
             {
                 rand_idx = random() % rtsz;
-                long real_hash_idx = hash_for_row_threads[row][col][td_id][rand_idx];
+                long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;
-                double error = rates_for_row_threads[row][col][rand_idx];
+                double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
                     error -= oldP[i * K + k] * oldQ[j * K + k];
@@ -362,10 +362,10 @@ void CalcUpdt(int td_id, int row, int col)
                 }
 
                 rand_idx = random() % ctsz;
-                real_hash_idx = hash_for_col_threads[row][col][rand_idx];
+                real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 i = real_hash_idx / M - row_sta_idx;
                 j = real_hash_idx % M - col_sta_idx;
-                error = rates_for_col_threads[row][col][td_id][rand_idx];
+                error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
                     error -= oldP[i * K + k] * oldQ[j * K + k];

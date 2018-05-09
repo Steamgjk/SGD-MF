@@ -37,6 +37,7 @@ using namespace std;
 //g++  -g   cutFile.cpp -o cutFile -pthread -std=c++11
 int main()
 {
+	printf("ok\n");
 	ifstream ifs_train(FILE_NAME);
 	ifstream ifs_test(TEST_NAME);
 	ofstream ofs_train[PORTION_NUM * PORTION_NUM];

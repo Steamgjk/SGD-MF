@@ -465,7 +465,7 @@ void CalcUpdt(int thread_id)
     {
         if (StartCalcUpdt[thread_id])
         {
-            int times_thresh = 100;
+            int times_thresh = 10;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz = hash_for_row_threads[thread_id].size();
@@ -481,6 +481,7 @@ void CalcUpdt(int thread_id)
                 for (int k = 0; k < K; ++k)
                 {
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
+                    /*
                     if (i * K + k >= Pblock.eles.size())
                     {
                         printf("exceed thread_id=%d  rand_idx=%d i=%d j=%d row_sta_idx=%d col_sta_idx=%d i*K+k=%d  psz=%ld  real_hash=%ld  real/M= %ld realmM=%ld  pidx = %d qidx=%d\n", thread_id, rand_idx, i, j, row_sta_idx, col_sta_idx, i * K + k, Pblock.eles.size(), real_hash_idx, real_hash_idx / M, real_hash_idx % M, Pblock.block_id, Qblock.block_id  );
@@ -490,6 +491,7 @@ void CalcUpdt(int thread_id)
                         printf("exceed thread_id=%d rand_idx=%d i=%d j=%d row_sta_idx=%d col_sta_idx=%d j*K+k=%d  qsz%ld  real_hash=%ld  real/M=%ld  realmM=%ld pidx=%d qidx=%d\n", thread_id, rand_idx, i, j, row_sta_idx, col_sta_idx, j * K + k, Qblock.eles.size(), real_hash_idx,  real_hash_idx / M, real_hash_idx % M, Pblock.block_id, Qblock.block_id  );
 
                     }
+                    **/
                     error -= Pblock.eles[i * K + k] * Qblock.eles[j * K + k];
                 }
                 for (int k = 0; k < K; ++k)

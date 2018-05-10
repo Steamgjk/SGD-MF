@@ -150,8 +150,8 @@ bool canSend = false;
 bool hasRecved = false;
 int block_seq[SEQ_LEN];
 
-double yita = 0.002;
-double theta = 0.05;
+double yita = 0.0002;
+double theta = 0.02;
 
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
@@ -321,7 +321,7 @@ void CalcUpdt(int thread_id)
     {
         if (StartCalcUpdt[thread_id])
         {
-            int times_thresh = 10;
+            int times_thresh = 100;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz = hash_for_row_threads[thread_id].size();

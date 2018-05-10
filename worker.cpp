@@ -397,6 +397,7 @@ void submf()
     int f4 = (r1 + 1) * 8 + c1 + 1;
     RMap.clear();
     struct timeval beg, ed;
+    long long mksp;
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
     gettimeofday(&beg, 0);
@@ -406,7 +407,7 @@ void submf()
     LoadRmatrix(f3, RMap);
     LoadRmatrix(f4, RMap);
     gettimeofday(&ed, 0);
-    long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
     **/
     int ii = 0;

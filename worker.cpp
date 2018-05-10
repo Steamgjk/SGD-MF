@@ -347,20 +347,19 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
         exit(-1);
     }
     int cnt = 0;
-    long hash_idx = 0;
+    long hash_idx = -1;
     double ra = 0;
     while (!ifs.eof())
     {
         ifs >> hash_idx >> ra;
-        if (hash_idx == 0)
+        if (hash_idx >= 0)
         {
-            printf("this file is %s\n", fn );
-        }
-        myMap.insert(pair<long, double>(hash_idx, ra));
-        cnt++;
-        if (cnt % 1000000 == 0)
-        {
-            printf("cnt = %ld\n", cnt );
+            myMap.insert(pair<long, double>(hash_idx, ra));
+            cnt++;
+            if (cnt % 1000000 == 0)
+            {
+                printf("cnt = %ld\n", cnt );
+            }
         }
     }
 }

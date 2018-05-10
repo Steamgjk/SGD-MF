@@ -321,7 +321,7 @@ void CalcUpdt(int thread_id)
     {
         if (StartCalcUpdt[thread_id])
         {
-            int times_thresh = 100;
+            int times_thresh = 200;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz = hash_for_row_threads[thread_id].size();

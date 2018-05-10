@@ -42,18 +42,22 @@ char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
 
-//#define FILE_NAME "./traina.txt"
-//#define TEST_NAME "./testa.txt"
 
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
-//#define N 71567
-//#define M 65133
-//#define K  40 //主题个数
+#define FILE_NAME "./mdata/traina-"
+#define TEST_NAME "./mdata/testa-"
+#define N 71567
+#define M 65133
+#define K  40 //主题个数
+
+
 #define CAP 30
 #define SEQ_LEN 1000
 #define QU_LEN 5000
@@ -70,9 +74,15 @@ int CACHE_NUM = 20;
 int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
 int process_tail[WORKER_TD];
-
+/*
 double yita = 0.002;
 double theta = 0.05;
+**/
+
+//Movie-Len
+double yita = 0.003;
+double theta = 0.01;
+
 vector<bool> StartCalcUpdt;
 
 struct Block

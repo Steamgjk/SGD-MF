@@ -343,7 +343,7 @@ int main(int argc, const char * argv[])
         printf("Processing has_processed=%d\n", has_processed );
     }
 }
-/*
+
 void CalcUpdt(int td_id)
 {
     std::vector<double> Pvec(K);
@@ -419,11 +419,11 @@ void CalcUpdt(int td_id)
 
 
 }
-**/
 
 
 
-void CalcUpdt(int thread_id)
+
+void CalcUpdt1(int thread_id)
 {
     while (1 == 1)
     {

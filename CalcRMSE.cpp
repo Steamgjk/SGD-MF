@@ -31,31 +31,41 @@ int PORTION_NUM = 4;
 double P[N][K];
 double Q[K][M];
 //#define TEST_NAME "./test_out.txt"
+#define FILE_NAME "./mdata/traina-"
+#define TEST_NAME "./mdata/testa-"
+
 using namespace std;
 map<long, double> TestMap;
 
 void LoadTestRating()
 {
-    ifstream ifs(TEST_NAME);
-    if (!ifs.is_open())
+    char fn[100];
+    for (int i = 0; i < 63 ; i++)
     {
-        printf("fail to open the file %s\n", TEST_NAME);
-        exit(-1);
-    }
-    int cnt = 0;
-    int temp = 0;
-    long hash_idx = 0;
-    double ra = 0;
-    while (!ifs.eof())
-    {
-        ifs >> hash_idx >> ra;
-        TestMap.insert(pair<long, double>(hash_idx, ra));
-        cnt++;
-        if (cnt % 10000 == 0)
+        sprintf(fn, "%s%d", TEST_NAME, i);
+        ifstream ifs(fn);
+        if (!ifs.is_open())
         {
-            printf("cnt = %ld\n", cnt );
+            printf("fail to open the file %s\n", TEST_NAME);
+            exit(-1);
+        }
+        int cnt = 0;
+        int temp = 0;
+        long hash_idx = 0;
+        double ra = 0;
+
+        while (!ifs.eof())
+        {
+            ifs >> hash_idx >> ra;
+            TestMap.insert(pair<long, double>(hash_idx, ra));
+            cnt++;
+            if (cnt % 10000 == 0)
+            {
+                printf("cnt = %ld\n", cnt );
+            }
         }
     }
+
 }
 double CalcRMSE()
 {
@@ -110,13 +120,13 @@ int main(int argc, const char * argv[])
     }
     LoadTestRating();
     char filename[100];
-    for (int i = 5; i < ITER_NUM; i += 5)
+    for (int i = 0; i < ITER_NUM; i += 10)
     {
         int row_idx = 0;
         int col_idx = 0;
         for (int j = 0 ; j < PORTION_NUM; j++)
         {
-            sprintf(filename, "./track/Pblock-%d-%d", i, j);
+            sprintf(filename, "./Rtrack/Pblock-%d-%d", i, j);
             ifstream ifs(filename, ios::in | ios::out);
             if (!ifs.is_open())
             {
@@ -133,7 +143,7 @@ int main(int argc, const char * argv[])
                 row_idx++;
             }
             printf("%s read\n", filename );
-            sprintf(filename, "./track/Qblock-%d-%d", i, j);
+            sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
             ifstream ifs1(filename, ios::in | ios::out);
             if (!ifs1.is_open())
             {

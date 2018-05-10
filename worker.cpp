@@ -480,11 +480,12 @@ void CalcUpdt(int thread_id)
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
                     if (i * K + k >= Pblock.eles.size())
                     {
-                        printf("exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld\n", i, j, row_sta_idx, col_sta_idx, i * K + k, Pblock.eles.size()  );
+                        printf("exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld  %ld\n", i, j, row_sta_idx, col_sta_idx, i * K + k, Pblock.eles.size(), real_hash_idx  );
                     }
                     if (j * K + k >= Qblock.eles.size())
                     {
-                        printf("exceed  %d  %ld\n", j * K + k, Qblock.eles.size()  );
+                        printf("exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld  %ld\n", i, j, row_sta_idx, col_sta_idx, j * K + k, Qblock.eles.size(), real_hash_idx  );
+
                     }
                     error -= Pblock.eles[i * K + k] * Qblock.eles[j * K + k];
                 }

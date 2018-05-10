@@ -239,11 +239,12 @@ int main(int argc, const char * argv[])
     {
         partitionP(WORKER_NUM, Pblocks);
         partitionQ(WORKER_NUM, Qblocks);
-
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            worker_qidx[i] = (worker_qidx[i] + 1) % 4;
-        }
+        /*
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    worker_qidx[i] = (worker_qidx[i] + 1) % 4;
+                }
+                **/
 
         //getchar();
         srand(time(0));
@@ -259,6 +260,7 @@ int main(int argc, const char * argv[])
         random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
          **/
+        random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
         for (int i = 0; i < WORKER_NUM; i++)
         {
             printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );

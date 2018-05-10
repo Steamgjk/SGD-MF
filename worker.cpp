@@ -480,7 +480,7 @@ void CalcUpdt(int thread_id)
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
                     if (i * K + k >= Pblock.eles.size())
                     {
-                        printf("exceed  %d  %ld\n", i * K + k, Pblock.eles.size()  );
+                        printf("exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld\n", i, j, row_sta_idx, col_sta_idx, i * K + k, Pblock.eles.size()  );
                     }
                     if (j * K + k >= Qblock.eles.size())
                     {

@@ -329,6 +329,14 @@ void CalcUpdt(int thread_id)
             int rand_idx = -1;
             while (times_thresh--)
             {
+                if (rtsz == 0)
+                {
+                    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+                    {
+                        printf("%d %d\n", hash_for_row_threads[i].size(), hash_for_col_threads[i].size() );
+                    }
+                    exit(1);
+                }
                 rand_idx = random() % rtsz;
                 long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;

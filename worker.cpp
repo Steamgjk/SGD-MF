@@ -466,7 +466,7 @@ void submf()
         }
         //printf("Rmap sz =%ld \n", Rmap.size() );
 
-
+        times_thresh = 100;
         bool canbreak = true;
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
@@ -494,7 +494,7 @@ void submf()
         //printf("ccc\n");
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("Calc time = %lld\n", mksp);
+        printf("Calc times_thresh=%d time = %lld\n", times_thresh, mksp);
 
     }
 

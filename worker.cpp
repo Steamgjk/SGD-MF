@@ -341,6 +341,10 @@ void CalcUpdt(int thread_id)
                 long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;
+                if (i < 0 || j < 0)
+                {
+                    continue;
+                }
                 double error = rates_for_row_threads[thread_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
@@ -450,12 +454,6 @@ void submf()
             //rates.push_back(myiter->second);
             ridx = ((myiter->first) / M);
             cidx = ((myiter->first) % M);
-
-            if (ridx < Pblock.sta_idx || cidx < Qblock.sta_idx)
-            {
-                myiter++;
-                continue;
-            }
             ridx = ridx % WORKER_THREAD_NUM;
             cidx = cidx % WORKER_THREAD_NUM;
 

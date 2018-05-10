@@ -291,7 +291,7 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
             //myMap.insert(pair<long, double>(hash_idx, ra));
             row_idx = hash_idx / M;
             col_idx = hash_idx % M;
-            Rmatrx[row_idx][col_idx] = ra;
+            //Rmatrx[row_idx][col_idx] = ra;
             cnt++;
             if (cnt % 1000000 == 0)
             {

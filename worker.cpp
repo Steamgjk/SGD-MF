@@ -192,7 +192,7 @@ int main(int argc, const char * argv[])
         {
             LoadRmatrix(i, RMap);
         }
-        **/
+    **/
     LoadSplitData();
     printf("Load Rating Success\n");
 

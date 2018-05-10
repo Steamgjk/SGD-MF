@@ -160,7 +160,6 @@ void recvTd(int recv_thread_id);
 //void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
 void submf();
 
-void LoadConfig(char*filename);
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void CalcUpdt(int thread_id);
@@ -185,8 +184,11 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
-    //LoadRating();
-    //LoadTestRating();
+
+    for (int i = 0; i < 64; i++)
+    {
+        LoadRmatrix(i, RMap);
+    }
     printf("Load Rating Success\n");
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);

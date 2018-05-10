@@ -25,7 +25,7 @@
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-int ITER_NUM  = 100;
+int ITER_NUM  = 2000;
 int PORTION_NUM = 4;
 double P[N][K];
 double Q[K][M];
@@ -162,7 +162,7 @@ int main(int argc, const char * argv[])
         }
         double rmse = CalcRMSE();
         ofs << rmse << endl;
-        printf("i=%d rmse=%lf\n", i, rmse );
+        printf("%d\t%lf\n", i, rmse );
     }
 
 

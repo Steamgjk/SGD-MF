@@ -343,7 +343,7 @@ int main(int argc, const char * argv[])
         printf("Processing has_processed=%d\n", has_processed );
     }
 }
-
+/*
 void CalcUpdt(int td_id)
 {
     std::vector<double> Pvec(K);
@@ -379,7 +379,6 @@ void CalcUpdt(int td_id)
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    //error -= oldP[i * K + k] * oldQ[j * K + k];
                     Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
                     Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
                     error -= Pvec[k] * Qvec[k];
@@ -414,6 +413,70 @@ void CalcUpdt(int td_id)
             }
             StartCalcUpdt[td_id] = false;
             //printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);
+
+        }
+    }
+
+
+}
+**/
+
+
+
+void CalcUpdt(int thread_id)
+{
+    while (1 == 1)
+    {
+        if (StartCalcUpdt[thread_id])
+        {
+            int times_thresh = 200;
+            int row_sta_idx = Pblocks[p_block_idx].sta_idx;
+            int col_sta_idx = Qblocks[q_block_idx].sta_idx;
+            size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][thread_id].size();
+            size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][thread_id].size();
+            int rand_idx = -1;
+            while (times_thresh--)
+            {
+
+                rand_idx = random() % rtsz;
+                long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
+                long i = real_hash_idx / M - row_sta_idx;
+                long j = real_hash_idx % M - col_sta_idx;
+                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
+                {
+                    continue;
+                }
+                double error = rates_for_row_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= Pblocks[p_block_idx].eles[i * K + k] * Qblocks[q_block_idx].eles[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Pupdt.eles[i * K + k] += yita * (error *  Qblocks[q_block_idx].eles[j * K + k] - theta * Pblocks[p_block_idx].eles[i * K + k]);
+                }
+
+                rand_idx = random() % ctsz;
+                real_hash_idx = hash_for_col_threads[thread_id][rand_idx];
+                i = real_hash_idx / M - row_sta_idx;
+                j = real_hash_idx % M - col_sta_idx;
+                error = rates_for_col_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
+
+                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >=  Qblocks[q_block_idx].height)
+                {
+                    continue;
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= Pblocks[p_block_idx].eles[i * K + k] *  Qblocks[q_block_idx].eles[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Qupdt.eles[j * K + k] += yita * (error * Pblocks[p_block_idx].eles[i * K + k] - theta * Qblocks[q_block_idx].eles[j * K + k]);
+                }
+            }
+            StartCalcUpdt[thread_id] = false;
+
 
         }
     }
@@ -679,6 +742,25 @@ void SGD_MF()
     long long mksp;
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
+
+    int Psz = Pblock.height * K;
+    int Qsz = Qblock.height * K;
+    //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
+    Pupdt.eles.resize(Psz);
+    Pupdt.ele_num = Psz;
+    Qupdt.eles.resize(Qsz);
+    Qupdt.ele_num = Qsz;
+    Pupdt.block_id = Pblocks[p_block_idx].block_id;
+    Qupdt.block_id = Qblocks[q_block_idx].block_id;
+    int ii = 0;
+    for (ii = 0; ii < Psz; ii++)
+    {
+        Pupdt.eles[ii] = 0;
+    }
+    for ( ii = 0; ii < Qsz; ii++)
+    {
+        Qupdt.eles[ii] = 0;
+    }
     {
 
         gettimeofday(&beg, 0);
@@ -686,6 +768,8 @@ void SGD_MF()
         {
             StartCalcUpdt[ii] = true;
         }
+
+
 
         bool canbreak = true;
         while (1 == 1)
@@ -706,10 +790,19 @@ void SGD_MF()
             }
 
         }
+        for (int i = 0; i < Pupdt.ele_num; i++)
+        {
+            Pblocks[p_block_idx].eles[i] += Pupdt.eles[i];
+        }
+        for (int i = 0; i < Qupdt.ele_num; i++)
+        {
+            Qblocks[q_block_idx].eles[i] += Qupdt.eles[i];
+        }
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf(" SGD time = %lld\n", mksp);
     }
+
 
 }
 

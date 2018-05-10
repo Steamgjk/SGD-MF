@@ -541,7 +541,7 @@ void LoadStateConfig(char* fn)
         printf("%d\t", states[i]);
     }
     printf("\n");
-    exit(0);
+    //exit(0);
 
 
 }

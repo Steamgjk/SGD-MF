@@ -344,7 +344,7 @@ int main(int argc, const char * argv[])
     }
 }
 
-void CalcUpdt(int td_id)
+void CalcUpdt2(int td_id)
 {
     std::vector<double> Pvec(K);
     std::vector<double> Qvec(K);
@@ -446,7 +446,7 @@ void CalcUpdt(int td_id)
 
 
 
-void CalcUpdt1(int thread_id)
+void CalcUpdt(int thread_id)
 {
     while (1 == 1)
     {

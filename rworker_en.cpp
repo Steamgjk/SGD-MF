@@ -246,8 +246,9 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].eles[j] = drand48() * 0.3;
-            Qblocks[i].eles[j] = drand48() * 0.3;
+            Pblocks[i].eles[j] = drand48() * 0.6;
+            Qblocks[i].eles[j] = drand48() * 0.6;
+            //0.3
         }
     }
 

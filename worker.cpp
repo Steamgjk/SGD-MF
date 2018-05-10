@@ -396,6 +396,7 @@ void CalcUpdt(int thread_id)
                 long j = real_hash_idx % M - col_sta_idx;
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
+                    printf("come here\n");
                     continue;
                 }
                 double error = rates_for_row_threads[thread_id][rand_idx];
@@ -416,6 +417,7 @@ void CalcUpdt(int thread_id)
 
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
+                    printf("come here2\n");
                     continue;
                 }
                 for (int k = 0; k < K; ++k)

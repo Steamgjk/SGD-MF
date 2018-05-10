@@ -323,6 +323,7 @@ int main(int argc, const char * argv[])
 
         }
         iter_cnt++;
+        printf("iterddd %d\n", iter_cnt );
         if (iter_cnt == 900)
         {
             printf("iter_cnt=%d\n", iter_cnt );

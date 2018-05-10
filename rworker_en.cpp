@@ -743,8 +743,7 @@ void SGD_MF()
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
 
-    int Psz = Pblock.height * K;
-    int Qsz = Qblock.height * K;
+
     //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
     Pupdt.eles.resize(Psz);
     Pupdt.ele_num = Psz;

@@ -38,11 +38,12 @@ using namespace std;
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
 
-#define FILE_NAME "./traina.txt"
-#define TEST_NAME "./testa.txt"
+#define FILE_NAME "./mdata/traina-"
+#define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
+
 
 /*
 #define FILE_NAME "./data/TrainingMap-"
@@ -200,7 +201,8 @@ int main(int argc, const char * argv[])
         {
             //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
             //P[i][j] = drand48() / 1.7;
-            P[i][j] = drand48() * 0.3;
+            //P[i][j] = drand48() * 0.3;
+            P[i][j] = drand48() * 0.6;
             //P[i][j] = drand48() * 0.38;
             //P[i][j] =  ((double)(rand() % 100) ) / 400 ;
 
@@ -213,7 +215,8 @@ int main(int argc, const char * argv[])
         {
             //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
             //Q[i][j] = drand48() / 1.7;
-            Q[i][j] = drand48() * 0.3;
+            //Q[i][j] = drand48() * 0.3;
+            Q[i][j] = drand48() * 0.6;
             //Q[i][j] = drand48() * 0.38 ;
             //Q[i][j] =  ((double)(rand() % 100) ) / 400 ;
 

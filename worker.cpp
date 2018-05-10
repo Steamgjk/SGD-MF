@@ -178,7 +178,7 @@ std::vector<double> rates_for_col_threads[WORKER_THREAD_NUM];
 int main(int argc, const char * argv[])
 {
 
-    int thresh_log = 900;
+    int thresh_log = 2000;
     thread_id = atoi(argv[1]);
     if (argc >= 3)
     {

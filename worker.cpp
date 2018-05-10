@@ -572,8 +572,9 @@ void submf()
     LoadRmatrix(f2, RMap);
     LoadRmatrix(f3, RMap);
     LoadRmatrix(f4, RMap);
-
-
+    gettimeofday(&ed, 0);
+    long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+    printf("Load time = %lld\n", mksp);
     int ii = 0;
     for (ii = 0; ii < Psz; ii++)
     {
@@ -585,12 +586,6 @@ void submf()
     }
 
     {
-        int times_thresh = 1000;
-        //for (int c_row_idx = 0; c_row_idx < row_len; c_row_idx++)
-        //for (size_t ss = 0; ss < sample_sz; ss++)
-        //oldP = Pblock.eles;
-        //oldQ = Qblock.eles;
-
         hash_ids.clear();
         rates.clear();
         map<long, double>::iterator myiter = RMap.begin();
@@ -610,18 +605,6 @@ void submf()
             ridx = ((myiter->first) / M);
             cidx = ((myiter->first) % M);
 
-            /*
-                        if (ridx < Pblock.sta_idx)
-                        {
-                            printf("hash=%ld r=%ld c=%ld p_sta_idx=%ld q_sta_idx=%ld  [%d %d %d %d]\n", myiter->first, ridx, cidx, Pblock.sta_idx, Qblock.sta_idx, f1, f2, f3, f4  );
-                            exit(0);
-                        }
-                        if (cidx < Qblock.sta_idx)
-                        {
-                            printf("hash=%ld r=%ld c=%ld p_sta_idx=%ld q_sta_idx=%ld  [%d %d %d %d]\n", myiter->first, ridx, cidx, Pblock.sta_idx, Qblock.sta_idx, f1, f2, f3, f4  );
-                            exit(0);
-                        }
-            **/
             if (ridx < Pblock.sta_idx || cidx < Qblock.sta_idx)
             {
                 myiter++;
@@ -637,30 +620,8 @@ void submf()
 
             myiter++;
         }
-        int tsz = hash_ids.size();
-        int rand_idx = -1;
-        //printf("launch new thread...\n");
-        //multiple thread...
-        //std::thread test(testhello, 10);
-        //test.join();
 
 
-        //std::thread td(CalcUpdt, 0);
-        //td.join();
-        /*
-                std::vector<thread> td_vec;
-                for (int i = 0; i < WORKER_THREAD_NUM; i++)
-                {
-                    //std::thread td(CalcUpdt, i);
-                    td_vec.push_back(std::thread(CalcUpdt, i));
-                }
-                //printf("come here\n");
-                for (int i = 0; i < WORKER_THREAD_NUM; i++)
-                {
-                    td_vec[i].join();
-                    printf("%d  has joined\n", i );
-                }
-        **/
         bool canbreak = true;
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
@@ -689,49 +650,9 @@ void submf()
         }
         //printf("ccc\n");
         gettimeofday(&ed, 0);
-        long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("thesh = %d  time = %lld\n", times_thresh, mksp);
-        /*
-
-
-        gettimeofday(&beg, 0);
-
-        while (times_thresh--)
-        {
-            rand_idx = random() % tsz;
-            long real_hash_idx = hash_ids[rand_idx];
-            long i = real_hash_idx / M - row_sta_idx;
-            long j = real_hash_idx % M - col_sta_idx;
-            error = rates[rand_idx];
-            for (int k = 0; k < K; ++k)
-            {
-                error -= oldP[i * K + k] * oldQ[j * K + k];
-            }
-            for (int k = 0; k < K; ++k)
-            {
-                Pupdt.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
-                Qupdt.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
-            }
-
-        }
-        gettimeofday(&ed, 0);
-        long long mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("thesh = %d  time = %lld\n", times_thresh, mksp);
-
-        **/
-        /*
-        int test_cnt = 0;
-        for (int i = 0; i < Pupdt.eles.size(); i++)
-        {
-            if ( Pupdt.eles[i] != 0)
-            {
-                test_cnt++;
-            }
-        }
-        gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("test_cnt=%d  time = %lld\n", test_cnt, mksp );
-        **/
+        printf("Calc time = %lld\n", mksp);
+
     }
 
 

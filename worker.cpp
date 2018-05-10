@@ -62,7 +62,7 @@ int remote_ports[10] = {4411, 4412, 4413, 4414};
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
-double Rmatrx[N][M];
+
 
 
 #define ThreshIter 1000
@@ -164,11 +164,13 @@ void submf();
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void CalcUpdt(int thread_id);
+void LoadSplitData();
 
 int thread_id = -1;
 struct timeval start, stop, diff;
 vector<bool> StartCalcUpdt;
 map<long, double> RMap;
+map<long, double> RMaps[8][8];
 
 std::vector<long> hash_for_row_threads[WORKER_THREAD_NUM];
 std::vector<double> rates_for_row_threads[WORKER_THREAD_NUM];
@@ -185,11 +187,13 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
-
-    for (int i = 0; i < 64; i++)
-    {
-        LoadRmatrix(i, RMap);
-    }
+    /*
+        for (int i = 0; i < 64; i++)
+        {
+            LoadRmatrix(i, RMap);
+        }
+        **/
+    LoadSplitData();
     printf("Load Rating Success\n");
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -276,22 +280,13 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
     long hash_idx = -1;
     double ra = 0;
     long row_idx, col_idx;
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < M; j++)
-        {
-            Rmatrx[i][j] = 0;
-        }
-    }
+
     while (!ifs.eof())
     {
         ifs >> hash_idx >> ra;
         if (hash_idx >= 0)
         {
-            //myMap.insert(pair<long, double>(hash_idx, ra));
-            row_idx = hash_idx / M;
-            col_idx = hash_idx % M;
-            //Rmatrx[row_idx][col_idx] = ra;
+            myMap.insert(pair<long, double>(hash_idx, ra));
             cnt++;
             if (cnt % 1000000 == 0)
             {
@@ -299,6 +294,52 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
             }
         }
     }
+}
+
+void LoadSplitData()
+{
+
+    char fn[100];
+    for (int i = 0;  i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            RMaps[i][j].clear();
+        }
+    }
+    for (int file_no = 0; file_no < 64; file_no++)
+    {
+        sprintf(fn, "%s%d", FILE_NAME, file_no);
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open the file %s\n", fn);
+            exit(-1);
+        }
+        int i = file_no / 8;
+        int j = file_no % 8;
+        int row = i / 2;
+        int col = j / 2;
+        int cnt = 0;
+        long hash_idx = -1;
+        double ra = 0;
+
+        while (!ifs.eof())
+        {
+            ifs >> hash_idx >> ra;
+            if (hash_idx >= 0)
+            {
+                RMaps[row][col].insert(pair<long, double>(hash_idx, ra));
+                cnt++;
+                if (cnt % 1000000 == 0)
+                {
+                    printf("cnt = %ld\n", cnt );
+                }
+            }
+        }
+    }
+
+
 }
 
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
@@ -450,10 +491,11 @@ void submf()
     }
 
     {
-
         //hash_ids.clear();
         //rates.clear();
-        map<long, double>::iterator myiter = RMap.begin();
+        int pid = Pblock.block_id;
+        int qid = Qblock.block_id;
+        map<long, double>::iterator myiter = RMaps[pid][qid].begin();
         long ridx = 0;
         long cidx = 0;
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -464,8 +506,9 @@ void submf()
             rates_for_col_threads[i].clear();
         }
 
-        /*
-        while (myiter != RMap.end())
+
+        //while (myiter != RMap.end())
+        while (myiter !=  RMaps[pid][qid].end())
         {
             //hash_ids.push_back(myiter->first);
             //rates.push_back(myiter->second);
@@ -481,56 +524,45 @@ void submf()
 
             myiter++;
         }
-        **/
-        long hash_val;
-        for (ridx = Pblock.sta_idx; ridx < Pblock.sta_idx + Pblock.height; ridx++)
-        {
-            for (ridx = Qblock.sta_idx; ridx < Qblock.sta_idx + Qblock.height; ridx++)
-            {
-                hash_val = ridx * M + cidx;
-                ridx = ridx % WORKER_THREAD_NUM;
-                cidx = cidx % WORKER_THREAD_NUM;
-                hash_for_row_threads[ridx].push_back(hash_val);
-                rates_for_row_threads[ridx].push_back(Rmatrx[ridx][cidx]);
-                hash_for_col_threads[cidx].push_back(hash_val);
-                rates_for_col_threads[cidx].push_back(Rmatrx[ridx][cidx]);
-            }
-        }
-        //printf("Rmap sz =%ld \n", Rmap.size() );
 
-        bool canbreak = true;
-        for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
-        {
-            StartCalcUpdt[ii] = true;
-        }
-
-        while (1 == 1)
-        {
-            canbreak = true;
-            for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
-            {
-
-                if (StartCalcUpdt[ii])
-                {
-                    //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
-                    canbreak = false;
-                }
-
-            }
-            if (canbreak)
-            {
-                break;
-            }
-        }
-        //printf("ccc\n");
-        gettimeofday(&ed, 0);
-        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("Calc  time = %lld\n", mksp);
 
     }
 
+//printf("Rmap sz =%ld \n", Rmap.size() );
+
+    bool canbreak = true;
+    for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
+    {
+        StartCalcUpdt[ii] = true;
+    }
+
+    while (1 == 1)
+    {
+        canbreak = true;
+        for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
+        {
+
+            if (StartCalcUpdt[ii])
+            {
+                //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
+                canbreak = false;
+            }
+
+        }
+        if (canbreak)
+        {
+            break;
+        }
+    }
+//printf("ccc\n");
+    gettimeofday(&ed, 0);
+    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+    printf("Calc  time = %lld\n", mksp);
 
 }
+
+
+
 
 
 int wait4connection(char*local_ip, int local_port)

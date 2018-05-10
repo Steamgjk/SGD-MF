@@ -385,7 +385,7 @@ void CalcUpdt(int td_id)
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * Qblocks[q_block_idx].eles[j * K + k] - theta * Pblocks[p_block_idx].eles[i * K + k]);
+                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
                 }
                 /*
                 for (int k = 0; k < K; ++k)
@@ -418,7 +418,7 @@ void CalcUpdt(int td_id)
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * Pblocks[p_block_idx].eles[i * K + k] - theta * Qblocks[q_block_idx].eles[j * K + k]);
+                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
                 }
                 /*
                 for (int k = 0; k < K; ++k)

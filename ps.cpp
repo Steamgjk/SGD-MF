@@ -177,22 +177,7 @@ int main(int argc, const char * argv[])
     {
         printf("opened log\n");
     }
-    /*
-    for (int i = 0; i < N; i++)
-    {
-        getMinR(R[i], i, 1, 0, M);
-        printf("Load %d line\n", i);
-    }
-    for (int i = 0 ; i < N; i++)
-    {
-        for (int j = 0; j < M; j++)
-        {
-            printf("%lf\t", R[i][j] );
-        }
-        printf("\n");
-    }
-    **/
-    //LoadRating();
+
     LoadTestRating();
     printf("Load Complete\n");
     for (int i = 0; i < N; i++)
@@ -264,27 +249,10 @@ int main(int argc, const char * argv[])
             worker_pidx[i] = worker_qidx[i] = i;
             per_num = per_num * (i + 1);
         }
-        /*
-        int rand_round = rand() % per_num;
-        for (int i = 0; i < rand_round; i++)
-        {
-            next_permutation(worker_pidx, worker_pidx + WORKER_NUM);
-        }
-        rand_round = rand() % per_num;
-        for (int i = 0; i < rand_round; i++)
-        {
-            next_permutation(worker_qidx, worker_qidx + WORKER_NUM);
-        }
-        **/
+
         random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
-        /*
-                for (int i = 0; i < WORKER_NUM; i++)
-                {
-                    printf("%d:[%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-                }
-                **/
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
@@ -304,28 +272,13 @@ int main(int argc, const char * argv[])
 
             for (int kk = 0; kk < WORKER_NUM; kk++)
             {
-                //printf("kk = %d  block_id = %d  sz=%ld\n", kk, Pupdts[kk].block_id, Pupdts[kk].eles.size()  );
-                //Update P [N*K]
-                //pos_n = neg_n = zero_n = 0;
+
                 for (int ii = 0; ii < Pupdts[kk].eles.size(); ii++)
                 {
                     int row_idx = (ii + idx) / K;
                     int col_idx = (ii + idx) % K;
                     P[row_idx][col_idx] += Pupdts[kk].eles[ii];
-                    /*
-                    if (Pupdts[kk].eles[ii] > 0)
-                    {
-                        pos_n++;
-                    }
-                    else if (Pupdts[kk].eles[ii] < 0 )
-                    {
-                        neg_n++;
-                    }
-                    else
-                    {
-                        zero_n++;
-                    }
-                    **/
+
                 }
                 idx += Pupdts[kk].eles.size();
                 //printf("Pupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
@@ -341,27 +294,14 @@ int main(int argc, const char * argv[])
                     int col_idx = (ii + idx) / K;
                     int row_idx = (ii + idx) % K;
                     Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
-                    /**
-                    if (Qupdts[kk].eles[ii] > 0)
-                    {
-                        pos_n++;
-                    }
-                    else if (Qupdts[kk].eles[ii] < 0 )
-                    {
-                        neg_n++;
-                    }
-                    else
-                    {
-                        zero_n++;
-                    }
-                    **/
+
                 }
                 idx += Qupdts[kk].eles.size();
                 //printf("Qupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
             }
             // printf("Update Finish, Can Distribute\n");
 
-            //if (iter_t % 10 == 0)
+            if (iter_t % 10 == 0)
             {
                 double rmse = CalcRMSE();
                 printf("rmse=%lf\n", rmse);
@@ -465,13 +405,7 @@ void sendTd(int send_thread_id)
     printf("[Td:%d]connected %s  %d\n", send_thread_id, remote_ip, remote_port );
     while (1 == 1)
     {
-        /*
-        if (!canSend[send_thread_id])
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-        else
-        **/
+
         if (canSend[send_thread_id])
         {
             int pbid = worker_pidx[send_thread_id];
@@ -664,74 +598,10 @@ int wait4connection(char*local_ip, int local_port)
 
 
 
-void printBlockPair(Block& pb, Block& qb, int minK)
-{
-    /*
-    double rmse = 0.0;
-    printf("\n********Below P[%d]*************\n", pb.block_id);
-    for (int i = 0 ; i < pb.height; i++)
-    {
-        for (int j = 0; j < minK; j++)
-        {
-            printf("%lf\t", pb.eles[i * minK + j]);
-        }
-        printf("\n");
-    }
-    printf("\n+++++++++++Below Q[%d]+++++++++++\n", qb.block_id);
-    for (int i = 0 ; i < qb.height; i++)
-    {
-        for (int j = 0; j < minK; j++)
-        {
-            printf("%lf\t", qb.eles[i * minK + j]);
-        }
-        printf("\n");
-    }
-    printf("\n++++++++Below Rb++++++++++\n");
-
-    for (int i = 0; i < pb.height; i++)
-    {
-        for (int j = 0; j < qb.height; j++)
-        {
-            double e = 0;
-            for (int k = 0; k < minK; k++)
-            {
-                e += pb.eles[i * minK + k] * qb.eles[j * minK + k];
-            }
-            printf("%lf\t", e);
-        }
-        printf("\n");
-    }
-    printf("\n++++++++Below R+++++++++++++\n");
-
-    int row_idx = pb.sta_idx;
-    int col_idx = qb.sta_idx;
-
-    for (int i = 0; i < pb.height; i++)
-    {
-        for (int j = 0; j < qb.height; j++)
-        {
-            double e = 0;
-            for (int k = 0; k < minK; k++)
-            {
-                e += pb.eles[i * minK + k] * qb.eles[j * minK + k];
-            }
-            int row_idx = i + pb.sta_idx;
-            int col_idx = j + qb.sta_idx;
-            printf("%lf\t", R[row_idx][col_idx]);
-            rmse += (e - R[row_idx][col_idx]) *  (e - R[row_idx][col_idx]);
-        }
-        printf("\n");
-    }
-    printf("\n***************************\n");
-    printf("rmse=%lf\n", rmse);
-    **/
-
-}
-
 
 void getMinR(double* minR, int row_sta_idx, int row_len, int col_sta_idx, int col_len)
 {
-    //printf("row_sta_idx = %d row_len=%d col_sta_idx=%d  col_len = %d\n", row_sta_idx, row_len, col_sta_idx, col_len);
+
 
     ifstream ifs(FILE_NAME);
     string temp;

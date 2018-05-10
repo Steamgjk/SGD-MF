@@ -501,17 +501,18 @@ void CalcUpdt(int thread_id)
                 j = real_hash_idx % M - col_sta_idx;
                 error = rates_for_col_threads[thread_id][rand_idx];
 
-                if (i * K + k >= Pblock.eles.size())
-                {
-                    printf("111  exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld  %ld  %ld %ld\n", i, j, row_sta_idx, col_sta_idx, i * K + k, Pblock.eles.size(), real_hash_idx, real_hash_idx / M, real_hash_idx % M  );
-                }
-                if (j * K + k >= Qblock.eles.size())
-                {
-                    printf("222 exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld  %ld  %ld  %ld\n", i, j, row_sta_idx, col_sta_idx, j * K + k, Qblock.eles.size(), real_hash_idx,  real_hash_idx / M, real_hash_idx % M  );
 
-                }
                 for (int k = 0; k < K; ++k)
                 {
+                    if (i * K + k >= Pblock.eles.size())
+                    {
+                        printf("exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld  %ld  %ld %ld\n", i, j, row_sta_idx, col_sta_idx, i * K + k, Pblock.eles.size(), real_hash_idx, real_hash_idx / M, real_hash_idx % M  );
+                    }
+                    if (j * K + k >= Qblock.eles.size())
+                    {
+                        printf("exceed i=%d j=%d row_sta_idx=%d col_sta_idx=%d %d  %ld  %ld  %ld  %ld\n", i, j, row_sta_idx, col_sta_idx, j * K + k, Qblock.eles.size(), real_hash_idx,  real_hash_idx / M, real_hash_idx % M  );
+
+                    }
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
                     error -= Pblock.eles[i * K + k] * Qblock.eles[j * K + k];
                 }

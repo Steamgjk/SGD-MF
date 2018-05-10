@@ -402,28 +402,28 @@ void submf()
     Qupdt.ele_num = Qsz;
     Pupdt.block_id = Pblock.block_id;
     Qupdt.block_id = Qblock.block_id;
-
-    int r1 = Pblock.block_id * 2;
-    int c1 = Qblock.block_id * 2;
-    int f1 = r1 * 8 + c1;
-    int f2 = r1 * 8 + c1 + 1;
-    int f3 = (r1 + 1) * 8 + c1;
-    int f4 = (r1 + 1) * 8 + c1 + 1;
-    RMap.clear();
     struct timeval beg, ed;
     long long mksp;
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
     gettimeofday(&beg, 0);
+
     /*
-    LoadRmatrix(f1, RMap);
-    LoadRmatrix(f2, RMap);
-    LoadRmatrix(f3, RMap);
-    LoadRmatrix(f4, RMap);
-    gettimeofday(&ed, 0);
-    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Load time = %lld\n", mksp);
-    **/
+      int r1 = Pblock.block_id * 2;
+      int c1 = Qblock.block_id * 2;
+      int f1 = r1 * 8 + c1;
+      int f2 = r1 * 8 + c1 + 1;
+      int f3 = (r1 + 1) * 8 + c1;
+      int f4 = (r1 + 1) * 8 + c1 + 1;
+      RMap.clear();
+      LoadRmatrix(f1, RMap);
+      LoadRmatrix(f2, RMap);
+      LoadRmatrix(f3, RMap);
+      LoadRmatrix(f4, RMap);
+      gettimeofday(&ed, 0);
+      mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+      printf("Load time = %lld\n", mksp);
+      **/
     int ii = 0;
     for (ii = 0; ii < Psz; ii++)
     {
@@ -464,7 +464,7 @@ void submf()
 
             myiter++;
         }
-
+        //printf("Rmap sz =%ld \n", Rmap.size() );
 
 
         bool canbreak = true;

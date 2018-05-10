@@ -351,7 +351,10 @@ void CalcUpdt(int td_id)
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
-
+                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
+                {
+                    continue;
+                }
                 for (int k = 0; k < K; ++k)
                 {
                     //error -= oldP[i * K + k] * oldQ[j * K + k];
@@ -380,6 +383,10 @@ void CalcUpdt(int td_id)
                 real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 i = real_hash_idx / M - row_sta_idx;
                 j = real_hash_idx % M - col_sta_idx;
+                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
+                {
+                    continue;
+                }
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 for (int k = 0; k < K; ++k)
                 {
@@ -642,44 +649,6 @@ void WriteLog(Block & Pb, Block & Qb, int iter_cnt)
 }
 
 
-
-
-double CalcRMSE(map<long, double>& RTestMap, Block & minP, Block & minQ)
-{
-    double rmse = 0;
-    int cnt = 0;
-    map<long, double>::iterator iter;
-    int positve_cnt = 0;
-    int negative_cnt = 0;
-    long row_sta_idx = minP.sta_idx;
-    long col_sta_idx = minQ.sta_idx;
-    //printf("Psz = %ld  Qsz= %ld row_sta_idx=%ld, col_sta_idx=%ld\n", minP.ele_num, minQ.ele_num, row_sta_idx, col_sta_idx );
-    for (iter = RTestMap.begin(); iter != RTestMap.end(); iter++)
-    {
-        long real_hash_idx = iter->first;
-        long row_idx = real_hash_idx / M - row_sta_idx;
-        long col_idx = real_hash_idx % M - col_sta_idx;
-        double sum = 0;
-
-        for (int k = 0; k < K; k++)
-        {
-            sum += minP.eles[row_idx * K + k] * minQ.eles[col_idx * K + k];
-        }
-
-        rmse += (sum - iter->second) * (sum - iter->second);
-        cnt++;
-    }
-    if (cnt != 0)
-    {
-        rmse /= cnt;
-        rmse = sqrt(rmse);
-    }
-    else
-    {
-        rmse = 0;
-    }
-    return rmse;
-}
 
 
 void SGD_MF()

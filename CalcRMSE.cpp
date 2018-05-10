@@ -162,6 +162,7 @@ int main(int argc, const char * argv[])
         }
         double rmse = CalcRMSE();
         ofs << rmse << endl;
+        printf("i=%d rmse=%lf\n", i, rmse );
     }
 
 

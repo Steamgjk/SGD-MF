@@ -608,19 +608,25 @@ void submf()
             ridx = ((myiter->first) / M);
             cidx = ((myiter->first) % M);
 
-            if (ridx < Pblock.sta_idx)
+            /*
+                        if (ridx < Pblock.sta_idx)
+                        {
+                            printf("hash=%ld r=%ld c=%ld p_sta_idx=%ld q_sta_idx=%ld  [%d %d %d %d]\n", myiter->first, ridx, cidx, Pblock.sta_idx, Qblock.sta_idx, f1, f2, f3, f4  );
+                            exit(0);
+                        }
+                        if (cidx < Qblock.sta_idx)
+                        {
+                            printf("hash=%ld r=%ld c=%ld p_sta_idx=%ld q_sta_idx=%ld  [%d %d %d %d]\n", myiter->first, ridx, cidx, Pblock.sta_idx, Qblock.sta_idx, f1, f2, f3, f4  );
+                            exit(0);
+                        }
+            **/
+            if (ridx < Pblock.sta_idx || cidx < Qblock.sta_idx)
             {
-                printf("hash=%ld r=%ld c=%ld p_sta_idx=%ld q_sta_idx=%ld  [%d %d %d %d]\n", myiter->first, ridx, cidx, Pblock.sta_idx, Qblock.sta_idx, f1, f2, f3, f4  );
-                exit(0);
+                myiter++;
+                continue;
             }
-            if (cidx < Qblock.sta_idx)
-            {
-                printf("hash=%ld r=%ld c=%ld p_sta_idx=%ld q_sta_idx=%ld  [%d %d %d %d]\n", myiter->first, ridx, cidx, Pblock.sta_idx, Qblock.sta_idx, f1, f2, f3, f4  );
-                exit(0);
-            }
-
-            ridx = ((myiter->first) / M) % WORKER_THREAD_NUM;
-            cidx = ((myiter->first) % M) % WORKER_THREAD_NUM;
+            ridx = ridx % WORKER_THREAD_NUM;
+            cidx = cidx % WORKER_THREAD_NUM;
 
             hash_for_row_threads[ridx].push_back(myiter->first);
             rates_for_row_threads[ridx].push_back(myiter->second);

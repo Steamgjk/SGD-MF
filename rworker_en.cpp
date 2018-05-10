@@ -310,6 +310,11 @@ int main(int argc, const char * argv[])
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             printf("calc time = %lld\n", mksp);
 
+
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+            }
             to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
@@ -322,8 +327,12 @@ int main(int argc, const char * argv[])
 
 
         }
+
+
         iter_cnt++;
+
         printf("iterddd %d\n", iter_cnt );
+
         if (iter_cnt == 900)
         {
             printf("iter_cnt=%d\n", iter_cnt );
@@ -838,7 +847,7 @@ void sendTd(int send_thread_id)
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
+            //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
             //getchar();
             free(buf);
 

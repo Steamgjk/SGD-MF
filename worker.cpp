@@ -361,7 +361,10 @@ void CalcUpdt(int thread_id)
                 j = real_hash_idx % M - col_sta_idx;
                 error = rates_for_col_threads[thread_id][rand_idx];
 
-
+                if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
+                {
+                    continue;
+                }
                 for (int k = 0; k < K; ++k)
                 {
                     //error -= oldP[i * K + k] * oldQ[j * K + k];

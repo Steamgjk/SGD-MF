@@ -22,7 +22,6 @@
 #include <sys/time.h>
 #include <map>
 
-#define TEST_NAME "./testa.txt"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数

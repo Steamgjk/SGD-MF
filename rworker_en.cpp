@@ -751,6 +751,7 @@ void WriteLog(Block & Pb, Block & Qb, int iter_cnt)
 
 void SGD_MF()
 {
+    /*
     double error = 0;
     int row_sta_idx = Pblocks[p_block_idx].sta_idx;
     int col_sta_idx = Qblocks[q_block_idx].sta_idx;
@@ -758,17 +759,14 @@ void SGD_MF()
     int col_len = Qblocks[q_block_idx].height;
     int Psz =  Pblocks[p_block_idx].height * K;
     int Qsz = Qblocks[q_block_idx].height * K;
-
-    int iter_cnt = 0;
-    int update_num = 0;
+    **/
     struct timeval beg, ed;
     long long mksp;
-    memset(&beg, 0, sizeof(struct timeval));
-    memset(&ed, 0, sizeof(struct timeval));
 
     oldP = Pblocks[p_block_idx].eles;
     oldQ = Qblocks[q_block_idx].eles;
     //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
+    /*
     Pupdt.eles.resize(Psz);
     Pupdt.ele_num = Psz;
     Qupdt.eles.resize(Qsz);
@@ -784,6 +782,7 @@ void SGD_MF()
     {
         Qupdt.eles[ii] = 0;
     }
+    **/
     {
 
         gettimeofday(&beg, 0);
@@ -813,6 +812,7 @@ void SGD_MF()
             }
 
         }
+        /*
         for (int i = 0; i < Pupdt.ele_num; i++)
         {
             Pblocks[p_block_idx].eles[i] += Pupdt.eles[i];
@@ -821,6 +821,7 @@ void SGD_MF()
         {
             Qblocks[q_block_idx].eles[i] += Qupdt.eles[i];
         }
+        **/
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);

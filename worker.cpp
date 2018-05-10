@@ -280,7 +280,7 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
     {
         for (int j = 0; j < M; j++)
         {
-            R[i][j] = 0;
+            Rmatrx[i][j] = 0;
         }
     }
     while (!ifs.eof())

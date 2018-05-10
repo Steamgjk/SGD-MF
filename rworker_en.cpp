@@ -40,7 +40,8 @@ using namespace std;
 
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
-
+std::vector<double> oldP ;
+std::vector<double> oldQ ;
 
 
 /*
@@ -344,12 +345,11 @@ int main(int argc, const char * argv[])
     }
 }
 
-void CalcUpdt2(int td_id)
+void CalcUpdt(int td_id)
 {
     std::vector<double> Pvec(K);
     std::vector<double> Qvec(K);
-    std::vector<double> oldP = Pblocks[p_block_idx].eles;
-    std::vector<double> oldQ = Qblocks[q_block_idx].eles;
+
     while (1 == 1)
     {
         if (StartCalcUpdt[td_id])
@@ -446,7 +446,7 @@ void CalcUpdt2(int td_id)
 
 
 
-void CalcUpdt(int thread_id)
+void CalcUpdt1(int thread_id)
 {
     while (1 == 1)
     {
@@ -766,7 +766,8 @@ void SGD_MF()
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
 
-
+    oldP = Pblocks[p_block_idx].eles;
+    oldQ = Qblocks[q_block_idx].eles;
     //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
     Pupdt.eles.resize(Psz);
     Pupdt.ele_num = Psz;

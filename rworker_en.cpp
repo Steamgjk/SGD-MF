@@ -800,7 +800,7 @@ void SGD_MF()
         }
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf(" SGD time = %lld\n", mksp);
+        printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
     }
 
 

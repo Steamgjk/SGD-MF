@@ -341,7 +341,7 @@ void CalcUpdt(int thread_id)
                 long real_hash_idx = hash_for_row_threads[thread_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;
-                if (i < 0 || j < 0)
+                if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
                     continue;
                 }

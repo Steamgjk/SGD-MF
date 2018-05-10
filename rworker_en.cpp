@@ -457,7 +457,7 @@ void CalcUpdt(int thread_id)
                 }
 
                 rand_idx = random() % ctsz;
-                real_hash_idx = hash_for_col_threads[thread_id][rand_idx];
+                real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
                 i = real_hash_idx / M - row_sta_idx;
                 j = real_hash_idx % M - col_sta_idx;
                 error = rates_for_col_threads[p_block_idx][q_block_idx][thread_id][rand_idx];

@@ -62,6 +62,7 @@ int remote_ports[10] = {4411, 4412, 4413, 4414};
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 
+double Rmatrx[N][M];
 
 
 #define ThreshIter 1000
@@ -274,12 +275,23 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
     int cnt = 0;
     long hash_idx = -1;
     double ra = 0;
+    long row_idx, col_idx;
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            R[i][j] = 0;
+        }
+    }
     while (!ifs.eof())
     {
         ifs >> hash_idx >> ra;
         if (hash_idx >= 0)
         {
-            myMap.insert(pair<long, double>(hash_idx, ra));
+            //myMap.insert(pair<long, double>(hash_idx, ra));
+            row_idx = hash_idx / M;
+            col_idx = hash_idx % M;
+            Rmatrx[row_idx][col_idx] = ra;
             cnt++;
             if (cnt % 1000000 == 0)
             {
@@ -439,8 +451,8 @@ void submf()
 
     {
 
-        hash_ids.clear();
-        rates.clear();
+        //hash_ids.clear();
+        //rates.clear();
         map<long, double>::iterator myiter = RMap.begin();
         long ridx = 0;
         long cidx = 0;
@@ -451,6 +463,8 @@ void submf()
             rates_for_row_threads[i].clear();
             rates_for_col_threads[i].clear();
         }
+
+        /*
         while (myiter != RMap.end())
         {
             //hash_ids.push_back(myiter->first);
@@ -466,6 +480,21 @@ void submf()
             rates_for_col_threads[cidx].push_back(myiter->second);
 
             myiter++;
+        }
+        **/
+        long hash_val;
+        for (ridx = Pblock.sta_idx; ridx < Pblock.sta_idx + Pblock.height; ridx++)
+        {
+            for (ridx = Qblock.sta_idx; ridx < Qblock.sta_idx + Qblock.height; ridx++)
+            {
+                hash_val = ridx * M + cidx;
+                ridx = ridx % WORKER_THREAD_NUM;
+                cidx = cidx % WORKER_THREAD_NUM;
+                hash_for_row_threads[ridx].push_back(hash_val);
+                rates_for_row_threads[ridx].push_back(Rmatrx[ridx][cidx]);
+                hash_for_col_threads[cidx].push_back(hash_val);
+                rates_for_col_threads[cidx].push_back(Rmatrx[ridx][cidx]);
+            }
         }
         //printf("Rmap sz =%ld \n", Rmap.size() );
 

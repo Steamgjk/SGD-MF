@@ -310,7 +310,7 @@ int main(int argc, const char * argv[])
             if (iter_t % 10 == 0)
             {
                 double rmse = CalcRMSE();
-                printf("rmse=%lf\n", rmse);
+                printf("%d  rmse=%lf\n", iter_t, rmse);
                 log_ofs << rmse << endl;
 
             }

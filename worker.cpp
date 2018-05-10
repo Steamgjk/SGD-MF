@@ -150,8 +150,8 @@ bool canSend = false;
 bool hasRecved = false;
 int block_seq[SEQ_LEN];
 
-double yita = 0.0002;
-double theta = 0.02;
+double yita = 0.003;
+double theta = 0.01;
 
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);

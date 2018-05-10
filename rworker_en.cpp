@@ -60,9 +60,8 @@ std::vector<double> oldQ ;
 
 
 #define CAP 30
-#define SEQ_LEN 1000
-#define QU_LEN 5000
-#define ThreshIter 100
+#define SEQ_LEN 2000
+#define QU_LEN 10000
 
 
 #define WORKER_THREAD_NUM 30
@@ -335,7 +334,7 @@ int main(int argc, const char * argv[])
 
         printf("iterddd %d\n", iter_cnt );
 
-        if (iter_cnt == 100)
+        if (iter_cnt == 2000)
         {
             printf("iter_cnt=%d\n", iter_cnt );
             exit(0);

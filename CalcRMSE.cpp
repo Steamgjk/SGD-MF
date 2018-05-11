@@ -35,46 +35,9 @@ double Q[K][M];
 
 using namespace std;
 
-long hashs[1000000];
-double rts[1000000];
-void LoadTestRating()
-{
-    /*
-    char fn[100];
-    for (int i = 0; i < 64 ; i++)
-    {
-        sprintf(fn, "%s%d", TEST_NAME, i);
-        ifstream ifs(fn);
-        if (!ifs.is_open())
-        {
-            printf("fail to open the file %s\n", TEST_NAME);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        hash_idx = -1;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            //TestMap.insert(pair<long, double>(hash_idx, ra));
-            if (hash_idx >= 0)
-            {
-                hashs.push_back(hash_idx);
-                rts.push_back(ra);
-                cnt++;
-                if (cnt % 10000 == 0)
-                {
-                    printf("cnt = %d\n", cnt );
-                }
-            }
+//long hashs[1000000];
+//double rts[1000000];
 
-        }
-    }
-    **/
-
-}
 double CalcRMSE()
 {
 
@@ -147,41 +110,7 @@ int main(int argc, const char * argv[])
 
     char fn[100];
     long hash_head = 0;
-    for (int i = 0; i < 64 ; i++)
-    {
-        sprintf(fn, "%s%d", TEST_NAME, i);
-        ifs.open(fn, ios::in | ios::out);
-        if (!ifs.is_open())
-        {
-            printf("fail to open the file %s\n", TEST_NAME);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        hash_idx = -1;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            if (hash_idx >= 0)
-            {
-                hashs[hash_head] = hash_idx;
-                rts[hash_head] = ra;
-                hash_head++;
-                cnt++;
-                if (cnt % 10000 == 0)
-                {
-                    printf("cnt = %d\n", cnt );
-                }
-            }
 
-        }
-        ifs.close();
-        printf("[%d]hash in he  %d\n", i, hash_head );
-    }
-
-    printf("Sz T  %ld\n", hash_head );
 
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
@@ -265,11 +194,31 @@ int main(int argc, const char * argv[])
 
 
 
-    for (int i = 0; i < hash_head; i++ )
+    for (int i = 0; i < 64 ; i++)
     {
-        printf("[%d] %ld\n", i, hashs[i] );
+        sprintf(fn, "%s%d", TEST_NAME, i);
+        ifs.open(fn, ios::in | ios::out);
+        if (!ifs.is_open())
+        {
+            printf("fail to open the file %s\n", TEST_NAME);
+            exit(-1);
+        }
+        int cnt = 0;
+        int temp = 0;
+        long hash_idx = 0;
+        double ra = 0;
+        hash_idx = -1;
+        while (!ifs.eof())
+        {
+            ifs >> hash_idx >> ra;
+            printf("%ld  %lf\n", hash_idx, ra );
+
+        }
+        ifs.close();
+        printf("[%d]hash in he  %d\n", i, hash_head );
     }
 
+    printf("Sz T  %ld\n", hash_head );
 
 
 //printf("%d\t%lf\n", i, rmse );

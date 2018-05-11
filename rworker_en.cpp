@@ -204,8 +204,8 @@ void getTestMap(map<long, double>& TestMap, int block_id);
 void getBlockRates(map<long, double>& BlockMap, int block_id);
 void SGD_MF();
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
-//void LoadData(int pre_read);
-void LoadData();
+void LoadData(int pre_read);
+//void LoadData();
 void CalcUpdt(int td_id);
 
 int thread_id = -1;

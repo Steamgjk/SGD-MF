@@ -232,10 +232,36 @@ int main(int argc, const char * argv[])
 
         }
         printf("hash_head = %ld \n", hash_head);
+        double rmse = 0;
+
+
+        int total = 0;
+        for (int ss = 0; ss < hash_head; ss++)
+        {
+            //long real_hash_idx = iter->first;
+            long real_hash_idx = hashs[ss];
+            double rate = rts[ss];
+            long row_idx = real_hash_idx / M;
+            long col_idx = real_hash_idx % M;
+            double sum = 0;
+            printf("real_hash_idx=%ld \n", real_hash_idx );
+
+            for (int k = 0; k < K; k++)
+            {
+                sum += P[row_idx][k] * Q[k][col_idx];
+                //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
+            }
+
+            rmse += (sum - rts[ss] ) * (sum - rts[ss]);
+        }
+
+        rmse /= hash_head;
+        rmse = sqrt(rmse);
+        printf("hash_head=%ld rmse=%lf\n", hash_head, rmse );
 
     }
 
-    double rmse = 0;
+
     /*
     for (int i = 0; i < hashs.size(); i++ )
     {

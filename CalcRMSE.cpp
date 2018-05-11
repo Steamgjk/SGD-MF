@@ -40,7 +40,7 @@ std::vector<double> rts;
 void LoadTestRating()
 {
     char fn[100];
-    for (int i = 0; i < 6 ; i++)
+    for (int i = 0; i < 64 ; i++)
     {
         sprintf(fn, "%s%d", TEST_NAME, i);
         ifstream ifs(fn);
@@ -138,6 +138,10 @@ int main(int argc, const char * argv[])
     {
         PORTION_NUM = atoi(argv[2]);
     }
+    ifstream ifs;
+//double rmse = CalcRMSE();
+    LoadTestRating();
+    printf("Sz T  %ld\n", hashs.size() );
 
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
@@ -147,7 +151,7 @@ int main(int argc, const char * argv[])
         for (int j = 0 ; j < PORTION_NUM; j++)
         {
             sprintf(filename, "./Rtrack/Pblock-%d-%d", i, j);
-            ifstream ifs(filename, ios::in | ios::out);
+            ifs.open(filename, ios::in | ios::out);
             if (!ifs.is_open())
             {
                 printf("fail to open %s\n", filename);
@@ -162,17 +166,18 @@ int main(int argc, const char * argv[])
                 }
                 row_idx++;
             }
-
+            ifs.close();
             printf("%s read\n", filename );
             sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
-            ifstream ifs1(filename, ios::in | ios::out);
-            if (!ifs1.is_open())
+            //ifstream ifs1(filename, ios::in | ios::out);
+            ifs.open(filename, ios::in | ios::out);
+            if (!ifs.is_open())
             {
                 printf("fail to open %s\n", filename);
                 getchar();
             }
             double temp;
-            while (!ifs1.eof())
+            while (!ifs.eof())
             {
 
                 for (int kk = 0; kk < K; kk++)
@@ -183,25 +188,25 @@ int main(int argc, const char * argv[])
 
                 col_idx++;
             }
+            ifs.close();
             printf("%s read\n", filename );
 
         }
-        //double rmse = CalcRMSE();
-        LoadTestRating();
-        printf("Sz T  %ld\n", hashs.size() );
-        double rmse = 0;
-        /*
-        for (int i = 0; i < hashs.size(); i++ )
-        {
-            printf("[%d] %ld\n", i, hashs[i] );
-        }
-        **/
 
-        printf("%ld \n", hashs.size() );
-        getchar();
-        ofs << rmse << endl;
-        printf("%d\t%lf\n", i, rmse );
     }
+
+    double rmse = 0;
+    /*
+    for (int i = 0; i < hashs.size(); i++ )
+    {
+        printf("[%d] %ld\n", i, hashs[i] );
+    }
+    **/
+
+    printf("%ld \n", hashs.size() );
+    getchar();
+    ofs << rmse << endl;
+    printf("%d\t%lf\n", i, rmse );
     return 0;
 
 

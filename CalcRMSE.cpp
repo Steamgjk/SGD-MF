@@ -146,7 +146,7 @@ int main(int argc, const char * argv[])
 
 
     char fn[100];
-    int hash_head = 0;
+    long hash_head = 0;
     for (int i = 0; i < 64 ; i++)
     {
         sprintf(fn, "%s%d", TEST_NAME, i);

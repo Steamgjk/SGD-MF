@@ -913,7 +913,7 @@ void sendTd(int send_thread_id)
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qblock), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
-            printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_s, Qblock.ele_num );
+            printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
             sent_len = 0;
             remain_len = total_len;
             ret = -1;

@@ -77,9 +77,10 @@ void LoadTestRating()
 }
 double CalcRMSE()
 {
-    /*
+
     printf("calc RMSE...\n");
     double rmse = 0;
+    /*
     int cnt = 0;
     map<long, double>::iterator iter;
     int positve_cnt = 0;

@@ -228,7 +228,7 @@ int main(int argc, const char * argv[])
             printf("%s read\n", filename );
 
         }
-        printf("%ld \n", hashs.size() );
+        printf("hash_head = %ld \n", hash_head);
 
     }
 

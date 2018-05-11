@@ -191,6 +191,7 @@ int main(int argc, const char * argv[])
             printf("%s read\n", filename );
 
         }
+        printf("%ld \n", hashs.size() );
 
     }
 

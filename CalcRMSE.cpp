@@ -185,8 +185,8 @@ int main(int argc, const char * argv[])
 
                 for (int kk = 0; kk < K; kk++)
                 {
-                    //ifs1 >> Q[kk][col_idx];
-                    ifs1 >> temp;
+                    ifs1 >> Q[kk][col_idx];
+                    //ifs1 >> temp;
                 }
 
                 col_idx++;

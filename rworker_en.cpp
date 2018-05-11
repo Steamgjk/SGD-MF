@@ -399,6 +399,7 @@ void CalcUpdt(int td_id)
                 }
                 cnt++;
             }
+            cnt = 0;
             while (cnt < times_thresh)
             {
                 rand_idx = random() % ctsz;

@@ -30,7 +30,8 @@
 #include <sys/time.h>
 #include <map>
 using namespace std;
-
+#define GROUP_NUM 1
+#define DIM_NUM 8
 //cnt=15454227 sizeof(long)=8
 //#define FILE_NAME "./netflix_row.txt"
 //#define TEST_NAME "./test_out.txt"
@@ -165,6 +166,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void CalcUpdt(int thread_id);
 void LoadSplitData();
+void LoadData();
 
 int thread_id = -1;
 struct timeval start, stop, diff;
@@ -172,11 +174,17 @@ vector<bool> StartCalcUpdt;
 map<long, double> RMap;
 map<long, double> RMaps[8][8];
 
+/*
 std::vector<long> hash_for_row_threads[WORKER_THREAD_NUM];
 std::vector<double> rates_for_row_threads[WORKER_THREAD_NUM];
-
 std::vector<long> hash_for_col_threads[WORKER_THREAD_NUM];
 std::vector<double> rates_for_col_threads[WORKER_THREAD_NUM];
+**/
+
+std::vector<long> hash_for_row_threads[10][10][WORKER_THREAD_NUM];
+std::vector<double> rates_for_row_threads[10][10][WORKER_THREAD_NUM];
+std::vector<long> hash_for_col_threads[10][10][WORKER_THREAD_NUM];
+std::vector<double> rates_for_col_threads[10][10][WORKER_THREAD_NUM];
 
 int main(int argc, const char * argv[])
 {
@@ -187,13 +195,9 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
-    /*
-        for (int i = 0; i < 64; i++)
-        {
-            LoadRmatrix(i, RMap);
-        }
-    **/
-    LoadSplitData();
+
+    //LoadSplitData();
+    LoadData()
     printf("Load Rating Success\n");
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -225,9 +229,6 @@ int main(int argc, const char * argv[])
         printf("%d  has detached\n", i );
     }
 
-
-
-    //double* minR = (double*)malloc(sizeof(double) * 1000);
     int iter_cnt = 0;
     bool isstart = false;
     while (1 == 1)
@@ -292,6 +293,56 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
             {
                 printf("cnt = %ld\n", cnt );
             }
+        }
+    }
+}
+
+void LoadData()
+{
+    char fn[100];
+    long hash_id;
+    double rate;
+    long cnt = 0;
+    for (int row = 0; row < WORKER_NUM; row++)
+    {
+        for (int col = 0; col < WORKER_NUM; col++)
+        {
+            for (int td = 0; td < WORKER_THREAD_NUM; td++)
+            {
+                hash_for_row_threads[row][col][td].clear();
+                rates_for_row_threads[row][col][td].clear();
+                hash_for_col_threads[row][col][td].clear();
+                rates_for_col_threads[row][col][td].clear();
+            }
+
+        }
+    }
+    for (int data_idx = 0; data_idx < 64; data_idx++)
+    {
+        int row = data_idx / DIM_NUM;
+        int col = data_idx % DIM_NUM;
+        row /= 2;
+        col /= 2;
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        printf("fn=%s  :[%d][%d]\n", fn, row, col );
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        cnt = 0;
+        long ridx, cidx;
+        while (!ifs.eof())
+        {
+            ifs >> hash_id >> rate;
+            ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+            cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+
+            hash_for_row_threads[row][col][ridx].push_back(hash_id);
+            rates_for_row_threads[row][col][ridx].push_back(rate);
+            hash_for_col_threads[row][col][cidx].push_back(hash_id);
+            rates_for_col_threads[row][col][cidx].push_back(rate);
         }
     }
 }
@@ -368,7 +419,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
 }
 
 
-void CalcUpdt(int thread_id)
+void CalcUpdt1(int thread_id)
 {
     while (1 == 1)
     {
@@ -439,6 +490,78 @@ void CalcUpdt(int thread_id)
 
 
 }
+
+
+void CalcUpdt(int td_id)
+{
+
+    while (1 == 1)
+    {
+        int p_block_idx = Pblock.block_id;
+        int q_block_idx = Qblock.block_id;
+        if (StartCalcUpdt[td_id])
+        {
+            int times_thresh = 200;
+            int row_sta_idx = Pblock.sta_idx;
+            int col_sta_idx = Qblock.sta_idx;
+            size_t rtsz;
+            size_t ctsz;
+            rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
+            ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
+            if (rtsz == 0)
+            {
+                printf("p %d q %d\n", p_block_idx, q_block_idx );
+                exit(0);
+            }
+            int rand_idx = -1;
+            while (times_thresh--)
+            {
+                rand_idx = random() % rtsz;
+                long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                long i = real_hash_idx / M - row_sta_idx;
+                long j = real_hash_idx % M - col_sta_idx;
+                double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
+                {
+                    printf("[%d] continue l \n", td_id);
+                    continue;
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                }
+
+                rand_idx = random() % ctsz;
+                real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                i = real_hash_idx / M - row_sta_idx;
+                j = real_hash_idx % M - col_sta_idx;
+                if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
+                {
+                    printf("[%d] continue l \n", td_id);
+                    continue;
+                }
+                error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Qblock.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                }
+            }
+            StartCalcUpdt[td_id] = false;
+
+
+        }
+    }
+
+
+}
 void submf()
 {
     //printf("enter submf\n");
@@ -482,6 +605,7 @@ void submf()
       mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
       printf("Load time = %lld\n", mksp);
       **/
+    /*
     int ii = 0;
     for (ii = 0; ii < Psz; ii++)
     {
@@ -491,44 +615,46 @@ void submf()
     {
         Qupdt.eles[ii] = 0;
     }
-
-    {
-        //hash_ids.clear();
-        //rates.clear();
-        int pid = Pblock.block_id;
-        int qid = Qblock.block_id;
-        map<long, double>::iterator myiter = RMaps[pid][qid].begin();
-        long ridx = 0;
-        long cidx = 0;
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    **/
+    /*
         {
-            hash_for_row_threads[i].clear();
-            hash_for_col_threads[i].clear();
-            rates_for_row_threads[i].clear();
-            rates_for_col_threads[i].clear();
+            //hash_ids.clear();
+            //rates.clear();
+            int pid = Pblock.block_id;
+            int qid = Qblock.block_id;
+            map<long, double>::iterator myiter = RMaps[pid][qid].begin();
+            long ridx = 0;
+            long cidx = 0;
+            for (int i = 0; i < WORKER_THREAD_NUM; i++)
+            {
+                hash_for_row_threads[i].clear();
+                hash_for_col_threads[i].clear();
+                rates_for_row_threads[i].clear();
+                rates_for_col_threads[i].clear();
+            }
+
+
+            //while (myiter != RMap.end())
+            while (myiter !=  RMaps[pid][qid].end())
+            {
+                //hash_ids.push_back(myiter->first);
+                //rates.push_back(myiter->second);
+                ridx = ((myiter->first) / M);
+                cidx = ((myiter->first) % M);
+                ridx = ridx % WORKER_THREAD_NUM;
+                cidx = cidx % WORKER_THREAD_NUM;
+
+                hash_for_row_threads[ridx].push_back(myiter->first);
+                rates_for_row_threads[ridx].push_back(myiter->second);
+                hash_for_col_threads[cidx].push_back(myiter->first);
+                rates_for_col_threads[cidx].push_back(myiter->second);
+
+                myiter++;
+            }
+
+
         }
-
-
-        //while (myiter != RMap.end())
-        while (myiter !=  RMaps[pid][qid].end())
-        {
-            //hash_ids.push_back(myiter->first);
-            //rates.push_back(myiter->second);
-            ridx = ((myiter->first) / M);
-            cidx = ((myiter->first) % M);
-            ridx = ridx % WORKER_THREAD_NUM;
-            cidx = cidx % WORKER_THREAD_NUM;
-
-            hash_for_row_threads[ridx].push_back(myiter->first);
-            rates_for_row_threads[ridx].push_back(myiter->second);
-            hash_for_col_threads[cidx].push_back(myiter->first);
-            rates_for_col_threads[cidx].push_back(myiter->second);
-
-            myiter++;
-        }
-
-
-    }
+        **/
 
 //printf("Rmap sz =%ld \n", Rmap.size() );
 
@@ -600,7 +726,7 @@ int wait4connection(char*local_ip, int local_port)
     return connfd;
 
 }
-void sendTd(int send_thread_id)
+void sendTd1(int send_thread_id)
 {
     printf("send_thread_id=%d\n", send_thread_id);
     char* remote_ip = remote_ips[send_thread_id];
@@ -709,6 +835,115 @@ void sendTd(int send_thread_id)
     }
 
 }
+
+void sendTd(int send_thread_id)
+{
+    printf("send_thread_id=%d\n", send_thread_id);
+    char* remote_ip = remote_ips[send_thread_id];
+    int remote_port = remote_ports[send_thread_id];
+    int fd;
+    int check_ret;
+    fd = socket(PF_INET, SOCK_STREAM , 0);
+    assert(fd >= 0);
+
+    struct sockaddr_in address;
+    bzero(&address, sizeof(address));
+    //转换成网络地址
+    address.sin_port = htons(remote_port);
+    address.sin_family = AF_INET;
+    //地址转换
+    inet_pton(AF_INET, remote_ip, &address.sin_addr);
+    do
+    {
+        check_ret = connect(fd, (struct sockaddr*) &address, sizeof(address));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    while (check_ret < 0);
+    assert(check_ret >= 0);
+    //发送数据
+    printf("connect to %s %d\n", remote_ip, remote_port);
+    while (1 == 1)
+    {
+        if (canSend)
+        {
+            //printf("Td:%d cansend\n", thread_id );
+            size_t struct_sz = sizeof(Block);
+            size_t data_sz = sizeof(double) * Pblock.ele_num;
+            char* buf = (char*)malloc(struct_sz + data_sz);
+            memcpy(buf, &(Pupdt), struct_sz);
+            memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
+
+            size_t total_len = struct_sz + data_sz;
+            struct timeval st, et, tspan;
+            size_t sent_len = 0;
+            size_t remain_len = total_len;
+            int ret = -1;
+            size_t to_send_len = 4096;
+            gettimeofday(&st, 0);
+
+
+            while (remain_len > 0)
+            {
+                if (to_send_len > remain_len)
+                {
+                    to_send_len = remain_len;
+                }
+                //printf("sending...\n");
+                ret = send(fd, buf + sent_len, to_send_len, 0);
+                if (ret >= 0)
+                {
+                    remain_len -= to_send_len;
+                    sent_len += to_send_len;
+                    //printf("remain_len = %ld\n", remain_len);
+                }
+                else
+                {
+                    printf("still fail\n");
+                }
+                //getchar();
+            }
+            free(buf);
+
+
+            data_sz = sizeof(double) * Qblock->ele_num;
+            total_len = struct_sz + data_sz;
+            buf = (char*)malloc(struct_sz + data_sz);
+            memcpy(buf, &(Qblock), struct_sz);
+            memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
+
+            sent_len = 0;
+            remain_len = total_len;
+            ret = -1;
+            to_send_len = 4096;
+            while (remain_len > 0)
+            {
+                if (to_send_len > remain_len)
+                {
+                    to_send_len = remain_len;
+                }
+                //printf("sending...\n");
+                ret = send(fd, buf + sent_len, to_send_len, 0);
+                if (ret >= 0)
+                {
+                    remain_len -= to_send_len;
+                    sent_len += to_send_len;
+                }
+                else
+                {
+                    printf("still fail\n");
+                }
+            }
+
+            free(buf);
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+            printf("send two blocks mksp=%lld\n", mksp );
+            canSend = false;
+        }
+    }
+
+}
+
 void recvTd(int recv_thread_id)
 {
     printf("recv_thread_id=%d\n", recv_thread_id);

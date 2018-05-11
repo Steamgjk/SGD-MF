@@ -182,13 +182,13 @@ int main(int argc, const char * argv[])
             double temp;
             while (!ifs1.eof())
             {
-                /*
-                                for (int kk = 0; kk < K; kk++)
-                                {
-                                    ifs1 >> Q[kk][col_idx];
-                                }
-                                **/
-                ifs1 >> temp;
+
+                for (int kk = 0; kk < K; kk++)
+                {
+                    //ifs1 >> Q[kk][col_idx];
+                    ifs1 >> temp;
+                }
+
                 col_idx++;
             }
             printf("%s read\n", filename );

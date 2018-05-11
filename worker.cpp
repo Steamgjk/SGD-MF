@@ -588,7 +588,8 @@ void submf()
     memset(&beg, 0, sizeof(struct timeval));
     memset(&ed, 0, sizeof(struct timeval));
     gettimeofday(&beg, 0);
-
+    oldP = Pblock.eles;
+    oldQ = Qblock.eles;
     /*
       int r1 = Pblock.block_id * 2;
       int c1 = Qblock.block_id * 2;

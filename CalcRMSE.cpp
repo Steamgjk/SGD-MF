@@ -150,7 +150,7 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < 64 ; i++)
     {
         sprintf(fn, "%s%d", TEST_NAME, i);
-        ifs.open(TEST_NAME, ios::in | ios::out);
+        ifs.open(fn, ios::in | ios::out);
         if (!ifs.is_open())
         {
             printf("fail to open the file %s\n", TEST_NAME);

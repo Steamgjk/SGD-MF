@@ -29,7 +29,6 @@ int ITER_NUM  = 2000;
 int PORTION_NUM = 8;
 double P[N][K];
 double Q[K][M];
-double qq[K][M];
 //#define TEST_NAME "./test_out.txt"
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
@@ -139,14 +138,6 @@ int main(int argc, const char * argv[])
     {
         PORTION_NUM = atoi(argv[2]);
     }
-    LoadTestRating();
-    printf("Sz T  %ld\n", hashs.size() );
-    /*
-    for (int i = 0; i < hashs.size(); i++ )
-    {
-        printf("[%d] %ld\n", i, hashs[i] );
-    }
-    **/
 
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
@@ -186,10 +177,8 @@ int main(int argc, const char * argv[])
 
                 for (int kk = 0; kk < K; kk++)
                 {
-                    //ifs1 >> Q[kk][col_idx];
-                    ifs1 >> temp;
-                    //Q[kk][col_idx] = temp;
-                    qq[kk][col_idx] = temp;
+                    ifs1 >> Q[kk][col_idx];
+
                 }
 
                 col_idx++;
@@ -198,6 +187,8 @@ int main(int argc, const char * argv[])
 
         }
         //double rmse = CalcRMSE();
+        LoadTestRating();
+        printf("Sz T  %ld\n", hashs.size() );
         double rmse = 0;
         /*
         for (int i = 0; i < hashs.size(); i++ )

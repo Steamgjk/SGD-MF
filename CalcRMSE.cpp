@@ -90,10 +90,12 @@ double CalcRMSE()
         //long real_hash_idx = iter->first;
         long real_hash_idx = hashs[ss];
         double rate = rts[ss];
+
         long row_idx = real_hash_idx / M;
         long col_idx = real_hash_idx % M;
         double sum = 0;
-        //printf("real_hash_idx=%ld \n", real_hash_idx );
+        printf("real_hash_idx=%ld \n", real_hash_idx );
+        /*
         for (int k = 0; k < K; k++)
         {
             sum += P[row_idx][k] * Q[k][col_idx];
@@ -108,8 +110,8 @@ double CalcRMSE()
             negative_cnt++;
 
         }
-        //rmse += (sum - iter->second) * (sum - iter->second);
         rmse += (sum - rts[ss] ) * (sum - rts[ss]);
+        **/
         cnt++;
     }
 
@@ -132,10 +134,12 @@ int main(int argc, const char * argv[])
     }
     LoadTestRating();
     printf("Sz T  %ld\n", hashs.size() );
+    /*
     for (int i = 0; i < hashs.size(); i++ )
     {
         printf("[%d] %ld\n", i, hashs[i] );
     }
+    **/
 
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)

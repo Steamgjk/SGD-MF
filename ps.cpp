@@ -721,6 +721,7 @@ void recvTd(int recv_thread_id)
                     exit(-1);
                 }
             }
+            printf("ret=%d\n", ret );
             cur_len += ret;
         }
         struct Block* pb = (struct Block*)(void*)sockBuf;

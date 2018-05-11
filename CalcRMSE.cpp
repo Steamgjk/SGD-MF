@@ -34,9 +34,9 @@ double Q[K][M];
 #define TEST_NAME "./mdata/testa-"
 
 using namespace std;
-map<long, double> TestMap;
-std::vector<long> hashs;
-std::vector<double> rts;
+
+long hashs[1000000];
+double rts[1000000];
 void LoadTestRating()
 {
     char fn[100];
@@ -139,9 +139,46 @@ int main(int argc, const char * argv[])
         PORTION_NUM = atoi(argv[2]);
     }
     ifstream ifs;
-//double rmse = CalcRMSE();
-    LoadTestRating();
-    printf("Sz T  %ld\n", hashs.size() );
+
+
+    char fn[100];
+    int hash_head = 0;
+    for (int i = 0; i < 64 ; i++)
+    {
+        sprintf(fn, "%s%d", TEST_NAME, i);
+        ifs.open(TEST_NAME, ios::in | ios::out);
+        if (!ifs.is_open())
+        {
+            printf("fail to open the file %s\n", TEST_NAME);
+            exit(-1);
+        }
+        int cnt = 0;
+        int temp = 0;
+        long hash_idx = 0;
+        double ra = 0;
+        hash_idx = -1;
+        while (!ifs.eof())
+        {
+            ifs >> hash_idx >> ra;
+            //TestMap.insert(pair<long, double>(hash_idx, ra));
+            if (hash_idx >= 0)
+            {
+                //hashs.push_back(hash_idx);
+                //rts.push_back(ra);
+                hashs[hash_head] = hash_idx;
+                rts[hash_head] = ra;
+                hash_head++;
+                cnt++;
+                if (cnt % 10000 == 0)
+                {
+                    printf("cnt = %d\n", cnt );
+                }
+            }
+
+        }
+    }
+
+    printf("Sz T  %ld\n", hash_head );
 
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
@@ -203,7 +240,7 @@ int main(int argc, const char * argv[])
     }
     **/
 
-    printf("%ld \n", hashs.size() );
+    printf("%ld \n", hash_head );
     getchar();
     ofs << rmse << endl;
     //printf("%d\t%lf\n", i, rmse );

@@ -199,6 +199,7 @@ int main(int argc, const char * argv[])
         **/
 
         printf("%ld \n", hashs.size() );
+        getchar();
         ofs << rmse << endl;
         printf("%d\t%lf\n", i, rmse );
     }

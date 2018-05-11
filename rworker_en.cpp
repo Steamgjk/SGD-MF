@@ -362,7 +362,7 @@ void CalcUpdt(int td_id)
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             if (rtsz == 0)
             {
-                printf(" rtsz=0 p %d q %d td_id=%d\n", p_block_idx, q_block_idx, td_id );
+                //printf(" rtsz=0 p %d q %d td_id=%d\n", p_block_idx, q_block_idx, td_id );
                 StartCalcUpdt[td_id] = false;
                 continue;
             }
@@ -377,7 +377,7 @@ void CalcUpdt(int td_id)
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
-                    printf("[%d] continue l \n", td_id);
+                    //printf("[%d] continue l \n", td_id);
                     continue;
                 }
                 for (int k = 0; k < K; ++k)

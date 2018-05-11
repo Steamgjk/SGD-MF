@@ -891,7 +891,7 @@ void sendTd(int send_thread_id)
                 {
                     to_send_len = remain_len;
                 }
-                //printf("sending...\n");
+                printf("sending...\n");
                 ret = send(fd, buf + sent_len, to_send_len, 0);
                 if (ret >= 0)
                 {

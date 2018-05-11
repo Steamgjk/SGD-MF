@@ -250,6 +250,7 @@ int main(int argc, const char * argv[])
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
             submf();
+            printf("after submf\n");
             iter_cnt++;
             if (iter_cnt == thresh_log )
             {
@@ -258,7 +259,7 @@ int main(int argc, const char * argv[])
                 long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
                 printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
                 //WriteLog(Pblock, Qblock, iter_cnt);
-                exit(0);
+                //exit(0);
             }
             canSend = true;
             hasRecved = false;
@@ -941,6 +942,10 @@ void sendTd(int send_thread_id)
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             printf("send two blocks mksp=%lld\n", mksp );
             canSend = false;
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
 

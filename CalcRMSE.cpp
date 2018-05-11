@@ -53,18 +53,22 @@ void LoadTestRating()
         int temp = 0;
         long hash_idx = 0;
         double ra = 0;
-
+        hash_idx = -1;
         while (!ifs.eof())
         {
             ifs >> hash_idx >> ra;
             //TestMap.insert(pair<long, double>(hash_idx, ra));
-            hashs.push_back(hash_idx);
-            rts.push_back(ra);
-            cnt++;
-            if (cnt % 10000 == 0)
+            if (hash_idx >= 0)
             {
-                printf("cnt = %d\n", cnt );
+                hashs.push_back(hash_idx);
+                rts.push_back(ra);
+                cnt++;
+                if (cnt % 10000 == 0)
+                {
+                    printf("cnt = %d\n", cnt );
+                }
             }
+
         }
     }
 
@@ -132,7 +136,7 @@ int main(int argc, const char * argv[])
     {
         printf("[%d] %ld\n", i, hashs[i] );
     }
-    /*
+
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
     {
@@ -179,7 +183,7 @@ int main(int argc, const char * argv[])
         ofs << rmse << endl;
         printf("%d\t%lf\n", i, rmse );
     }
-    **/
+
 
 }
 

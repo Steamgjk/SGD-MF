@@ -143,7 +143,7 @@ int main(int argc, const char * argv[])
         PORTION_NUM = atoi(argv[2]);
     }
     ifstream ifs;
-
+    double rmse = 0;
 
     char fn[100];
     long hash_head = 0;
@@ -232,29 +232,31 @@ int main(int argc, const char * argv[])
 
         }
         printf("hash_head = %ld \n", hash_head);
-        double rmse = 0;
 
 
-        int total = 0;
-        for (int ss = 0; ss < hash_head; ss++)
-        {
-            //long real_hash_idx = iter->first;
-            long real_hash_idx = hashs[ss];
-            double rate = rts[ss];
-            long row_idx = real_hash_idx / M;
-            long col_idx = real_hash_idx % M;
-            double sum = 0;
-            printf("real_hash_idx=%ld \n", real_hash_idx );
+        /*
+                int total = 0;
+                for (int ss = 0; ss < hash_head; ss++)
+                {
+                    //long real_hash_idx = iter->first;
+                    long real_hash_idx = hashs[ss];
+                    double rate = rts[ss];
+                    long row_idx = real_hash_idx / M;
+                    long col_idx = real_hash_idx % M;
+                    double sum = 0;
+                    printf("real_hash_idx=%ld \n", real_hash_idx );
 
-            for (int k = 0; k < K; k++)
-            {
-                sum += P[row_idx][k] * Q[k][col_idx];
-                //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
-            }
+                    for (int k = 0; k < K; k++)
+                    {
+                        sum += P[row_idx][k] * Q[k][col_idx];
+                        //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
+                    }
 
-            rmse += (sum - rts[ss] ) * (sum - rts[ss]);
+                    rmse += (sum - rts[ss] ) * (sum - rts[ss]);
+
+
         }
-
+        **/
         rmse /= hash_head;
         rmse = sqrt(rmse);
         printf("hash_head=%ld rmse=%lf\n", hash_head, rmse );
@@ -262,15 +264,15 @@ int main(int argc, const char * argv[])
     }
 
 
-    /*
-    for (int i = 0; i < hashs.size(); i++ )
+
+    for (int i = 0; i < hash_head; i++ )
     {
         printf("[%d] %ld\n", i, hashs[i] );
     }
-    **/
 
 
-    //printf("%d\t%lf\n", i, rmse );
+
+//printf("%d\t%lf\n", i, rmse );
     return 0;
 
 

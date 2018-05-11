@@ -161,34 +161,35 @@ int main(int argc, const char * argv[])
                 printf("fail to open %s\n", filename);
                 getchar();
             }
-            /*
-                        while (!ifs.eof())
-                        {
-                            for (int kk = 0; kk < K; kk++)
-                            {
-                                ifs >> P[row_idx][kk];
-                            }
-                            row_idx++;
-                        }
-                        printf("%s read\n", filename );
-                        sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
-                        ifstream ifs1(filename, ios::in | ios::out);
-                        if (!ifs1.is_open())
-                        {
-                            printf("fail to open %s\n", filename);
-                            getchar();
-                        }
 
-                        while (!ifs1.eof())
-                        {
-                            for (int kk = 0; kk < K; kk++)
-                            {
-                                ifs1 >> Q[kk][col_idx];
-                            }
-                            col_idx++;
-                        }
-                        printf("%s read\n", filename );
-                        **/
+            while (!ifs.eof())
+            {
+                for (int kk = 0; kk < K; kk++)
+                {
+                    ifs >> P[row_idx][kk];
+                }
+                row_idx++;
+            }
+            /*
+            printf("%s read\n", filename );
+            sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
+            ifstream ifs1(filename, ios::in | ios::out);
+            if (!ifs1.is_open())
+            {
+                printf("fail to open %s\n", filename);
+                getchar();
+            }
+
+            while (!ifs1.eof())
+            {
+                for (int kk = 0; kk < K; kk++)
+                {
+                    ifs1 >> Q[kk][col_idx];
+                }
+                col_idx++;
+            }
+            printf("%s read\n", filename );
+            **/
         }
         //double rmse = CalcRMSE();
         double rmse = 0;

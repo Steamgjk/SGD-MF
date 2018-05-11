@@ -223,8 +223,8 @@ int main(int argc, const char * argv[])
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
-    //LoadData(CACHE_NUM);
-    LoadData();
+    LoadData(CACHE_NUM);
+    //LoadData();
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
@@ -556,7 +556,7 @@ void LoadStateConfig(char* fn)
 
 
 }
-void LoadData1(int pre_read)
+void LoadData(int pre_read)
 {
     char fn[100];
     long hash_id = -1;
@@ -616,7 +616,7 @@ void LoadData1(int pre_read)
     }
 }
 
-void LoadData()
+void LoadData2()
 {
     char fn[100];
     long hash_id;

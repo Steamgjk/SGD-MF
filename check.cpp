@@ -164,8 +164,9 @@ int main()
 			printf("fail to open %s\n", fn );
 			exit(-1);
 		}
-		cnt = 0;
 		long i, j;
+		long hash_id;
+		double rate;
 		while (!ifs.eof())
 		{
 			ifs >> hash_id >> rate;

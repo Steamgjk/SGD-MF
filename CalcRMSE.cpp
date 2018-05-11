@@ -60,7 +60,7 @@ void LoadTestRating()
             cnt++;
             if (cnt % 10000 == 0)
             {
-                printf("cnt = %ld\n", cnt );
+                printf("cnt = %d\n", cnt );
             }
         }
     }
@@ -76,10 +76,10 @@ double CalcRMSE()
     int negative_cnt = 0;
     double sss = 0;
     double avg = 0;
-    //printf("hehere\n");
+    printf("hehere\n");
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
-        //printf("hehe11\n");
+        printf("hehe11\n");
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M;
         long col_idx = real_hash_idx % M;

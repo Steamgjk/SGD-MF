@@ -703,6 +703,7 @@ void recvTd(int recv_thread_id)
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
     while (1 == 1)
     {
+        printf("recving ...\n");
 
         size_t expected_len = sizeof(Block);
         char* sockBuf = (char*)malloc(expected_len);

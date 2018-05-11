@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 1;
-int DIM_NUM = 4;
+int GROUP_NUM = 2;
+int DIM_NUM = 8;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -377,7 +377,7 @@ void CalcUpdt(int td_id)
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
-                    //printf("[%d] continue l \n", td_id);
+                    printf("[%d] continue l [%ld][%ld]  %ld\n", td_id, i, j, real_hash_idx);
                     continue;
                 }
                 for (int k = 0; k < K; ++k)
@@ -388,20 +388,7 @@ void CalcUpdt(int td_id)
                 {
                     Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
                 }
-                /*
-                for (int k = 0; k < K; ++k)
-                {
-                    Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
-                    Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
-                    error -= Pvec[k] * Qvec[k];
-                }
 
-                for (int k = 0; k < K; ++k)
-                {
-                    Pblocks[p_block_idx].eles[k] += yita * (error * Qvec[k] - theta * Pvec[k]);
-
-                }
-                **/
 
                 rand_idx = random() % ctsz;
                 real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
@@ -754,38 +741,13 @@ void WriteLog(Block & Pb, Block & Qb, int iter_cnt)
 
 void SGD_MF()
 {
-    /*
-    double error = 0;
-    int row_sta_idx = Pblocks[p_block_idx].sta_idx;
-    int col_sta_idx = Qblocks[q_block_idx].sta_idx;
-    int row_len = Pblocks[p_block_idx].height;
-    int col_len = Qblocks[q_block_idx].height;
-    int Psz =  Pblocks[p_block_idx].height * K;
-    int Qsz = Qblocks[q_block_idx].height * K;
-    **/
+
     struct timeval beg, ed;
     long long mksp;
 
     oldP = Pblocks[p_block_idx].eles;
     oldQ = Qblocks[q_block_idx].eles;
-    //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
-    /*
-    Pupdt.eles.resize(Psz);
-    Pupdt.ele_num = Psz;
-    Qupdt.eles.resize(Qsz);
-    Qupdt.ele_num = Qsz;
-    Pupdt.block_id = Pblocks[p_block_idx].block_id;
-    Qupdt.block_id = Qblocks[q_block_idx].block_id;
-    int ii = 0;
-    for (ii = 0; ii < Psz; ii++)
-    {
-        Pupdt.eles[ii] = 0;
-    }
-    for ( ii = 0; ii < Qsz; ii++)
-    {
-        Qupdt.eles[ii] = 0;
-    }
-    **/
+
     {
 
         gettimeofday(&beg, 0);
@@ -816,16 +778,7 @@ void SGD_MF()
             }
 
         }
-        /*
-        for (int i = 0; i < Pupdt.ele_num; i++)
-        {
-            Pblocks[p_block_idx].eles[i] += Pupdt.eles[i];
-        }
-        for (int i = 0; i < Qupdt.ele_num; i++)
-        {
-            Qblocks[q_block_idx].eles[i] += Qupdt.eles[i];
-        }
-        **/
+
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
         printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);

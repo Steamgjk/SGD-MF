@@ -84,6 +84,11 @@ double CalcRMSE()
     double sss = 0;
     double avg = 0;
     printf("hehere\n");
+    for (int i = 0; i < hashs.size(); i++ )
+    {
+        printf("[%d] %ld\n", i, hashs[i] );
+    }
+    /*
     //for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     for (int ss = 0; ss < hashs.size(); ss++)
     {
@@ -95,7 +100,7 @@ double CalcRMSE()
         long col_idx = real_hash_idx % M;
         double sum = 0;
         printf("real_hash_idx=%ld \n", real_hash_idx );
-        /*
+
         for (int k = 0; k < K; k++)
         {
             sum += P[row_idx][k] * Q[k][col_idx];
@@ -111,13 +116,14 @@ double CalcRMSE()
 
         }
         rmse += (sum - rts[ss] ) * (sum - rts[ss]);
-        **/
+
         cnt++;
     }
 
     rmse /= cnt;
     rmse = sqrt(rmse);
     printf("positve_cnt=%d negative_cnt=%d rmse=%lf\n", positve_cnt, negative_cnt, rmse );
+    **/
     return rmse;
 }
 int main(int argc, const char * argv[])

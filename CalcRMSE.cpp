@@ -36,7 +36,7 @@ double Q[K][M];
 using namespace std;
 map<long, double> TestMap;
 std::vector<long> hashs;
-std::vector<rate> rts;
+std::vector<double> rts;
 void LoadTestRating()
 {
     char fn[100];

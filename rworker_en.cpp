@@ -609,14 +609,15 @@ void LoadData(int pre_read)
                     ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
                     cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
 
-                    hash_for_row_threads[row_sta][col_sta][ridx].push_back(hash_id);
-                    rates_for_row_threads[row_sta][col_sta][ridx].push_back(rate);
-                    hash_for_col_threads[row_sta][col_sta][cidx].push_back(hash_id);
-                    rates_for_col_threads[row_sta][col_sta][cidx].push_back(rate);
+                    hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                    rates_for_row_threads[row][col][ridx].push_back(rate);
+                    hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                    rates_for_col_threads[row][col][cidx].push_back(rate);
                     //printf("row=%d col=%d rr=%ld cc=%ld\n", row, col, ((hash_id) / M), ((hash_id) % M)  );
                     //break;
 
                 }
+                printf("row=%d col=%d sz =%ld\n", row, col, hash_for_row_threads[row][col][0].size() );
             }
         }
 

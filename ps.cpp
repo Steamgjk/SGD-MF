@@ -725,6 +725,7 @@ void recvTd(int recv_thread_id)
             cur_len += ret;
             printf("cur_len=%d expected_len=%d\n", cur_len, expected_len );
         }
+        printf("come here\n");
         struct Block* pb = (struct Block*)(void*)sockBuf;
         size_t data_sz = sizeof(double) * (pb->ele_num);
         char* dataBuf = (char*)malloc(data_sz);
@@ -738,6 +739,7 @@ void recvTd(int recv_thread_id)
                 printf("Mimatch!\n");
             }
             cur_len += ret;
+            printf("cur_len=%d data_sz=%d\n", cur_len, data_sz );
         }
 
         double* data_eles = (double*)(void*)dataBuf;

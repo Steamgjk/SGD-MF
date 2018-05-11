@@ -77,6 +77,7 @@ struct Block
     int sta_idx;
     int height; //height
     int ele_num;
+    bool isP;
     vector<double> eles;
     Block()
     {
@@ -127,7 +128,6 @@ struct Updates
 
     void printUpdates()
     {
-
         printf("update block_id %d\n", block_id );
         printf("clock_t  %d\n", clock_t);
         printf("ele size %ld\n", ele_num);
@@ -136,7 +136,6 @@ struct Updates
             printf("%lf\t", eles[i]);
         }
         printf("\n");
-
     }
 };
 struct Block Pblock;

@@ -711,7 +711,7 @@ void recvTd(int recv_thread_id)
         int ret = 0;
         while (cur_len < expected_len)
         {
-            printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
+            //printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
             ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
             if (ret <=  0)
             {
@@ -721,12 +721,13 @@ void recvTd(int recv_thread_id)
                     exit(-1);
                 }
             }
-            printf("ret=%d\n", ret );
+            //printf("ret=%d\n", ret );
             cur_len += ret;
-            printf("cur_len=%d expected_len=%d\n", cur_len, expected_len );
+            //printf("cur_len=%d expected_len=%d\n", cur_len, expected_len );
         }
-        printf("come here\n");
+        //printf("come here\n");
         struct Block* pb = (struct Block*)(void*)sockBuf;
+        //pb->printBlock();
         size_t data_sz = sizeof(double) * (pb->ele_num);
         char* dataBuf = (char*)malloc(data_sz);
         cur_len = 0;

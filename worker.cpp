@@ -872,7 +872,7 @@ void sendTd(int send_thread_id)
             size_t struct_sz = sizeof(Block);
             size_t data_sz = sizeof(double) * Pblock.ele_num;
             char* buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Pupdt), struct_sz);
+            memcpy(buf, &(Pblock), struct_sz);
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
 
             size_t total_len = struct_sz + data_sz;

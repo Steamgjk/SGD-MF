@@ -164,11 +164,8 @@ int main(int argc, const char * argv[])
         while (!ifs.eof())
         {
             ifs >> hash_idx >> ra;
-            //TestMap.insert(pair<long, double>(hash_idx, ra));
             if (hash_idx >= 0)
             {
-                //hashs.push_back(hash_idx);
-                //rts.push_back(ra);
                 hashs[hash_head] = hash_idx;
                 rts[hash_head] = ra;
                 hash_head++;
@@ -180,6 +177,7 @@ int main(int argc, const char * argv[])
             }
 
         }
+        printf("[%d]hash in he  %d\n", i, hash_head );
     }
 
     printf("Sz T  %ld\n", hash_head );

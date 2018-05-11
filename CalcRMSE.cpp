@@ -186,6 +186,31 @@ int main(int argc, const char * argv[])
 
         }
         **/
+
+        for (int i = 0; i < 64 ; i++)
+        {
+            sprintf(fn, "%s%d", TEST_NAME, i);
+            ifs.open(fn, ios::in | ios::out);
+            if (!ifs.is_open())
+            {
+                printf("fail to open the file %s\n", TEST_NAME);
+                exit(-1);
+            }
+            int cnt = 0;
+            int temp = 0;
+            long hash_idx = 0;
+            double ra = 0;
+            hash_idx = -1;
+            while (!ifs.eof())
+            {
+                ifs >> hash_idx >> ra;
+                printf("%ld  %lf\n", hash_idx, ra );
+
+            }
+            ifs.close();
+
+        }
+
         rmse /= hash_head;
         rmse = sqrt(rmse);
         printf("hash_head=%ld rmse=%lf\n", hash_head, rmse );
@@ -194,29 +219,7 @@ int main(int argc, const char * argv[])
 
 
 
-    for (int i = 0; i < 64 ; i++)
-    {
-        sprintf(fn, "%s%d", TEST_NAME, i);
-        ifs.open(fn, ios::in | ios::out);
-        if (!ifs.is_open())
-        {
-            printf("fail to open the file %s\n", TEST_NAME);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        hash_idx = -1;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            printf("%ld  %lf\n", hash_idx, ra );
 
-        }
-        ifs.close();
-        printf("[%d]hash in he  %d\n", i, hash_head );
-    }
 
     printf("Sz T  %ld\n", hash_head );
 

@@ -82,6 +82,7 @@ double CalcRMSE()
         long row_idx = real_hash_idx / M;
         long col_idx = real_hash_idx % M;
         double sum = 0;
+        printf("real_hash_idx=%ld \n", real_hash_idx );
         for (int k = 0; k < K; k++)
         {
             sum += P[row_idx][k] * Q[k][col_idx];

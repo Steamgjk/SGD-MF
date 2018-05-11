@@ -363,11 +363,13 @@ void CalcUpdt(int td_id)
             if (rtsz == 0)
             {
                 printf(" rtsz=0 p %d q %d td_id=%d\n", p_block_idx, q_block_idx, td_id );
-                exit(0);
+                StartCalcUpdt[td_id] = false;
+                continue;
             }
             int rand_idx = -1;
             while (times_thresh--)
             {
+
                 rand_idx = random() % rtsz;
                 long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
@@ -570,7 +572,7 @@ void LoadStateConfig(char* fn)
 void LoadData(int pre_read)
 {
     char fn[100];
-    long hash_id;
+    long hash_id = -1;
     double rate;
     long cnt = 0;
     for (int i = 0; i < pre_read; i++)
@@ -600,24 +602,26 @@ void LoadData(int pre_read)
                 cnt = 0;
 
                 long ridx, cidx;
-
+                hash_id = -1;
                 while (!ifs.eof())
                 {
                     ifs >> hash_id >> rate;
+                    if (hash_id >= 0)
+                    {
+                        ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                        cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+                        hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                        rates_for_row_threads[row][col][ridx].push_back(rate);
+                        hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                        rates_for_col_threads[row][col][cidx].push_back(rate);
+                    }
 
-                    ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
-                    cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
-
-                    hash_for_row_threads[row][col][ridx].push_back(hash_id);
-                    rates_for_row_threads[row][col][ridx].push_back(rate);
-                    hash_for_col_threads[row][col][cidx].push_back(hash_id);
-                    rates_for_col_threads[row][col][cidx].push_back(rate);
-                    if (row == 5 && col == 2)
-                        printf("row=%d col=%d rr=%ld cc=%ld\n", row, col, ((hash_id) / M), ((hash_id) % M)  );
+                    //if (row == 5 && col == 2)
+                    //printf("row=%d col=%d rr=%ld cc=%ld\n", row, col, ((hash_id) / M), ((hash_id) % M)  );
                     //break;
 
                 }
-                printf("row=%d col=%d sz =%ld\n", row, col, hash_for_row_threads[row][col][0].size() );
+                //printf("row=%d col=%d sz =%ld\n", row, col, hash_for_row_threads[row][col][0].size() );
             }
         }
 

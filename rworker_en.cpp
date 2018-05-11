@@ -588,7 +588,6 @@ void LoadData(int pre_read)
         {
             for (int col_sta = phy_col; col_sta < phy_col  + (2 / GROUP_NUM); col_sta++)
             {
-                //if (TrainMaps[row][col].size() != 0)
                 data_idx = row_sta * DIM_NUM * (2 / GROUP_NUM) + col_sta;
                 sprintf(fn, "%s%d", FILE_NAME, data_idx);
                 printf("fn=%s  :[%d][%d]\n", fn, row_sta, col_sta );
@@ -885,7 +884,7 @@ void sendTd(int send_thread_id)
     inet_pton(AF_INET, remote_ip, &address.sin_addr);
     do
     {
-        printf("Trying to connect to %s %d\n", remote_ip, remote_port);
+        //printf("Trying to connect to %s %d\n", remote_ip, remote_port);
         check_ret = connect(fd, (struct sockaddr*) &address, sizeof(address));
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }

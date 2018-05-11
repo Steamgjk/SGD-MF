@@ -189,6 +189,7 @@ int main(int argc, const char * argv[])
                     //ifs1 >> Q[kk][col_idx];
                     ifs1 >> temp;
                     //Q[kk][col_idx] = temp;
+                    qq[kk][col_idx] = temp;
                 }
 
                 col_idx++;

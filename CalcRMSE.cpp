@@ -35,7 +35,8 @@ double Q[K][M];
 
 using namespace std;
 map<long, double> TestMap;
-
+std::vector<long> hashs;
+std::vector<rate> rts;
 void LoadTestRating()
 {
     char fn[100];
@@ -57,6 +58,8 @@ void LoadTestRating()
         {
             ifs >> hash_idx >> ra;
             TestMap.insert(pair<long, double>(hash_idx, ra));
+            hashs.push_back(hash_idx);
+            rts.push_back(ra);
             cnt++;
             if (cnt % 10000 == 0)
             {
@@ -77,11 +80,12 @@ double CalcRMSE()
     double sss = 0;
     double avg = 0;
     printf("hehere\n");
-    for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    //for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
+    for (int ss = 0; ss < hashs.size(); ss++)
     {
-        iter->first;
-        printf("helhe11  %ld\n", (iter->first));
-        long real_hash_idx = iter->first;
+        //long real_hash_idx = iter->first;
+        long real_hash_idx = hashs[ss];
+        double rate = rts[ss];
         long row_idx = real_hash_idx / M;
         long col_idx = real_hash_idx % M;
         double sum = 0;
@@ -100,7 +104,8 @@ double CalcRMSE()
             negative_cnt++;
 
         }
-        rmse += (sum - iter->second) * (sum - iter->second);
+        //rmse += (sum - iter->second) * (sum - iter->second);
+        rmse += (sum - rts[ss] ) * (sum - rts[ss]);
         cnt++;
     }
 

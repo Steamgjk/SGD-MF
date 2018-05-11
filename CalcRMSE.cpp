@@ -58,8 +58,9 @@ int main(int argc, const char * argv[])
 
 
     char filename[100];
-    for (int i = 0; i < ITER_NUM; i += 10)
+    //for (int i = 0; i < ITER_NUM; i += 10)
     {
+        int i = atoi(argv[3]);
         int row_idx = 0;
         int col_idx = 0;
         for (int j = 0 ; j < PORTION_NUM; j++)

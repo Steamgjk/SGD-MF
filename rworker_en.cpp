@@ -372,6 +372,7 @@ void CalcUpdt(int td_id)
             {
                 srand(time(0));
                 rand_idx = random() % rtsz;
+                printf("rand_idx=%d\n", rand_idx);
                 long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;

@@ -152,7 +152,7 @@ int main(int argc, const char * argv[])
         rmse /= cnt;
         rmse = sqrt(rmse);
         printf("i=%d rmse=%lf\n", i, rmse );
-
+        ofs << rmse << endl;
 
 
     }

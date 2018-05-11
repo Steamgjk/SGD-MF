@@ -905,7 +905,7 @@ void sendTd(int send_thread_id)
             free(buf);
 
 
-            data_sz = sizeof(double) * Qblock->ele_num;
+            data_sz = sizeof(double) * Qblock.ele_num;
             total_len = struct_sz + data_sz;
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qblock), struct_sz);

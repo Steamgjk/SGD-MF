@@ -110,6 +110,7 @@ int main(int argc, const char * argv[])
 
 
         rmse = 0;
+        int cnt = 0;
         for (int i = 0; i < 64 ; i++)
         {
             sprintf(fn, "%s%d", TEST_NAME, i);
@@ -119,7 +120,7 @@ int main(int argc, const char * argv[])
                 printf("fail to open the file %s\n", TEST_NAME);
                 exit(-1);
             }
-            int cnt = 0;
+
             int temp = 0;
             long hash_idx = 0;
             double ra = 0;

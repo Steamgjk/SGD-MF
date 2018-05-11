@@ -380,22 +380,20 @@ void CalcUpdt(int td_id)
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] continue l [%ld][%ld]  %ld\n", td_id, i, j, real_hash_idx);
-                    int tewm =  random() % rtsz;
-                    while (tewm == rand_idx)
-                    {
-                        printf("tem =%d rtsz=%d\n", tewm, rtsz );
 
+                }
+                else
+                {
+                    for (int k = 0; k < K; ++k)
+                    {
+                        error -= oldP[i * K + k] * oldQ[j * K + k];
                     }
-                    continue;
+                    for (int k = 0; k < K; ++k)
+                    {
+                        Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    }
                 }
-                for (int k = 0; k < K; ++k)
-                {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
-                }
+
 
 
                 rand_idx = random() % ctsz;
@@ -405,30 +403,21 @@ void CalcUpdt(int td_id)
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] continue l \n", td_id);
-                    continue;
                 }
-                error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
-                for (int k = 0; k < K; ++k)
+                else
                 {
-                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                    error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                    for (int k = 0; k < K; ++k)
+                    {
+                        error -= oldP[i * K + k] * oldQ[j * K + k];
+                    }
+                    for (int k = 0; k < K; ++k)
+                    {
+                        Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    }
+
                 }
-                for (int k = 0; k < K; ++k)
-                {
-                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
-                }
-                /*
-                for (int k = 0; k < K; ++k)
-                {
-                    //error -= oldP[i * K + k] * oldQ[j * K + k];
-                    Pvec[k] = Pblocks[p_block_idx].eles[i * K + k];
-                    Qvec[k] = Qblocks[q_block_idx].eles[j * K + k];
-                    error -= Pvec[k] * Qvec[k];
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    Qblocks[q_block_idx].eles[k] += yita * (error * Pvec[k] - theta * Qvec[k]);
-                }
-                **/
+
             }
             StartCalcUpdt[td_id] = false;
             //printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);

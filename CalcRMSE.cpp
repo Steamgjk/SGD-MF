@@ -121,6 +121,7 @@ int main(int argc, const char * argv[])
         PORTION_NUM = atoi(argv[2]);
     }
     LoadTestRating();
+    printf("Sz T  %ld\n", TestMap.size() );
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
     {

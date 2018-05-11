@@ -39,6 +39,7 @@ long hashs[1000000];
 double rts[1000000];
 void LoadTestRating()
 {
+    /*
     char fn[100];
     for (int i = 0; i < 64 ; i++)
     {
@@ -71,10 +72,12 @@ void LoadTestRating()
 
         }
     }
+    **/
 
 }
 double CalcRMSE()
 {
+    /*
     printf("calc RMSE...\n");
     double rmse = 0;
     int cnt = 0;
@@ -88,7 +91,7 @@ double CalcRMSE()
     {
         printf("[%d] %ld\n", i, hashs[i] );
     }
-    /*
+
     //for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     for (int ss = 0; ss < hashs.size(); ss++)
     {

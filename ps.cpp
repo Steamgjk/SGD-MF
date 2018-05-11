@@ -752,7 +752,7 @@ void recvTd(int recv_thread_id)
         free(sockBuf);
         free(dataBuf);
 
-
+        printf("successful rece one Block\n");
         expected_len = sizeof(Block);
         sockBuf = (char*)malloc(expected_len);
         cur_len = 0;
@@ -798,6 +798,8 @@ void recvTd(int recv_thread_id)
         {
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
+
+        printf("successful rece another Block\n");
         free(sockBuf);
         free(dataBuf);
 

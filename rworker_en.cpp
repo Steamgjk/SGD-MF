@@ -652,16 +652,21 @@ void LoadData()
         }
         cnt = 0;
         long ridx, cidx;
+        hash_id = -1;
         while (!ifs.eof())
         {
             ifs >> hash_id >> rate;
-            ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
-            cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+            if (hash_id >= 0)
+            {
+                ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
 
-            hash_for_row_threads[row][col][ridx].push_back(hash_id);
-            rates_for_row_threads[row][col][ridx].push_back(rate);
-            hash_for_col_threads[row][col][cidx].push_back(hash_id);
-            rates_for_col_threads[row][col][cidx].push_back(rate);
+                hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                rates_for_row_threads[row][col][ridx].push_back(rate);
+                hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                rates_for_col_threads[row][col][cidx].push_back(rate);
+            }
+
         }
     }
 }
@@ -714,18 +719,20 @@ void readData(int data_thread_id)
                     }
                     cnt = 0;
                     long ridx, cidx;
+                    hash_id = -1;
                     while (!ifs.eof())
                     {
                         ifs >> hash_id >> rate;
-                        //TrainMaps[row][col].insert(pair<long, double>(hash_id, rate));
 
-                        ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
-                        cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
-                        hash_for_row_threads[row][col][ridx].push_back(hash_id);
-                        rates_for_row_threads[row][col][ridx].push_back(rate);
-                        hash_for_col_threads[row][col][cidx].push_back(hash_id);
-                        rates_for_col_threads[row][col][cidx].push_back(rate);
-
+                        if (hash_id >= 0)
+                        {
+                            ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                            cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+                            hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                            rates_for_row_threads[row][col][ridx].push_back(rate);
+                            hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                            rates_for_col_threads[row][col][cidx].push_back(rate);
+                        }
                     }
 
                 }

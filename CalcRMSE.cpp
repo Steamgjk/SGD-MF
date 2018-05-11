@@ -26,9 +26,10 @@
 #define M 65133
 #define K  40 //主题个数
 int ITER_NUM  = 2000;
-int PORTION_NUM = 4;
+int PORTION_NUM = 8;
 double P[N][K];
 double Q[K][M];
+double qq[K][M];
 //#define TEST_NAME "./test_out.txt"
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
@@ -187,7 +188,7 @@ int main(int argc, const char * argv[])
                 {
                     //ifs1 >> Q[kk][col_idx];
                     ifs1 >> temp;
-                    Q[kk][col_idx] = temp;
+                    //Q[kk][col_idx] = temp;
                 }
 
                 col_idx++;

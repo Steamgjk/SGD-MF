@@ -865,7 +865,7 @@ void sendTd(int send_thread_id)
     printf("connect to %s %d\n", remote_ip, remote_port);
     while (1 == 1)
     {
-        //printf("canSend=%d\n", canSend );
+        printf("canSend=%d\n", canSend );
         if (canSend)
         {
             //printf("Td:%d cansend\n", thread_id );

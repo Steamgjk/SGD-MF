@@ -204,7 +204,8 @@ void getTestMap(map<long, double>& TestMap, int block_id);
 void getBlockRates(map<long, double>& BlockMap, int block_id);
 void SGD_MF();
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
-void LoadData(int pre_read);
+//void LoadData(int pre_read);
+void LoadData();
 void CalcUpdt(int td_id);
 
 int thread_id = -1;
@@ -222,8 +223,8 @@ int main(int argc, const char * argv[])
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
-    LoadData(CACHE_NUM);
-
+    //LoadData(CACHE_NUM);
+    LoadData();
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
@@ -231,8 +232,8 @@ int main(int argc, const char * argv[])
     }
 
 
-    std::thread data_read_thread(readData, thread_id);
-    data_read_thread.detach();
+    //std::thread data_read_thread(readData, thread_id);
+    //data_read_thread.detach();
 
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
@@ -556,7 +557,7 @@ void LoadStateConfig(char* fn)
 
 
 }
-void LoadData(int pre_read)
+void LoadData1(int pre_read)
 {
     char fn[100];
     long hash_id = -1;
@@ -613,6 +614,56 @@ void LoadData(int pre_read)
         }
 
 
+    }
+}
+
+void LoadData()
+{
+    char fn[100];
+    long hash_id;
+    double rate;
+    long cnt = 0;
+    for (int row = 0; row < WORKER_NUM; row++)
+    {
+        for (int col = 0; col < WORKER_NUM; col++)
+        {
+            for (int td = 0; td < WORKER_THREAD_NUM; td++)
+            {
+                hash_for_row_threads[row][col][td].clear();
+                rates_for_row_threads[row][col][td].clear();
+                hash_for_col_threads[row][col][td].clear();
+                rates_for_col_threads[row][col][td].clear();
+            }
+
+        }
+    }
+    for (int data_idx = 0; data_idx < 64; data_idx++)
+    {
+        int row = data_idx / DIM_NUM;
+        int col = data_idx % DIM_NUM;
+        //row /= 2;
+        //col /= 2;
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        printf("fn=%s  :[%d][%d]\n", fn, row, col );
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        cnt = 0;
+        long ridx, cidx;
+        while (!ifs.eof())
+        {
+            ifs >> hash_id >> rate;
+            ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+            cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+
+            hash_for_row_threads[row][col][ridx].push_back(hash_id);
+            rates_for_row_threads[row][col][ridx].push_back(rate);
+            hash_for_col_threads[row][col][cidx].push_back(hash_id);
+            rates_for_col_threads[row][col][cidx].push_back(rate);
+        }
     }
 }
 void readData(int data_thread_id)

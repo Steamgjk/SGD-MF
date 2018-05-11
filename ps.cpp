@@ -710,7 +710,7 @@ void recvTd(int recv_thread_id)
         int ret = 0;
         while (cur_len < expected_len)
         {
-            //printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
+            printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
             ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
             if (ret <=  0)
             {

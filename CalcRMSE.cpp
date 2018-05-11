@@ -217,6 +217,7 @@ int main(int argc, const char * argv[])
                     }
 
                     rmse += (sum - ra ) * (sum - ra);
+                    printf("sum=%lf rmse=%lf\n", sum, rmse );
                     cnt++;
                 }
 
@@ -229,8 +230,6 @@ int main(int argc, const char * argv[])
         }
 
 
-
-        printf("hash_head=%ld rmse=%lf\n", hash_head, rmse );
 
     }
 

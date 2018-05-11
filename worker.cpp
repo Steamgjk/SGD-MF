@@ -876,6 +876,7 @@ void sendTd(int send_thread_id)
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
 
             size_t total_len = struct_sz + data_sz;
+            printf("total_len=%ld struct_sz=%ld data_sz=%ld\n", total_len, struct_sz, data_sz );
             struct timeval st, et, tspan;
             size_t sent_len = 0;
             size_t remain_len = total_len;
@@ -912,7 +913,7 @@ void sendTd(int send_thread_id)
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qblock), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
-
+            printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld\n", total_len, struct_sz, data_sz );
             sent_len = 0;
             remain_len = total_len;
             ret = -1;

@@ -152,6 +152,7 @@ int main()
 	char fn[100];
 	partitionQ(8, Pblocks);
 	partitionQ(8, Qblocks);
+	long cnt = 0;
 	for (int data_idx = 0; data_idx < 64; data_idx++)
 	{
 		int row = data_idx / DIM_NUM;
@@ -159,6 +160,7 @@ int main()
 
 		sprintf(fn, "%s%d", FILE_NAME, data_idx);
 		printf("fn=%s  :[%d][%d]\n", fn, row, col );
+
 		ifstream ifs(fn);
 		if (!ifs.is_open())
 		{
@@ -179,6 +181,8 @@ int main()
 
 				//continue;
 			}
+			cnt++;
 		}
+		printf("cnt = %ld\n", cnt );
 	}
 }

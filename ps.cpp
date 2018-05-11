@@ -732,7 +732,7 @@ void recvTd(int recv_thread_id)
         char* dataBuf = (char*)malloc(data_sz);
         cur_len = 0;
         ret = 0;
-        printf("pb ele_num %d\n", pb->ele_num );
+        //printf("pb ele_num %d\n", pb->ele_num );
         while (cur_len < data_sz)
         {
             ret = recv(connfd, dataBuf + cur_len, data_sz - cur_len, 0);
@@ -741,7 +741,7 @@ void recvTd(int recv_thread_id)
                 printf("Mimatch!\n");
             }
             cur_len += ret;
-            printf("cur_len=%d data_sz=%d\n", cur_len, data_sz );
+            // printf("cur_len=%d data_sz=%d\n", cur_len, data_sz );
         }
 
         double* data_eles = (double*)(void*)dataBuf;

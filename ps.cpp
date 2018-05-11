@@ -723,6 +723,7 @@ void recvTd(int recv_thread_id)
             }
             printf("ret=%d\n", ret );
             cur_len += ret;
+            printf("cur_len=%d expected_len=%d\n", cur_len, expected_len );
         }
         struct Block* pb = (struct Block*)(void*)sockBuf;
         size_t data_sz = sizeof(double) * (pb->ele_num);

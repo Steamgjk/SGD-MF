@@ -332,7 +332,7 @@ int main(int argc, const char * argv[])
 
         iter_cnt++;
 
-        printf("iterddd %d\n", iter_cnt );
+        //printf("iterddd %d\n", iter_cnt );
 
         if (iter_cnt == 2000)
         {
@@ -655,7 +655,7 @@ void readData(int data_thread_id)
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
 
-        printf("fff 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
+        //printf("fff 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
         //if (TrainMaps[row][col].size() == 0)
         if (hash_for_row_threads[row][col][0].size() == 0)
         {
@@ -694,7 +694,7 @@ void readData(int data_thread_id)
                 }
             }
         }
-        printf("read [%d][%d]\n", row, col  );
+        //printf("read [%d][%d]\n", row, col  );
 
         disk_read_tail_idx++;
         data_idx = states[disk_read_head_idx];
@@ -794,7 +794,7 @@ void SGD_MF()
             StartCalcUpdt[ii] = true;
         }
 
-        printf("check 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
+        //printf("check 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
 
 
         bool canbreak = true;

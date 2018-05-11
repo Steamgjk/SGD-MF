@@ -182,8 +182,7 @@ int main(int argc, const char * argv[])
 
                 for (int kk = 0; kk < K; kk++)
                 {
-                    ifs1 >> Q[kk][col_idx];
-
+                    ifs >> Q[kk][col_idx];
                 }
 
                 col_idx++;
@@ -206,7 +205,7 @@ int main(int argc, const char * argv[])
     printf("%ld \n", hashs.size() );
     getchar();
     ofs << rmse << endl;
-    printf("%d\t%lf\n", i, rmse );
+    //printf("%d\t%lf\n", i, rmse );
     return 0;
 
 

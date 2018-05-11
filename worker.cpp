@@ -249,7 +249,7 @@ int main(int argc, const char * argv[])
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
             submf();
-            printf("after submf\n");
+            //printf("after submf\n");
             iter_cnt++;
             if (iter_cnt == thresh_log )
             {
@@ -865,7 +865,7 @@ void sendTd(int send_thread_id)
     printf("connect to %s %d\n", remote_ip, remote_port);
     while (1 == 1)
     {
-        printf("canSend=%d\n", canSend );
+        //printf("canSend=%d\n", canSend );
         if (canSend)
         {
             //printf("Td:%d cansend\n", thread_id );
@@ -876,7 +876,7 @@ void sendTd(int send_thread_id)
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
 
             size_t total_len = struct_sz + data_sz;
-            printf("total_len=%ld struct_sz=%ld data_sz=%ld  elenum=%d\n", total_len, struct_sz, data_sz, Pblock.ele_num );
+            //printf("total_len=%ld struct_sz=%ld data_sz=%ld  elenum=%d\n", total_len, struct_sz, data_sz, Pblock.ele_num );
             struct timeval st, et, tspan;
             size_t sent_len = 0;
             size_t remain_len = total_len;
@@ -891,7 +891,7 @@ void sendTd(int send_thread_id)
                 {
                     to_send_len = remain_len;
                 }
-                printf("sending...\n");
+                //printf("sending...\n");
                 ret = send(fd, buf + sent_len, to_send_len, 0);
                 if (ret >= 0)
                 {
@@ -913,7 +913,7 @@ void sendTd(int send_thread_id)
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qblock), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
-            printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
+            //printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
             sent_len = 0;
             remain_len = total_len;
             ret = -1;
@@ -945,7 +945,7 @@ void sendTd(int send_thread_id)
         }
         else
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
 
@@ -1024,7 +1024,7 @@ void recvTd(int recv_thread_id)
         Qblock.height = qb->height;
         Qblock.ele_num = qb-> ele_num;
         Qblock.eles.resize(qb->ele_num);
-        printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
+        //printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
         free(sockBuf);
 
         data_sz = sizeof(double) * (Qblock.ele_num);

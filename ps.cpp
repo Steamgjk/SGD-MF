@@ -703,7 +703,7 @@ void recvTd(int recv_thread_id)
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
     while (1 == 1)
     {
-        printf("recving ...\n");
+        //printf("recving ...\n");
 
         size_t expected_len = sizeof(Block);
         char* sockBuf = (char*)malloc(expected_len);
@@ -759,7 +759,7 @@ void recvTd(int recv_thread_id)
         free(sockBuf);
         free(dataBuf);
 
-        printf("successful rece one Block\n");
+        //printf("successful rece one Block\n");
         expected_len = sizeof(Block);
         sockBuf = (char*)malloc(expected_len);
         cur_len = 0;
@@ -806,7 +806,7 @@ void recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("successful rece another Block\n");
+        //printf("successful rece another Block\n");
         free(sockBuf);
         free(dataBuf);
 

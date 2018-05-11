@@ -383,7 +383,7 @@ void CalcUpdt(int td_id)
                     int tewm =  random() % rtsz;
                     while (tewm == rand_idx)
                     {
-                        printf("tem =%d\n", tewm );
+                        printf("tem =%d rtsz=%d\n", tewm, rtsz );
 
                     }
                     continue;

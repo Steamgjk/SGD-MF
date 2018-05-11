@@ -381,7 +381,7 @@ void CalcUpdt(int td_id)
                 {
                     printf("[%d] continue l [%ld][%ld]  %ld\n", td_id, i, j, real_hash_idx);
                     int tewm =  random() % rtsz;
-                    while (tewm = = rand_idx)
+                    while (tewm == rand_idx)
                     {
                         printf("tem =%d\n", tewm );
 

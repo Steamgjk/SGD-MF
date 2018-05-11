@@ -204,15 +204,32 @@ int main(int argc, const char * argv[])
             while (!ifs.eof())
             {
                 ifs >> hash_idx >> ra;
-                printf("%ld  %lf\n", hash_idx, ra );
+                if (hash_idx >= 0)
+                {
+                    long row_idx = hash_idx / M;
+                    long col_idx = hash_idx % M;
+                    double sum = 0;
+
+                    for (int k = 0; k < K; k++)
+                    {
+                        sum += P[row_idx][k] * Q[k][col_idx];
+                        //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
+                    }
+
+                    rmse += (sum - ra ) * (sum - ra);
+                    cnt++;
+                }
 
             }
+            rmse /= cnt;
+            rmse = sqrt(rmse);
+            printf("rmse=%lf\n", rmse );
             ifs.close();
 
         }
 
-        rmse /= hash_head;
-        rmse = sqrt(rmse);
+
+
         printf("hash_head=%ld rmse=%lf\n", hash_head, rmse );
 
     }

@@ -384,7 +384,7 @@ void LoadSplitData()
                 cnt++;
                 if (cnt % 1000000 == 0)
                 {
-                    printf("cnt = %ld\n", cnt );
+                    printf("cnt = %d\n", cnt );
                 }
             }
         }
@@ -418,7 +418,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt)
     }
 }
 
-
+/*
 void CalcUpdt1(int thread_id)
 {
     while (1 == 1)
@@ -491,7 +491,7 @@ void CalcUpdt1(int thread_id)
 
 }
 
-
+**/
 void CalcUpdt(int td_id)
 {
 

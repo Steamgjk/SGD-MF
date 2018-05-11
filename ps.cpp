@@ -731,6 +731,7 @@ void recvTd(int recv_thread_id)
         char* dataBuf = (char*)malloc(data_sz);
         cur_len = 0;
         ret = 0;
+        printf("pb ele_num %d\n", pb->ele_num );
         while (cur_len < data_sz)
         {
             ret = recv(connfd, dataBuf + cur_len, data_sz - cur_len, 0);

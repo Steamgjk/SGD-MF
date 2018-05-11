@@ -38,61 +38,6 @@ using namespace std;
 //long hashs[1000000];
 //double rts[1000000];
 
-double CalcRMSE()
-{
-
-    printf("calc RMSE...\n");
-    double rmse = 0;
-    /*
-    int cnt = 0;
-    map<long, double>::iterator iter;
-    int positve_cnt = 0;
-    int negative_cnt = 0;
-    double sss = 0;
-    double avg = 0;
-    printf("hehere\n");
-    for (int i = 0; i < hashs.size(); i++ )
-    {
-        printf("[%d] %ld\n", i, hashs[i] );
-    }
-
-    //for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
-    for (int ss = 0; ss < hashs.size(); ss++)
-    {
-        //long real_hash_idx = iter->first;
-        long real_hash_idx = hashs[ss];
-        double rate = rts[ss];
-
-        long row_idx = real_hash_idx / M;
-        long col_idx = real_hash_idx % M;
-        double sum = 0;
-        printf("real_hash_idx=%ld \n", real_hash_idx );
-
-        for (int k = 0; k < K; k++)
-        {
-            sum += P[row_idx][k] * Q[k][col_idx];
-            //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
-        }
-        if (sum > iter->second)
-        {
-            positve_cnt++;
-        }
-        else
-        {
-            negative_cnt++;
-
-        }
-        rmse += (sum - rts[ss] ) * (sum - rts[ss]);
-
-        cnt++;
-    }
-
-    rmse /= cnt;
-    rmse = sqrt(rmse);
-    printf("positve_cnt=%d negative_cnt=%d rmse=%lf\n", positve_cnt, negative_cnt, rmse );
-    **/
-    return rmse;
-}
 int main(int argc, const char * argv[])
 {
     ofstream ofs("./rima.txt", ios::trunc);
@@ -163,29 +108,6 @@ int main(int argc, const char * argv[])
         printf("hash_head = %ld \n", hash_head);
 
 
-        /*
-                int total = 0;
-                for (int ss = 0; ss < hash_head; ss++)
-                {
-                    //long real_hash_idx = iter->first;
-                    long real_hash_idx = hashs[ss];
-                    double rate = rts[ss];
-                    long row_idx = real_hash_idx / M;
-                    long col_idx = real_hash_idx % M;
-                    double sum = 0;
-                    printf("real_hash_idx=%ld \n", real_hash_idx );
-
-                    for (int k = 0; k < K; k++)
-                    {
-                        sum += P[row_idx][k] * Q[k][col_idx];
-                        //printf("%lf  %lf\n", P[row_idx][k], Q[k][col_idx]);
-                    }
-
-                    rmse += (sum - rts[ss] ) * (sum - rts[ss]);
-
-
-        }
-        **/
 
         for (int i = 0; i < 64 ; i++)
         {
@@ -237,10 +159,6 @@ int main(int argc, const char * argv[])
 
 
 
-    printf("Sz T  %ld\n", hash_head );
-
-
-//printf("%d\t%lf\n", i, rmse );
     return 0;
 
 

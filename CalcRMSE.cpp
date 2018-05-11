@@ -79,6 +79,7 @@ double CalcRMSE()
     printf("hehere\n");
     for (iter = TestMap.begin(); iter != TestMap.end(); iter++)
     {
+        iter->first;
         printf("hehe11\n");
         long real_hash_idx = iter->first;
         long row_idx = real_hash_idx / M;

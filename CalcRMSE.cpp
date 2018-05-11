@@ -191,10 +191,12 @@ int main(int argc, const char * argv[])
         }
         //double rmse = CalcRMSE();
         double rmse = 0;
+        /*
         for (int i = 0; i < hashs.size(); i++ )
         {
             printf("[%d] %ld\n", i, hashs[i] );
         }
+        **/
 
 
         ofs << rmse << endl;

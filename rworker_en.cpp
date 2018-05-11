@@ -362,7 +362,7 @@ void CalcUpdt(int td_id)
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             if (rtsz == 0)
             {
-                printf("p %d q %d\n", p_block_idx, q_block_idx );
+                printf(" rtsz=0 p %d q %d td_id=%d\n", p_block_idx, q_block_idx, td_id );
                 exit(0);
             }
             int rand_idx = -1;
@@ -650,7 +650,7 @@ void readData(int data_thread_id)
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
 
-
+        printf("fff 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
         //if (TrainMaps[row][col].size() == 0)
         if (hash_for_row_threads[row][col][0].size() == 0)
         {
@@ -789,6 +789,7 @@ void SGD_MF()
             StartCalcUpdt[ii] = true;
         }
 
+        printf("check 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
 
 
         bool canbreak = true;

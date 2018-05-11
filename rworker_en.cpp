@@ -369,15 +369,20 @@ void CalcUpdt(int td_id)
             }
             int rand_idx = -1;
             int cnt = 0;
+            long real_hash_idx;
+            long i ;
+            long j ;
+            double error;
+            srand(time(0));
             while (cnt < times_thresh)
             {
-                srand(time(0));
+
                 rand_idx = random() % rtsz;
                 printf("rand_idx=%d\n", rand_idx);
-                long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
-                long i = real_hash_idx / M - row_sta_idx;
-                long j = real_hash_idx % M - col_sta_idx;
-                double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                i = real_hash_idx / M - row_sta_idx;
+                j = real_hash_idx % M - col_sta_idx;
+                error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] continue l [%ld][%ld]  %ld\n", td_id, i, j, real_hash_idx);

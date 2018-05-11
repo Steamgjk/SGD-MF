@@ -232,8 +232,8 @@ int main(int argc, const char * argv[])
     }
 
 
-    //std::thread data_read_thread(readData, thread_id);
-    //data_read_thread.detach();
+    std::thread data_read_thread(readData, thread_id);
+    data_read_thread.detach();
 
     std::thread send_thread(sendTd, thread_id);
     send_thread.detach();

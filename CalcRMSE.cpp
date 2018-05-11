@@ -40,7 +40,7 @@ std::vector<double> rts;
 void LoadTestRating()
 {
     char fn[100];
-    for (int i = 0; i < 63 ; i++)
+    for (int i = 0; i < 6 ; i++)
     {
         sprintf(fn, "%s%d", TEST_NAME, i);
         ifstream ifs(fn);

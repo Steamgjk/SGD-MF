@@ -108,7 +108,7 @@ int main(int argc, const char * argv[])
         printf("hash_head = %ld \n", hash_head);
 
 
-
+        rmse = 0;
         for (int i = 0; i < 64 ; i++)
         {
             sprintf(fn, "%s%d", TEST_NAME, i);

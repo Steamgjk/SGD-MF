@@ -107,7 +107,6 @@ int main(int argc, const char * argv[])
             printf("%s read\n", filename );
 
         }
-        printf("hash_head = %ld \n", hash_head);
 
 
         rmse = 0;
@@ -142,7 +141,7 @@ int main(int argc, const char * argv[])
                     }
 
                     rmse += (sum - ra ) * (sum - ra);
-                    printf("sum=%lf ra=%lf rmse=%lf\n", sum, ra, rmse );
+                    //printf("sum=%lf ra=%lf rmse=%lf\n", sum, ra, rmse );
                     cnt++;
                 }
 

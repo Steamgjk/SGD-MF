@@ -388,6 +388,7 @@ void CalcUpdt(int td_id)
                 {
                     printf("[%d] continue l [%d][%d] pq [%ld][%ld]  %ld\n", td_id, p_block_idx, q_block_idx, i, j, real_hash_idx);
                     cnt++;
+                    getchar();
                     continue;
                 }
                 for (int k = 0; k < K; ++k)
@@ -409,8 +410,9 @@ void CalcUpdt(int td_id)
                 j = real_hash_idx % M - col_sta_idx;
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
-                    printf("[%d] continue l \n", td_id);
+                    printf("[%d] c11ontinue l [%d][%d] pq [%ld][%ld]  %ld\n", td_id, p_block_idx, q_block_idx, i, j, real_hash_idx);
                     cnt++;
+                    getchar();
                     continue;
                 }
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];

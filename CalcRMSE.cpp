@@ -269,9 +269,7 @@ int main(int argc, const char * argv[])
     }
     **/
 
-    printf("%ld \n", hash_head );
-    getchar();
-    ofs << rmse << endl;
+
     //printf("%d\t%lf\n", i, rmse );
     return 0;
 

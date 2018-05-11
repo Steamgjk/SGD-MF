@@ -57,7 +57,7 @@ void LoadTestRating()
         while (!ifs.eof())
         {
             ifs >> hash_idx >> ra;
-            TestMap.insert(pair<long, double>(hash_idx, ra));
+            //TestMap.insert(pair<long, double>(hash_idx, ra));
             hashs.push_back(hash_idx);
             rts.push_back(ra);
             cnt++;
@@ -127,7 +127,12 @@ int main(int argc, const char * argv[])
         PORTION_NUM = atoi(argv[2]);
     }
     LoadTestRating();
-    printf("Sz T  %ld\n", TestMap.size() );
+    printf("Sz T  %ld\n", hashs.size() );
+    for (int i = 0; i < hashs.size(); i++ )
+    {
+        printf("[%d] %ld\n", i, hashs[i] );
+    }
+    /*
     char filename[100];
     for (int i = 0; i < ITER_NUM; i += 10)
     {
@@ -174,7 +179,7 @@ int main(int argc, const char * argv[])
         ofs << rmse << endl;
         printf("%d\t%lf\n", i, rmse );
     }
-
+    **/
 
 }
 

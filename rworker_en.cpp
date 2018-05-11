@@ -380,6 +380,12 @@ void CalcUpdt(int td_id)
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] continue l [%ld][%ld]  %ld\n", td_id, i, j, real_hash_idx);
+                    int tewm =  random() % rtsz;
+                    while (tewm = = rand_idx)
+                    {
+                        printf("tem =%d\n", tewm );
+
+                    }
                     continue;
                 }
                 for (int k = 0; k < K; ++k)

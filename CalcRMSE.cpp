@@ -177,6 +177,7 @@ int main(int argc, const char * argv[])
             }
 
         }
+        ifs.close();
         printf("[%d]hash in he  %d\n", i, hash_head );
     }
 

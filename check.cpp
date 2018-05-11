@@ -149,6 +149,7 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 int main()
 {
+	char fn[100];
 	partitionQ(8, Pblocks);
 	partitionQ(8, Qblocks);
 	for (int data_idx = 0; data_idx < 64; data_idx++)

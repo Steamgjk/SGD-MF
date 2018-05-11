@@ -179,7 +179,7 @@ int main(int argc, const char * argv[])
                 printf("fail to open %s\n", filename);
                 getchar();
             }
-            /*
+
             while (!ifs1.eof())
             {
                 for (int kk = 0; kk < K; kk++)
@@ -189,7 +189,7 @@ int main(int argc, const char * argv[])
                 col_idx++;
             }
             printf("%s read\n", filename );
-            **/
+
         }
         //double rmse = CalcRMSE();
         double rmse = 0;

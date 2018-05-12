@@ -300,7 +300,7 @@ int main(int argc, const char * argv[])
                 printf("%d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
-            if (iter_cnt == 2000)
+            if (iter_cnt == 1000)
             {
                 for (int i = 0; i < 200; i++)
                 {
@@ -339,12 +339,12 @@ int main(int argc, const char * argv[])
 
             SGD_MF();
 
-
-            if (iter_cnt % 10 == 0)
-            {
-                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
-            }
-
+            /*
+                        if (iter_cnt % 10 == 0)
+                        {
+                            WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+                        }
+            **/
             //patch
 
             if (thread_id != WORKER_NUM - 1)

@@ -998,7 +998,7 @@ void sendTd(int send_thread_id)
             free(buf);
             printf("after free...\n");
             to_send_head = (to_send_head + 1) % QU_LEN;
-
+            getchar();
         }
     }
 

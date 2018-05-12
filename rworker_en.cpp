@@ -412,6 +412,7 @@ void CalcUpdt(int td_id)
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] c11ontinue l [%d][%d] pq [%ld][%ld]  %ld\n", td_id, p_block_idx, q_block_idx, i, j, real_hash_idx);
+                    getchar();
                     cnt++;
                     //getchar();
                     //exit(0);
@@ -940,7 +941,7 @@ void sendTd(int send_thread_id)
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
         if (to_send_head < to_send_tail)
         {
-            printf("come here send\n");
+            //printf("come here send\n");
             //getchar();
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
@@ -1000,7 +1001,7 @@ void sendTd(int send_thread_id)
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
             //getchar();
             //printf("before free..\n");
             //getchar();

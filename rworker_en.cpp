@@ -923,9 +923,9 @@ void sendTd(int send_thread_id)
     inet_pton(AF_INET, remote_ip, &address.sin_addr);
     do
     {
-        //printf("Trying to connect to %s %d\n", remote_ip, remote_port);
+        printf("Trying to connect to %s %d\n", remote_ip, remote_port);
         check_ret = connect(fd, (struct sockaddr*) &address, sizeof(address));
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (check_ret < 0);
     //发送数据

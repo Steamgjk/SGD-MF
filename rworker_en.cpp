@@ -933,6 +933,7 @@ void sendTd(int send_thread_id)
         if (to_send_head < to_send_tail)
         {
             printf("come here send\n");
+            getchar();
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p

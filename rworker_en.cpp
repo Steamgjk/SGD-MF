@@ -925,7 +925,7 @@ void sendTd(int send_thread_id)
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
     int send_cnt = 0;
-    getchar();
+    //getchar();
     while (1 == 1)
     {
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
@@ -995,7 +995,7 @@ void sendTd(int send_thread_id)
             printf("before free..\n");
             //getchar();
             free(buf);
-
+            printf("after free...\n");
             to_send_head = (to_send_head + 1) % QU_LEN;
 
         }

@@ -297,6 +297,8 @@ int main(int argc, const char * argv[])
             state_idx++;
         }
 
+//patch
+
 
         for (int i = 0; i < GROUP_NUM; i++)
         {
@@ -317,7 +319,12 @@ int main(int argc, const char * argv[])
             {
                 WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
             }
-            to_send_tail = (to_send_tail + 1) % QU_LEN;
+            //patch
+            if (thread_id != WORKER_NUM - 1)
+            {
+                to_send_tail = (to_send_tail + 1) % QU_LEN;
+            }
+            //to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
@@ -328,6 +335,11 @@ int main(int argc, const char * argv[])
             }
 
 
+        }
+        //patch
+        if (thread_id == WORKER_NUM - 1)
+        {
+            to_send_tail =  (to_send_tail + 2) % QU_LEN;
         }
 
 
@@ -538,6 +550,7 @@ void LoadStateConfig(char* fn)
         int col = DIM_NUM - 1 - row;
         states[gp] = row * DIM_NUM + col;
     }
+
     for (size_t i = 0; i < SEQ_LEN; i++ )
     {
         for (int gp = 0 ; gp < GROUP_NUM; gp++)
@@ -558,6 +571,8 @@ void LoadStateConfig(char* fn)
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
 
+
+
             }
             else
             {
@@ -566,6 +581,19 @@ void LoadStateConfig(char* fn)
 
                 states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - GROUP_NUM) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
+            //patch
+            if (thread_id == WORKER_NUM - 1)
+            {
+                if (gp == 1)
+                {
+
+                    int tmp = states[loc];
+                    state[loc] = states[loc - 1];
+                    states[loc - 1] = tmp;
+                }
+
+            }
+            //
         }
 
     }

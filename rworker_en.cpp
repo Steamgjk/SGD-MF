@@ -347,13 +347,13 @@ int main(int argc, const char * argv[])
 
 void CalcUpdt(int td_id)
 {
-    std::vector<double> Pvec(K);
-    std::vector<double> Qvec(K);
+
 
     while (1 == 1)
     {
         if (StartCalcUpdt[td_id])
         {
+            /**
             int times_thresh = 50;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
@@ -379,7 +379,7 @@ void CalcUpdt(int td_id)
             {
 
                 rand_idx = random() % rtsz;
-                //printf("rand_idx=%d\n", rand_idx);
+                //printf("cnt = %d rand_idx=%d\n", cnt, rand_idx);
                 real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 i = real_hash_idx / M - row_sta_idx;
                 j = real_hash_idx % M - col_sta_idx;
@@ -429,6 +429,7 @@ void CalcUpdt(int td_id)
                 cnt++;
 
             }
+            **/
             StartCalcUpdt[td_id] = false;
             //printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);
 
@@ -1096,7 +1097,7 @@ void recvTd(int recv_thread_id)
             //printf("recv complete\n");
             //getchar();
             printf("before free blockBuf\n");
-            getchar();
+            //getchar();
             free(blockBuf);
             printf("before free dataBuf\n");
             free(dataBuf);

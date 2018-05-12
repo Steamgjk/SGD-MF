@@ -589,6 +589,10 @@ void LoadStateConfig(char* fn)
                     int tmp = states[loc];
                     states[loc] = states[loc - 1];
                     states[loc - 1] = tmp;
+                    tmp = to_send[loc] ;
+                    to_send[loc] = to_send[loc - 1];
+                    to_send[loc - 1] = tmp;
+
                 }
 
             }

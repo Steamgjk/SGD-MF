@@ -159,7 +159,7 @@ bool canSend[CAP] = {false};
 int worker_pidx[CAP];
 int worker_qidx[CAP];
 
-
+long long time_span[300];
 
 int main(int argc, const char * argv[])
 {
@@ -211,152 +211,12 @@ int main(int argc, const char * argv[])
         worker_pidx[i] = i;
         worker_qidx[i] = 3 - i;
     }
+    struct timeval beg, ed;
+
     while (1 == 1)
     {
         srand(time(0));
         bool ret = false;
-        random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-        }
-
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            canSend[i] = true;
-        }
-
-        while (recvCount != WORKER_NUM)
-        {
-            //cout << "RecvCount\t" << recvCount << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-
-
-        if (recvCount == WORKER_NUM)
-        {
-            if (iter_t % 10 == 0)
-            {
-                for (int bid = 0; bid < WORKER_NUM; bid++)
-                {
-                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
-                }
-
-            }
-            printf("iter_t=%d\n", iter_t );
-            recvCount = 0;
-        }
-        iter_t++;
-    }
-
-    return 0;
-}
-/*
-int main1(int argc, const char * argv[])
-{
-    //int connfd = wait4connection(ips[0], ports[0]);
-    //printf("connfd=%d\n", connfd);
-    //gen P and Q
-    if (argc == 2)
-    {
-        WORKER_NUM = atoi(argv[1]) ;
-    }
-    srand(1);
-    ofstream log_ofs("./rmse.txt", ios::trunc);
-    if (!log_ofs.is_open())
-    {
-        printf("failed open log\n");
-    }
-    else
-    {
-        printf("opened log\n");
-    }
-
-    LoadTestRating();
-    printf("Load Complete\n");
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < K; j++)
-        {
-            //P[i][j] =  ((double)rand() / RAND_MAX ) / sqrt(K);
-            //P[i][j] = drand48() / 1.7;
-            //P[i][j] = drand48() * 0.3;
-            P[i][j] = drand48() * 0.6;
-            //P[i][j] = drand48() * 0.38;
-            //P[i][j] =  ((double)(rand() % 100) ) / 400 ;
-
-        }
-
-    }
-    for (int i = 0; i < K; i++)
-    {
-        for (int j = 0; j < M; j++)
-        {
-            //Q[i][j] = ((double)rand() / RAND_MAX) / sqrt(K);
-            //Q[i][j] = drand48() / 1.7;
-            //Q[i][j] = drand48() * 0.3;
-            Q[i][j] = drand48() * 0.6;
-            //Q[i][j] = drand48() * 0.38 ;
-            //Q[i][j] =  ((double)(rand() % 100) ) / 400 ;
-
-        }
-    }
-    double init_rmse = CalcRMSE();
-    printf("init rmse=%lf\n", init_rmse);
-    log_ofs << init_rmse << endl;
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        canSend[i] = false;
-    }
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = worker_qidx[i] = i;
-    }
-    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
-    {
-        std::thread send_thread(sendTd, send_thread_id);
-        send_thread.detach();
-    }
-    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
-    {
-        std::thread recv_thread(recvTd, recv_thread_id);
-        recv_thread.detach();
-    }
-    int iter_t = 0;
-
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = i;
-        worker_qidx[i] = 3 - i;
-    }
-    while (1 == 1)
-    {
-        partitionP(WORKER_NUM, Pblocks);
-        partitionQ(WORKER_NUM, Qblocks);
-        **/
-/*
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            worker_qidx[i] = (worker_qidx[i] + 1) % 4;
-        }
-        **/
-/*
-        //getchar();
-        srand(time(0));
-        bool ret = false;
-
-        int per_num = 1;
-        **/
-/*
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            worker_pidx[i] = worker_qidx[i] = i;
-        }
-
-random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
-random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
- **/
-/*
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
         for (int i = 0; i < WORKER_NUM; i++)
         {
@@ -373,60 +233,41 @@ random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
             //cout << "RecvCount\t" << recvCount << endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        long pos_n, neg_n, zero_n;
 
+        if (iter_t == 0)
+        {
+            gettimeofday(&beg, 0);
+        }
         if (recvCount == WORKER_NUM)
         {
-            //printf("Collect All, Can Update\n");
-            int idx = 0;
-
-            for (int kk = 0; kk < WORKER_NUM; kk++)
-            {
-
-                for (int ii = 0; ii < Pupdts[kk].eles.size(); ii++)
-                {
-                    int row_idx = (ii + idx) / K;
-                    int col_idx = (ii + idx) % K;
-                    P[row_idx][col_idx] += Pupdts[kk].eles[ii];
-
-                }
-                idx += Pupdts[kk].eles.size();
-                //printf("Pupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
-            }
-
-            idx = 0;
-            for (int kk = 0; kk < WORKER_NUM; kk++)
-            {
-                pos_n = neg_n = zero_n = 0;
-                //Update Q[K*M]
-                for (int ii = 0; ii < Qupdts[kk].eles.size(); ii++)
-                {
-                    int col_idx = (ii + idx) / K;
-                    int row_idx = (ii + idx) % K;
-                    Q[row_idx][col_idx] += Qupdts[kk].eles[ii];
-
-                }
-                idx += Qupdts[kk].eles.size();
-                //printf("Qupdt kk=%d pos %ld neg %ld zero %ld\n", kk, pos_n, neg_n, zero_n );
-            }
-            // printf("Update Finish, Can Distribute\n");
-
             if (iter_t % 10 == 0)
             {
-                double rmse = CalcRMSE();
-                printf("%d  rmse=%lf\n", iter_t, rmse);
-                log_ofs << rmse << endl;
+                gettimeofday(&ed, 0);
+                /*
+                for (int bid = 0; bid < WORKER_NUM; bid++)
+                {
+                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
+                }
+                **/
+                time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
 
             }
-
+            //printf("iter_t=%d\n", iter_t );
             recvCount = 0;
         }
         iter_t++;
+        if (iter_t == 2000)
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                printf("%lld\n", time_span[i] );
+            }
+        }
     }
 
     return 0;
 }
-**/
+
 
 void WriteLog(Block & Pb, Block & Qb, int iter_cnt)
 {

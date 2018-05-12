@@ -523,7 +523,7 @@ void CalcUpdt(int td_id)
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
-                    printf("[%d] continue l \n", td_id);
+                    //printf("[%d] continue l \n", td_id);
                     continue;
                 }
                 for (int k = 0; k < K; ++k)
@@ -541,7 +541,7 @@ void CalcUpdt(int td_id)
                 j = real_hash_idx % M - col_sta_idx;
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
-                    printf("[%d] continue l \n", td_id);
+                    //printf("[%d] continue l \n", td_id);
                     continue;
                 }
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
@@ -576,18 +576,12 @@ void submf()
 
     int Psz = Pblock.height * K;
     int Qsz = Qblock.height * K;
-    //printf("Psz =%d Qsz =%d\n", Psz, Qsz);
-    Pupdt.eles.resize(Psz);
-    Pupdt.ele_num = Psz;
-    Qupdt.eles.resize(Qsz);
-    Qupdt.ele_num = Qsz;
-    Pupdt.block_id = Pblock.block_id;
-    Qupdt.block_id = Qblock.block_id;
-    struct timeval beg, ed;
-    long long mksp;
-    memset(&beg, 0, sizeof(struct timeval));
-    memset(&ed, 0, sizeof(struct timeval));
-    gettimeofday(&beg, 0);
+
+    /*
+        struct timeval beg, ed;
+        long long mksp;
+        gettimeofday(&beg, 0);
+        **/
     oldP = Pblock.eles;
     oldQ = Qblock.eles;
     /*
@@ -606,17 +600,7 @@ void submf()
       mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
       printf("Load time = %lld\n", mksp);
       **/
-    /*
-    int ii = 0;
-    for (ii = 0; ii < Psz; ii++)
-    {
-        Pupdt.eles[ii] = 0;
-    }
-    for ( ii = 0; ii < Qsz; ii++)
-    {
-        Qupdt.eles[ii] = 0;
-    }
-    **/
+
     /*
         {
             //hash_ids.clear();
@@ -683,11 +667,12 @@ void submf()
             break;
         }
     }
-//printf("ccc\n");
-    gettimeofday(&ed, 0);
-    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Calc  time = %lld\n", mksp);
 
+    /*
+        gettimeofday(&ed, 0);
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf("Calc  time = %lld\n", mksp);
+    **/
 }
 
 
@@ -771,7 +756,8 @@ void sendTd1(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
-            gettimeofday(&st, 0);
+
+            //gettimeofday(&st, 0);
 
 
             while (remain_len > 0)
@@ -828,9 +814,11 @@ void sendTd1(int send_thread_id)
             }
 
             free(buf);
+            /*
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             printf("send two blocks mksp=%lld\n", mksp );
+            **/
             canSend = false;
         }
     }

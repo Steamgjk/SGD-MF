@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 1;
-int DIM_NUM = 4;
+int GROUP_NUM = 2;
+int DIM_NUM = 8;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -342,12 +342,12 @@ int main(int argc, const char * argv[])
                         }
                         **/
             //patch
-            /*
+
             if (thread_id != WORKER_NUM - 1)
             {
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
-            **/
+
             to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
             //printf("processed success has_processed=%d\n", has_processed );
@@ -360,13 +360,13 @@ int main(int argc, const char * argv[])
 
 
         }
-        /*
+
         //patch
         if (thread_id == WORKER_NUM - 1)
         {
             to_send_tail =  (to_send_tail + 2) % QU_LEN;
         }
-        **/
+
 
         iter_cnt++;
 
@@ -478,69 +478,6 @@ void CalcUpdt(int td_id)
 }
 
 
-
-
-void CalcUpdt1(int thread_id)
-{
-    while (1 == 1)
-    {
-        if (StartCalcUpdt[thread_id])
-        {
-            int times_thresh = 200;
-            int row_sta_idx = Pblocks[p_block_idx].sta_idx;
-            int col_sta_idx = Qblocks[q_block_idx].sta_idx;
-            size_t rtsz = hash_for_row_threads[p_block_idx][q_block_idx][thread_id].size();
-            size_t ctsz = hash_for_col_threads[p_block_idx][q_block_idx][thread_id].size();
-            int rand_idx = -1;
-            while (times_thresh--)
-            {
-
-                rand_idx = random() % rtsz;
-                long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
-                long i = real_hash_idx / M - row_sta_idx;
-                long j = real_hash_idx % M - col_sta_idx;
-                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
-                {
-                    continue;
-                }
-                double error = rates_for_row_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
-                for (int k = 0; k < K; ++k)
-                {
-                    error -= Pblocks[p_block_idx].eles[i * K + k] * Qblocks[q_block_idx].eles[j * K + k];
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    Pupdt.eles[i * K + k] += yita * (error *  Qblocks[q_block_idx].eles[j * K + k] - theta * Pblocks[p_block_idx].eles[i * K + k]);
-                }
-
-                rand_idx = random() % ctsz;
-                real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
-                i = real_hash_idx / M - row_sta_idx;
-                j = real_hash_idx % M - col_sta_idx;
-                error = rates_for_col_threads[p_block_idx][q_block_idx][thread_id][rand_idx];
-
-                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >=  Qblocks[q_block_idx].height)
-                {
-                    continue;
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    error -= Pblocks[p_block_idx].eles[i * K + k] *  Qblocks[q_block_idx].eles[j * K + k];
-                }
-                for (int k = 0; k < K; ++k)
-                {
-                    Qupdt.eles[j * K + k] += yita * (error * Pblocks[p_block_idx].eles[i * K + k] - theta * Qblocks[q_block_idx].eles[j * K + k]);
-                }
-            }
-            StartCalcUpdt[thread_id] = false;
-
-
-        }
-    }
-
-
-}
-
 void LoadActionConfig(char* fn)
 {
     int loc = 0;
@@ -606,7 +543,7 @@ void LoadStateConfig(char* fn)
 
                 states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - GROUP_NUM) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
-            /*
+
             //patch
             if (thread_id == WORKER_NUM - 1)
             {
@@ -622,7 +559,7 @@ void LoadStateConfig(char* fn)
                 }
 
             }
-            **/
+
             //
         }
 

@@ -1096,6 +1096,7 @@ void recvTd(int recv_thread_id)
             //printf("recv complete\n");
             //getchar();
             printf("before free blockBuf\n");
+            getchar();
             free(blockBuf);
             printf("before free dataBuf\n");
             free(dataBuf);

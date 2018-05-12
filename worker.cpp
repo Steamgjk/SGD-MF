@@ -712,118 +712,7 @@ int wait4connection(char*local_ip, int local_port)
     return connfd;
 
 }
-void sendTd1(int send_thread_id)
-{
-    printf("send_thread_id=%d\n", send_thread_id);
-    char* remote_ip = remote_ips[send_thread_id];
-    int remote_port = remote_ports[send_thread_id];
 
-    int fd;
-    int check_ret;
-    fd = socket(PF_INET, SOCK_STREAM , 0);
-    assert(fd >= 0);
-
-    struct sockaddr_in address;
-    bzero(&address, sizeof(address));
-    //转换成网络地址
-    address.sin_port = htons(remote_port);
-    address.sin_family = AF_INET;
-    //地址转换
-    inet_pton(AF_INET, remote_ip, &address.sin_addr);
-    do
-    {
-        check_ret = connect(fd, (struct sockaddr*) &address, sizeof(address));
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    while (check_ret < 0);
-    assert(check_ret >= 0);
-    //发送数据
-    printf("connect to %s %d\n", remote_ip, remote_port);
-    while (1 == 1)
-    {
-        if (canSend)
-        {
-            //printf("Td:%d cansend\n", thread_id );
-            size_t struct_sz = sizeof(Pupdt);
-            size_t data_sz = sizeof(double) * Pupdt.eles.size();
-            char* buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Pupdt), struct_sz);
-            memcpy(buf + struct_sz, (char*) & (Pupdt.eles[0]), data_sz);
-
-            size_t total_len = struct_sz + data_sz;
-            struct timeval st, et, tspan;
-            size_t sent_len = 0;
-            size_t remain_len = total_len;
-            int ret = -1;
-            size_t to_send_len = 4096;
-
-            //gettimeofday(&st, 0);
-
-
-            while (remain_len > 0)
-            {
-                if (to_send_len > remain_len)
-                {
-                    to_send_len = remain_len;
-                }
-                //printf("sending...\n");
-                ret = send(fd, buf + sent_len, to_send_len, 0);
-                if (ret >= 0)
-                {
-                    remain_len -= to_send_len;
-                    sent_len += to_send_len;
-                    //printf("remain_len = %ld\n", remain_len);
-                }
-                else
-                {
-                    printf("still fail\n");
-                }
-                //getchar();
-            }
-            free(buf);
-
-
-            struct_sz = sizeof(Qupdt);
-            data_sz = sizeof(double) * Qupdt.eles.size();
-            total_len = struct_sz + data_sz;
-            buf = (char*)malloc(struct_sz + data_sz);
-            memcpy(buf, &(Qupdt), struct_sz);
-            memcpy(buf + struct_sz , (char*) & (Qupdt.eles[0]), data_sz);
-
-            sent_len = 0;
-            remain_len = total_len;
-            ret = -1;
-            to_send_len = 4096;
-            while (remain_len > 0)
-            {
-                if (to_send_len > remain_len)
-                {
-                    to_send_len = remain_len;
-                }
-                //printf("sending...\n");
-                ret = send(fd, buf + sent_len, to_send_len, 0);
-                if (ret >= 0)
-                {
-                    remain_len -= to_send_len;
-                    sent_len += to_send_len;
-                }
-                else
-                {
-                    printf("still fail\n");
-                }
-            }
-
-            free(buf);
-            /*
-            gettimeofday(&et, 0);
-            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("send two blocks mksp=%lld\n", mksp );
-            **/
-            canSend = false;
-        }
-    }
-
-}
 
 void sendTd(int send_thread_id)
 {
@@ -870,7 +759,7 @@ void sendTd(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
-            gettimeofday(&st, 0);
+            //gettimeofday(&st, 0);
 
 
             while (remain_len > 0)
@@ -926,9 +815,11 @@ void sendTd(int send_thread_id)
             }
 
             free(buf);
+            /*
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
             printf("send two blocks mksp=%lld\n", mksp );
+            **/
             canSend = false;
         }
         else
@@ -948,7 +839,8 @@ void recvTd(int recv_thread_id)
     while (1 == 1)
     {
         struct timeval st, et;
-        gettimeofday(&st, 0);
+
+        //gettimeofday(&st, 0);
 
         size_t expected_len = sizeof(Pblock);
         char* sockBuf = (char*)malloc(expected_len + 100);
@@ -1035,11 +927,11 @@ void recvTd(int recv_thread_id)
             Qblock.eles[i] = data_eles[i];
         }
         free(data_eles);
-
-        gettimeofday(&et, 0);
-        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("recv two blocks time = %lld\n", mksp);
-
+        /*
+                gettimeofday(&et, 0);
+                long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+                printf("recv two blocks time = %lld\n", mksp);
+        **/
         hasRecved = true;
     }
 }

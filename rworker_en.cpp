@@ -933,7 +933,7 @@ void sendTd(int send_thread_id)
         if (to_send_head < to_send_tail)
         {
             printf("come here send\n");
-            getchar();
+            //getchar();
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
@@ -999,7 +999,7 @@ void sendTd(int send_thread_id)
             free(buf);
             printf("after free...\n");
             to_send_head = (to_send_head + 1) % QU_LEN;
-            getchar();
+            //getchar();
         }
     }
 
@@ -1066,10 +1066,11 @@ void recvTd(int recv_thread_id)
                 cur_len += ret;
             }
             double* data_eles = (double*)(void*)dataBuf;
-            //printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
+            printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
 
             if (block_p_or_q == 0)
             {
+                printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
                 // recv q
                 Qblocks[block_idx].block_id = pb->block_id;
                 Qblocks[block_idx].sta_idx = pb->sta_idx;
@@ -1095,7 +1096,7 @@ void recvTd(int recv_thread_id)
                     Pblocks[block_idx].eles[i] = data_eles[i];
                 }
             }
-            //printf("recv complete\n");
+            printf("recv complete\n");
             //getchar();
             printf("before free blockBuf\n");
             //getchar();

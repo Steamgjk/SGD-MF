@@ -412,7 +412,7 @@ void CalcUpdt(int td_id)
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] c11ontinue l [%d][%d] pq [%ld][%ld]  %ld\n", td_id, p_block_idx, q_block_idx, i, j, real_hash_idx);
-                    getchar();
+                    //getchar();
                     cnt++;
                     //getchar();
                     //exit(0);

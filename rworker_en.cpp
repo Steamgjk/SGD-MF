@@ -925,7 +925,6 @@ void sendTd(int send_thread_id)
     //发送数据
     printf("connect to %s %d\n", remote_ip, remote_port);
     int send_cnt = 0;
-    getchar();
     while (1 == 1)
     {
         //printf("to_send_head=%d to_send_tail=%d\n", to_send_head, to_send_tail );
@@ -989,6 +988,8 @@ void sendTd(int send_thread_id)
 
             //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
             //getchar();
+            printf("before free..\n");
+            getchar();
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;

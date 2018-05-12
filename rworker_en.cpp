@@ -586,9 +586,8 @@ void LoadStateConfig(char* fn)
             {
                 if (gp == 1)
                 {
-
                     int tmp = states[loc];
-                    state[loc] = states[loc - 1];
+                    states[loc] = states[loc - 1];
                     states[loc - 1] = tmp;
                 }
 

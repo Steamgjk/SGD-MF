@@ -944,7 +944,7 @@ void sendTd(int send_thread_id)
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
                 //printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
                 buf = (char*)malloc(struct_sz + data_sz);
-                getchar();
+                //getchar();
                 printf("before memcpy1\n");
                 memcpy(buf, &(Qblocks[block_idx]), struct_sz);
                 printf("before memcpy2\n");
@@ -993,7 +993,7 @@ void sendTd(int send_thread_id)
             //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
             //getchar();
             printf("before free..\n");
-            getchar();
+            //getchar();
             free(buf);
 
             to_send_head = (to_send_head + 1) % QU_LEN;

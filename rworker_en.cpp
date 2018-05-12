@@ -330,8 +330,8 @@ int main(int argc, const char * argv[])
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
-                printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
+                //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
 
 
@@ -1068,7 +1068,7 @@ void recvTd(int recv_thread_id)
 
             int block_idx = has_recved[recved_head];
             int block_p_or_q = actions[recved_head];
-            printf("recved_head=%d block_idx=%d  block_p_or_q=%d\n", recved_head, block_idx, block_p_or_q );
+            //printf("recved_head=%d block_idx=%d  block_p_or_q=%d\n", recved_head, block_idx, block_p_or_q );
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;
@@ -1106,7 +1106,7 @@ void recvTd(int recv_thread_id)
                 cur_len += ret;
             }
             double* data_eles = (double*)(void*)dataBuf;
-            printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
+            //printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
 
             if (block_p_or_q == 0)
             {

@@ -337,12 +337,12 @@ int main(int argc, const char * argv[])
 
             SGD_MF();
 
-            /*
-                        if (iter_cnt % 10 == 0)
-                        {
-                            WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
-                        }
-                        **/
+
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+            }
+
             //patch
             /*
                         if (thread_id != WORKER_NUM - 1)

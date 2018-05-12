@@ -1026,8 +1026,10 @@ void sendTd(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
+            /*
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
+            **/
             while (remain_len > 0)
             {
                 if (to_send_len > remain_len)
@@ -1047,11 +1049,12 @@ void sendTd(int send_thread_id)
                     printf("still fail\n");
                 }
             }
+            /*
+                        gettimeofday(&et, 0);
+                        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            gettimeofday(&et, 0);
-            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
+                        printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
+                        **/
             //getchar();
             //printf("before free..\n");
             //getchar();

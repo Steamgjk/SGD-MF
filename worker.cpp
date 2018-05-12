@@ -424,7 +424,7 @@ void CalcUpdt(int td_id)
         int q_block_idx = Qblock.block_id;
         if (StartCalcUpdt[td_id])
         {
-            int times_thresh = 200;
+            int times_thresh = 1000;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;

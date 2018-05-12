@@ -1074,7 +1074,7 @@ void recvTd(int recv_thread_id)
                 cur_len += ret;
             }
             double* data_eles = (double*)(void*)dataBuf;
-            //printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
+            printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
 
             if (block_p_or_q == 0)
             {

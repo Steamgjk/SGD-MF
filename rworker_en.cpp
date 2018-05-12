@@ -353,7 +353,7 @@ void CalcUpdt(int td_id)
     {
         if (StartCalcUpdt[td_id])
         {
-            /**
+
             int times_thresh = 50;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
@@ -429,7 +429,7 @@ void CalcUpdt(int td_id)
                 cnt++;
 
             }
-            **/
+
             StartCalcUpdt[td_id] = false;
             //printf("finish %d  %ld %ld\n",  td_id, rtsz, ctsz);
 
@@ -522,12 +522,20 @@ void LoadActionConfig(char* fn)
 }
 void LoadStateConfig(char* fn)
 {
+    /*
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
         int row = thread_id * GROUP_NUM + gp;
         int col = DIM_NUM - 1 - ( thread_id * GROUP_NUM + gp);
         states[gp] = row * DIM_NUM + col;
         printf("state[%d] %d\n", gp, states[gp] );
+    }
+    **/
+    for (int gp = 0; gp < GROUP_NUM; gp++)
+    {
+        int row = thread_id  + gp * WORKER_NUM;
+        int col = DIM_NUM - 1 - row;
+        states[gp] = row * DIM_NUM + col;
     }
     for (size_t i = 0; i < SEQ_LEN; i++ )
     {
@@ -539,11 +547,11 @@ void LoadStateConfig(char* fn)
             if (actions[loc] == 0)
             {
                 /*
-                                to_send[loc] = states[loc] % DIM_NUM;
-                                has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
+                to_send[loc] = states[loc] % DIM_NUM;
+                has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
 
-                                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
-                  **/
+                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
+                **/
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + 1) % DIM_NUM;
 

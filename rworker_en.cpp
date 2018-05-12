@@ -955,9 +955,9 @@ void sendTd(int send_thread_id)
                 //printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
                 buf = (char*)malloc(struct_sz + data_sz);
                 //getchar();
-                printf("before memcpy1\n");
+                //printf("before memcpy1\n");
                 memcpy(buf, &(Qblocks[block_idx]), struct_sz);
-                printf("before memcpy2\n");
+                //printf("before memcpy2\n");
                 memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
             }
             else
@@ -1002,10 +1002,10 @@ void sendTd(int send_thread_id)
 
             //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
             //getchar();
-            printf("before free..\n");
+            //printf("before free..\n");
             //getchar();
             free(buf);
-            printf("after free...\n");
+            //printf("after free...\n");
             to_send_head = (to_send_head + 1) % QU_LEN;
             //getchar();
         }
@@ -1074,28 +1074,28 @@ void recvTd(int recv_thread_id)
                 cur_len += ret;
             }
             double* data_eles = (double*)(void*)dataBuf;
-            printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
+            //printf("tofill bid=%d real id %d\n", block_idx, pb->block_id );
 
             if (block_p_or_q == 0)
             {
-                printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+                //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
                 // recv q
                 Qblocks[block_idx].block_id = pb->block_id;
                 Qblocks[block_idx].sta_idx = pb->sta_idx;
                 Qblocks[block_idx].height = pb->height;
                 Qblocks[block_idx].ele_num = pb->ele_num;
-                printf("recvQ pb->ele_num=%ld qbsz=%ld\n", pb->ele_num, Qblocks[block_idx].eles.size() );
+                //printf("recvQ pb->ele_num=%ld qbsz=%ld\n", pb->ele_num, Qblocks[block_idx].eles.size() );
                 Qblocks[block_idx].eles.clear();
-                printf("recvQ  qbsz=%ld\n", Qblocks[block_idx].eles.size() );
+                //printf("recvQ  qbsz=%ld\n", Qblocks[block_idx].eles.size() );
                 Qblocks[block_idx].eles.resize(pb->ele_num);
-                printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+                //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
                 Qblocks[block_idx].isP = pb->isP;
                 for (int i = 0; i < pb->ele_num; i++)
                 {
-                    printf("i=%d\n", i );
+                    //printf("i=%d\n", i );
                     Qblocks[block_idx].eles[i] = data_eles[i];
                 }
-                printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+                //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
             }
             else
             {
@@ -1110,17 +1110,17 @@ void recvTd(int recv_thread_id)
                     Pblocks[block_idx].eles[i] = data_eles[i];
                 }
             }
-            printf("recv complete\n");
+            //printf("recv complete\n");
             //getchar();
-            printf("before free blockBuf\n");
+            //printf("before free blockBuf\n");
             //getchar();
             free(blockBuf);
-            printf("before free dataBuf\n");
+            //printf("before free dataBuf\n");
             free(dataBuf);
-            printf("after free two\n");
+            //printf("after free two\n");
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("recv success time = %lld, recved_head=%d has_processed=%d\n", mksp, recved_head, has_processed );
+            //printf("recv success time = %lld, recved_head=%d has_processed=%d\n", mksp, recved_head, has_processed );
             recved_head = (recved_head + 1) % QU_LEN;
         }
     }

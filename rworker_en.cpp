@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -320,11 +320,13 @@ int main(int argc, const char * argv[])
                 WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
             }
             //patch
+            /*
             if (thread_id != WORKER_NUM - 1)
             {
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
-            //to_send_tail = (to_send_tail + 1) % QU_LEN;
+            **/
+            to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
             printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
@@ -336,12 +338,13 @@ int main(int argc, const char * argv[])
 
 
         }
+        /*
         //patch
         if (thread_id == WORKER_NUM - 1)
         {
             to_send_tail =  (to_send_tail + 2) % QU_LEN;
         }
-
+        **/
 
         iter_cnt++;
 
@@ -581,6 +584,7 @@ void LoadStateConfig(char* fn)
 
                 states[loc + GROUP_NUM] = ((states[loc] / DIM_NUM + DIM_NUM - GROUP_NUM) % DIM_NUM) * DIM_NUM + (states[loc] % DIM_NUM);
             }
+            /*
             //patch
             if (thread_id == WORKER_NUM - 1)
             {
@@ -596,6 +600,7 @@ void LoadStateConfig(char* fn)
                 }
 
             }
+            **/
             //
         }
 

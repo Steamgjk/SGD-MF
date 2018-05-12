@@ -537,16 +537,17 @@ void LoadStateConfig(char* fn)
             //printf("loc [%d] act %d\n", loc, actions[loc]);
             if (actions[loc] == 0)
             {
-                /*
+
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
-                **/
+                /*
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + 1) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
+                **/
             }
             else
             {

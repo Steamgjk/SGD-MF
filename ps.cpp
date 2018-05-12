@@ -26,6 +26,7 @@
 #include <mutex>
 #include <atomic>
 #include <fstream>
+#include <sys/time.h>
 #include <map>
 using namespace std;
 #define CAP 30

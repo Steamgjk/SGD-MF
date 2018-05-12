@@ -275,8 +275,26 @@ int main(int argc, const char * argv[])
     std::vector<bool> send_this_p(GROUP_NUM);
     //Init Mark
     int iter_cnt = 0;
+    struct timeval st, et, tspan;
+    long long mksp;
     while (1 == 1)
     {
+        if (iter_cnt == 0)
+        {
+            gettimeofday(&st, 0);
+        }
+        else
+        {
+            if (iter_cnt % 10 == 0)
+            {
+
+                gettimeofday(&et, 0);
+
+                mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+                printf("%d\t%lld\n", iter_cnt, mksp);
+
+            }
+        }
         for (int i = 0; i < GROUP_NUM; i++)
         {
             block_to_process = states[state_idx];
@@ -306,19 +324,14 @@ int main(int argc, const char * argv[])
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
 
-            struct timeval st, et, tspan;
-            gettimeofday(&st, 0);
             SGD_MF();
-            gettimeofday(&et, 0);
 
-            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("calc time = %lld\n", mksp);
-
-
-            if (iter_cnt % 10 == 0)
-            {
-                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
-            }
+            /*
+                        if (iter_cnt % 10 == 0)
+                        {
+                            WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+                        }
+                        **/
             //patch
             /*
             if (thread_id != WORKER_NUM - 1)
@@ -328,7 +341,7 @@ int main(int argc, const char * argv[])
             **/
             to_send_tail = (to_send_tail + 1) % QU_LEN;
             has_processed++;
-            printf("processed success has_processed=%d\n", has_processed );
+            //printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
@@ -870,7 +883,7 @@ void SGD_MF()
 
     {
 
-        gettimeofday(&beg, 0);
+        //gettimeofday(&beg, 0);
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
             StartCalcUpdt[ii] = true;
@@ -898,10 +911,11 @@ void SGD_MF()
             }
 
         }
-
-        gettimeofday(&ed, 0);
-        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
+        /*
+                gettimeofday(&ed, 0);
+                mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+                printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
+                **/
     }
 
 

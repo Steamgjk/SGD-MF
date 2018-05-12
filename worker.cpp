@@ -196,7 +196,7 @@ int main(int argc, const char * argv[])
     }
 
     //LoadSplitData();
-    LoadData();
+    //LoadData();
     printf("Load Rating Success\n");
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);

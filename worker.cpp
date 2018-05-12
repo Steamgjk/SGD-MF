@@ -251,6 +251,10 @@ int main(int argc, const char * argv[])
             submf();
             //printf("after submf\n");
             iter_cnt++;
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblock, Qblock, iter_cnt);
+            }
             if (iter_cnt == thresh_log )
             {
                 gettimeofday(&stop, 0);

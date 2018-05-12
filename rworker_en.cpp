@@ -1001,7 +1001,7 @@ void sendTd(int send_thread_id)
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, mksp, to_send_head);
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
             //getchar();
             //printf("before free..\n");
             //getchar();
@@ -1037,7 +1037,7 @@ void recvTd(int recv_thread_id)
 
             int block_idx = has_recved[recved_head];
             int block_p_or_q = actions[recved_head];
-            //printf("recved_head=%d block_idx=%d  block_p_or_q=%d\n", recved_head, block_idx, block_p_or_q );
+            printf("recved_head=%d block_idx=%d  block_p_or_q=%d\n", recved_head, block_idx, block_p_or_q );
             //0 is to right trans/recv Q, 1 is up, trans p
             cur_len = 0;
             ret = 0;

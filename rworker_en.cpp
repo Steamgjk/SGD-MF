@@ -299,7 +299,7 @@ int main(int argc, const char * argv[])
             {
                 for (int i = 0; i < 200; i++)
                 {
-                    printf("lld\n", time_span[i]);
+                    printf("%lld\n", time_span[i]);
                 }
             }
         }

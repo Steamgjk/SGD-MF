@@ -248,12 +248,12 @@ int main(int argc, const char * argv[])
             if (iter_t % 10 == 0)
             {
                 gettimeofday(&ed, 0);
-                /*
+
                 for (int bid = 0; bid < WORKER_NUM; bid++)
                 {
                     WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
                 }
-                **/
+
 
                 time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
                 printf("%d\t%lld\n", iter_t, time_span[iter_t / 10] );

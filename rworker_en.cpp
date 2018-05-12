@@ -292,7 +292,7 @@ int main(int argc, const char * argv[])
                 gettimeofday(&et, 0);
 
                 mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-                //printf("%d\t%lld\n", iter_cnt, mksp);
+                printf("%d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
             if (iter_cnt == 2000)

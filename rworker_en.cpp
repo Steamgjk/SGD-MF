@@ -324,7 +324,7 @@ int main(int argc, const char * argv[])
             {
                 //Wait
                 printf("to recv has_processed=%d recved_head=%d disk_read_tail_idx=%d\n", has_processed, recved_head, disk_read_tail_idx);
-                //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
 
 

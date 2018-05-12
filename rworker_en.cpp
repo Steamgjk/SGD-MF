@@ -348,7 +348,9 @@ int main(int argc, const char * argv[])
                 to_send_tail = (to_send_tail + 1) % QU_LEN;
             }
 
-            to_send_tail = (to_send_tail + 1) % QU_LEN;
+            //to_send_tail = (to_send_tail + 1) % QU_LEN;
+
+            //patch the two above mutual
             has_processed++;
             //printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)

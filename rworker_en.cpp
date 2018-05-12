@@ -1076,7 +1076,7 @@ void recvTd(int recv_thread_id)
                 Qblocks[block_idx].sta_idx = pb->sta_idx;
                 Qblocks[block_idx].height = pb->height;
                 Qblocks[block_idx].ele_num = pb->ele_num;
-                printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+                printf("recvQ pb->ele_num=%ld qbsz=%ld\n", pb->ele_num, Qblocks[block_idx].eles.size() );
                 Qblocks[block_idx].eles.resize(pb->ele_num);
                 printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
                 Qblocks[block_idx].isP = pb->isP;

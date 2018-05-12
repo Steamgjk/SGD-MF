@@ -219,12 +219,12 @@ int main(int argc, const char * argv[])
         srand(time(0));
         bool ret = false;
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
-
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-        }
-
+        /*
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+                }
+        **/
 
         for (int i = 0; i < WORKER_NUM; i++)
         {
@@ -253,6 +253,7 @@ int main(int argc, const char * argv[])
                 }
                 **/
                 time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+                printf("%d\t%lld\n", iter_t, time_span[iter_t / 10] );
 
             }
             //printf("iter_t=%d\n", iter_t );

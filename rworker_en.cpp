@@ -300,9 +300,9 @@ int main(int argc, const char * argv[])
                 printf("%d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
-            if (iter_cnt == 1000)
+            if (iter_cnt == 1200)
             {
-                for (int i = 0; i < 200; i++)
+                for (int i = 0; i < 120; i++)
                 {
                     printf("%lld\n", time_span[i]);
                 }
@@ -342,7 +342,7 @@ int main(int argc, const char * argv[])
 
             if (iter_cnt % 10 == 0)
             {
-                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+                //WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
             }
 
             //patch

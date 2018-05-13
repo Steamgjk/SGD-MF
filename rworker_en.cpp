@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -346,13 +346,14 @@ int main(int argc, const char * argv[])
             }
 
             //patch
+            /*
+                        if (thread_id != WORKER_NUM - 1)
+                        {
+                            to_send_tail = (to_send_tail + 1) % QU_LEN;
+                        }
+                        **/
 
-            if (thread_id != WORKER_NUM - 1)
-            {
-                to_send_tail = (to_send_tail + 1) % QU_LEN;
-            }
-
-            //to_send_tail = (to_send_tail + 1) % QU_LEN;
+            to_send_tail = (to_send_tail + 1) % QU_LEN;
 
             //patch the two above mutual
             has_processed++;
@@ -368,12 +369,12 @@ int main(int argc, const char * argv[])
         }
 
         //patch
-
-        if (thread_id == WORKER_NUM - 1)
-        {
-            to_send_tail =  (to_send_tail + 2) % QU_LEN;
-        }
-
+        /*
+                if (thread_id == WORKER_NUM - 1)
+                {
+                    to_send_tail =  (to_send_tail + 2) % QU_LEN;
+                }
+        **/
 
 
         iter_cnt++;
@@ -554,22 +555,22 @@ void LoadStateConfig(char* fn)
             }
 
             //patch
+            /*
+                        if (thread_id == WORKER_NUM - 1)
+                        {
+                            if (gp == 1)
+                            {
+                                int tmp = states[loc];
+                                states[loc] = states[loc - 1];
+                                states[loc - 1] = tmp;
+                                tmp = to_send[loc] ;
+                                to_send[loc] = to_send[loc - 1];
+                                to_send[loc - 1] = tmp;
 
-            if (thread_id == WORKER_NUM - 1)
-            {
-                if (gp == 1)
-                {
-                    int tmp = states[loc];
-                    states[loc] = states[loc - 1];
-                    states[loc - 1] = tmp;
-                    tmp = to_send[loc] ;
-                    to_send[loc] = to_send[loc - 1];
-                    to_send[loc - 1] = tmp;
+                            }
 
-                }
-
-            }
-
+                        }
+            **/
 
             //
         }

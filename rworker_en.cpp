@@ -339,12 +339,12 @@ int main(int argc, const char * argv[])
 
             SGD_MF();
 
-            /*
-                        if (iter_cnt % 10 == 0)
-                        {
-                            WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
-                        }
-            **/
+
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+            }
+
             //patch
 
             if (thread_id != WORKER_NUM - 1)
@@ -399,7 +399,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
 
-            int times_thresh = 250;
+            int times_thresh = 500;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;

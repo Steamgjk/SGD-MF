@@ -342,7 +342,7 @@ int main(int argc, const char * argv[])
 
             if (iter_cnt % 10 == 0)
             {
-                //WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
             }
 
             //patch

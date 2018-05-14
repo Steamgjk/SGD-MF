@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -296,7 +296,7 @@ int main(int argc, const char * argv[])
 
                 mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
                 //if (iter_cnt % 100 == 0)
-                printf("%d\t%lld\n", iter_cnt, mksp);
+                printf("hehere %d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
             if (iter_cnt == 1200)

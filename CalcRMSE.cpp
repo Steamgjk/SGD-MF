@@ -89,6 +89,10 @@ int main(int argc, const char * argv[])
                 printf("fail to open %s\n", filename);
                 getchar();
             }
+            else
+            {
+                printf("open %s\n", filename );
+            }
 
             while (!ifs.eof())
             {
@@ -102,6 +106,7 @@ int main(int argc, const char * argv[])
             }
             ifs.close();
             printf("%s read\n", filename );
+            getchar();
             sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
             //ifstream ifs1(filename, ios::in | ios::out);
             ifs.open(filename, ios::in | ios::out);

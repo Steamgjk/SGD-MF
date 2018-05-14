@@ -76,6 +76,7 @@ int main(int argc, const char * argv[])
     //int i = atoi(argv[3]);
     for (int i = stat; i < ITER_NUM; i += 10)
     {
+        printf("i=%d\n", i );
 
         int row_idx = 0;
         int col_idx = 0;

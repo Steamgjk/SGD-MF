@@ -93,7 +93,7 @@ int main(int argc, const char * argv[])
             {
                 printf("open %s\n", filename );
             }
-
+            getchar();
             while (!ifs.eof())
             {
                 for (int kk = 0; kk < K; kk++)

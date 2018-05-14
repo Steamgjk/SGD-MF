@@ -44,20 +44,20 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
 
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-
+**/
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -292,7 +292,6 @@ int main(int argc, const char * argv[])
         {
             if (iter_cnt % 10 == 0)
             {
-
                 gettimeofday(&et, 0);
 
                 mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
@@ -871,11 +870,11 @@ void SGD_MF()
             }
 
         }
-        /*
-                gettimeofday(&ed, 0);
-                mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-                printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
-                **/
+
+        gettimeofday(&ed, 0);
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
+
 
     }
 
@@ -987,10 +986,10 @@ void sendTd(int send_thread_id)
             size_t remain_len = total_len;
             int ret = -1;
             size_t to_send_len = 4096;
-            /*
+
             struct timeval st, et, tspan;
             gettimeofday(&st, 0);
-            **/
+
             while (remain_len > 0)
             {
                 if (to_send_len > remain_len)
@@ -1010,12 +1009,12 @@ void sendTd(int send_thread_id)
                     printf("still fail\n");
                 }
             }
-            /*
-                        gettimeofday(&et, 0);
-                        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-                        printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
-                        **/
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+
+            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
+
             //getchar();
             //printf("before free..\n");
             //getchar();
@@ -1133,11 +1132,11 @@ void recvTd(int recv_thread_id)
             //printf("before free dataBuf\n");
             free(dataBuf);
             //printf("after free two\n");
-            /*
+
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("recv success time = %lld, recved_head=%d has_processed=%d\n", mksp, recved_head, has_processed );
-            ***/
+            printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
+
             recved_head = (recved_head + 1) % QU_LEN;
         }
     }

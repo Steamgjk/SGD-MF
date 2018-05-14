@@ -841,7 +841,7 @@ void SGD_MF()
 
     {
 
-        //gettimeofday(&beg, 0);
+        gettimeofday(&beg, 0);
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
             StartCalcUpdt[ii] = true;
@@ -869,11 +869,11 @@ void SGD_MF()
             }
 
         }
-        /*
-                gettimeofday(&ed, 0);
-                mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-                printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
-                **/
+
+        gettimeofday(&ed, 0);
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
+
     }
 
 
@@ -1132,7 +1132,7 @@ void recvTd(int recv_thread_id)
             //printf("after free two\n");
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            //printf("recv success time = %lld, recved_head=%d has_processed=%d\n", mksp, recved_head, has_processed );
+            printf("recv success time = %lld, recved_head=%d has_processed=%d\n", mksp, recved_head, has_processed );
             recved_head = (recved_head + 1) % QU_LEN;
         }
     }

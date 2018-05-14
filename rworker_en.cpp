@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 1;
-int DIM_NUM = 4;
+int GROUP_NUM = 2;
+int DIM_NUM = 8;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -496,10 +496,10 @@ void LoadActionConfig(char* fn)
         for (int gp = 0; gp < GROUP_NUM; gp++)
         {
             loc = i * GROUP_NUM + gp;
-            //actions[loc] = gp % 2;
+            actions[loc] = gp % 2;
 
             //only one direction
-            actions[loc] = 0;
+            //actions[loc] = 0;
 
         }
     }
@@ -507,7 +507,7 @@ void LoadActionConfig(char* fn)
 }
 void LoadStateConfig(char* fn)
 {
-    /*
+
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
         int row = thread_id * GROUP_NUM + gp;
@@ -515,13 +515,15 @@ void LoadStateConfig(char* fn)
         states[gp] = row * DIM_NUM + col;
         printf("state[%d] %d\n", gp, states[gp] );
     }
-    **/
+
+    /* right
     for (int gp = 0; gp < GROUP_NUM; gp++)
     {
         int row = thread_id  + gp * WORKER_NUM;
         int col = DIM_NUM - 1 - row;
         states[gp] = row * DIM_NUM + col;
     }
+    **/
 
     for (size_t i = 0; i < SEQ_LEN; i++ )
     {
@@ -532,17 +534,17 @@ void LoadStateConfig(char* fn)
             //printf("loc [%d] act %d\n", loc, actions[loc]);
             if (actions[loc] == 0)
             {
-                /*
+
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
-                **/
+                /*
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + 1) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
-
+                **/
 
 
             }

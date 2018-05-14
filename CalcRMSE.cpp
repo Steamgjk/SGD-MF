@@ -97,7 +97,8 @@ int main(int argc, const char * argv[])
                     ifs >> P[row_idx][kk];
                 }
                 row_idx++;
-                printf("row_idx=%d\n", row_idx);
+                if (row_idx % 1000 == 0)
+                    printf("row_idx=%d\n", row_idx);
             }
             ifs.close();
             printf("%s read\n", filename );

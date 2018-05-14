@@ -38,21 +38,21 @@ using namespace std;
 
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
-/*
+
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-**/
 
 
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-
+**/
 int WORKER_NUM = 4;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
@@ -62,8 +62,7 @@ int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
 
 
-//double R[N][M];
-//double Rline[M];
+
 map<long, double> RMap;
 map<long, double> TestMap;
 double P[N][K];
@@ -248,13 +247,13 @@ int main(int argc, const char * argv[])
             if (iter_t % 10 == 0)
             {
                 gettimeofday(&ed, 0);
-                /*
-                                for (int bid = 0; bid < WORKER_NUM; bid++)
-                                {
-                                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
-                                }
 
-                **/
+                for (int bid = 0; bid < WORKER_NUM; bid++)
+                {
+                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
+                }
+
+
                 time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
                 printf("%d\t%lld\n", iter_t, time_span[iter_t / 10] );
 

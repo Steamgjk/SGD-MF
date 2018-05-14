@@ -496,10 +496,11 @@ void LoadActionConfig(char* fn)
         for (int gp = 0; gp < GROUP_NUM; gp++)
         {
             loc = i * GROUP_NUM + gp;
-            actions[loc] = gp % 2;
 
-            //only one direction
-            //actions[loc] = 0;
+            //actions[loc] = gp % 2;
+
+            //only one direction  patch
+            actions[loc] = 0;
 
         }
     }

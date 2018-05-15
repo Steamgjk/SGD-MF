@@ -357,7 +357,7 @@ int main(int argc, const char * argv[])
 
             //patch the two above mutual
             has_processed++;
-            //printf("processed success has_processed=%d\n", has_processed );
+            printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
@@ -379,7 +379,7 @@ int main(int argc, const char * argv[])
 
         iter_cnt++;
 
-        //printf("iterddd %d\n", iter_cnt );
+        printf("iterddd %d\n", iter_cnt );
 
         if (iter_cnt == 2000)
         {

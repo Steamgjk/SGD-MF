@@ -406,7 +406,7 @@ void sendTd(int send_thread_id)
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success pbid =%d\n", send_thread_id, pbid );
+                printf("[Td:%d] send success pbid =%d ret=%d\n", send_thread_id, pbid, ret );
             }
             free(buf);
 
@@ -418,7 +418,7 @@ void sendTd(int send_thread_id)
             ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success qbid=%d\n", send_thread_id, qbid);
+                printf("[Td:%d] send success qbid=%d ret =%d\n", send_thread_id, qbid, ret);
             }
             free(buf);
             canSend[send_thread_id] = false;

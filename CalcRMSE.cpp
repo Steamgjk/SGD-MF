@@ -101,11 +101,11 @@ int main(int argc, const char * argv[])
                     ifs >> P[row_idx][kk];
                 }
                 row_idx++;
-                if (row_idx % 1000 == 0)
-                    printf("row_idx=%d\n", row_idx);
+                //if (row_idx % 1000 == 0)
+                // printf("row_idx=%d\n", row_idx);
             }
             ifs.close();
-            printf("%s read\n", filename );
+            //printf("%s read\n", filename );
             //getchar();
             sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
             //ifstream ifs1(filename, ios::in | ios::out);
@@ -127,7 +127,7 @@ int main(int argc, const char * argv[])
                 col_idx++;
             }
             ifs.close();
-            printf("%s read\n", filename );
+            //printf("%s read\n", filename );
 
         }
 

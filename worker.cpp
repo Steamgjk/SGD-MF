@@ -429,6 +429,7 @@ void CalcUpdt(int td_id)
         int q_block_idx = Qblock.block_id;
         if (StartCalcUpdt[td_id])
         {
+            printf("enter CalcUpdt\n");
             int times_thresh = 200;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
@@ -444,6 +445,7 @@ void CalcUpdt(int td_id)
             int rand_idx = -1;
             while (times_thresh--)
             {
+                printf("times_thresh=%d\n", times_thresh );
                 rand_idx = random() % rtsz;
                 long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
@@ -535,7 +537,7 @@ void submf()
         }
         getchar();
     }
-
+    printf("enter submf22\n");
     struct timeval beg, ed;
     long long mksp;
     gettimeofday(&beg, 0);
@@ -607,7 +609,7 @@ void submf()
         }
         **/
 
-//printf("Rmap sz =%ld \n", Rmap.size() );
+    printf("come\n");
 
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)

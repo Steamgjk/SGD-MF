@@ -517,7 +517,22 @@ void submf()
     int Qsz = Qblock.height * K;
     oldP = Pblock.eles;
     oldQ = Qblock.eles;
-
+    for (int i = 0; i < Psz; i++)
+    {
+        if (oldP[i] > 100 || oldP < -100)
+        {
+            printf("P Exception! [%d] %lf\n", i, oldP[i]);
+        }
+        getchar();
+    }
+    for (int i = 0; i < Qsz; i++)
+    {
+        if (oldQ[i] > 100 || oldQ < -100)
+        {
+            printf("Q Exception! [%d] %lf\n", i, oldQ[i]);
+        }
+        getchar();
+    }
 
     struct timeval beg, ed;
     long long mksp;
@@ -830,6 +845,10 @@ void recvTd(int recv_thread_id)
         for (int i = 0; i < Pblock.ele_num; i++)
         {
             Pblock.eles[i] = data_eles[i];
+            if (Pblock.eles[i] > 100 || Pblock.eles[i] < -100 )
+            {
+                printf("P Exception!\n");
+            }
         }
         free(data_eles);
 
@@ -874,6 +893,10 @@ void recvTd(int recv_thread_id)
         for (int i = 0; i < Qblock.ele_num; i++)
         {
             Qblock.eles[i] = data_eles[i];
+            if (Qblock.eles[i] > 100 || Qblock.eles[i] < -100 )
+            {
+                printf("Q Exception!\n");
+            }
         }
         free(data_eles);
         /*

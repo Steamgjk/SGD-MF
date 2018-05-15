@@ -392,7 +392,7 @@ int main(int argc, const char * argv[])
 }
 
 
-void CalcUpdt(int td_id)
+void CalcUpdt1(int td_id)
 {
 
     while (1 == 1)
@@ -477,7 +477,7 @@ void CalcUpdt(int td_id)
 
 }
 
-void CalcUpdt1(int td_id)
+void CalcUpdt(int td_id)
 {
 
 

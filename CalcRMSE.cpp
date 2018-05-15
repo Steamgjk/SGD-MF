@@ -106,7 +106,7 @@ int main(int argc, const char * argv[])
             }
             ifs.close();
             printf("%s read\n", filename );
-            getchar();
+            //getchar();
             sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
             //ifstream ifs1(filename, ios::in | ios::out);
             ifs.open(filename, ios::in | ios::out);

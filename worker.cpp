@@ -507,7 +507,7 @@ void CalcUpdt(int td_id)
 }
 void submf()
 {
-    printf("enter submf\n");
+    printf("enter submf111\n");
     double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;
@@ -529,6 +529,7 @@ void submf()
         }
         getchar();
     }
+    printf("comere hhe\n");
     for (int i = 0; i < Qsz; i++)
     {
         if (oldQ[i] > 100 || oldQ[i] < -100)

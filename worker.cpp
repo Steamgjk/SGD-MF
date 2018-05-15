@@ -804,7 +804,7 @@ void recvTd(int recv_thread_id)
     {
         struct timeval st, et;
 
-        //gettimeofday(&st, 0);
+        gettimeofday(&st, 0);
 
         size_t expected_len = sizeof(Pblock);
         char* sockBuf = (char*)malloc(expected_len + 100);
@@ -812,8 +812,9 @@ void recvTd(int recv_thread_id)
         int ret = 0;
         while (cur_len < expected_len)
         {
+            printf("recving..\n");
             ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
-            //printf("check 1.5\n");
+            printf("check 1.5\n");
             if (ret < 0)
             {
                 printf("Mimatch!\n");

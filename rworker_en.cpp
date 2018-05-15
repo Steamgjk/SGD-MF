@@ -391,7 +391,95 @@ int main(int argc, const char * argv[])
     }
 }
 
+
 void CalcUpdt(int td_id)
+{
+
+    while (1 == 1)
+    {
+        //printf("td = %d entercalc\n", td_id );
+        int p_block_idx = Pblock.block_id;
+        int q_block_idx = Qblock.block_id;
+        if (StartCalcUpdt[td_id])
+        {
+            printf("enter CalcUpdt\n");
+            int times_thresh = 200;
+            int row_sta_idx = Pblock.sta_idx;
+            int col_sta_idx = Qblock.sta_idx;
+            size_t rtsz;
+            size_t ctsz;
+            rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
+            ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
+            if (rtsz == 0)
+            {
+                printf("p %d q %d\n", p_block_idx, q_block_idx );
+                exit(0);
+            }
+            int rand_idx = -1;
+            while (times_thresh--)
+            {
+                //printf("times_thresh=%d\n", times_thresh );
+                rand_idx = random() % rtsz;
+                long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                long i = real_hash_idx / M - row_sta_idx;
+                long j = real_hash_idx % M - col_sta_idx;
+                double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblocks[q_block_idx].height)
+                {
+                    printf("[%d] continue l \n", td_id);
+                    continue;
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    if (Pblocks[p_block_idx].eles[i * K + k] + 1 == Pblocks[p_block_idx].eles[i * K + k] - 1)
+                    {
+                        printf("p %d q %d  error =%lf i=%d j=%d k=%d rand_idx=%d vale=%lf pvale=%lf  qvalue=%lf\n", p_block_idx, q_block_idx, error, i, j, k, rand_idx,  rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx], oldP[i * K + k], oldQ[j * K + k] );
+                        getchar();
+                    }
+                }
+
+                rand_idx = random() % ctsz;
+                real_hash_idx = hash_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+                i = real_hash_idx / M - row_sta_idx;
+                j = real_hash_idx % M - col_sta_idx;
+                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
+                {
+                    printf("[%d] continue l11 \n", td_id);
+                    continue;
+                }
+                error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
+
+                for (int k = 0; k < K; ++k)
+                {
+                    error -= oldP[i * K + k] * oldQ[j * K + k];
+                }
+                for (int k = 0; k < K; ++k)
+                {
+                    Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    if (Qblocks[q_block_idx].eles[j * K + k] + 1 == Qblocks[q_block_idx].eles[j * K + k] - 1)
+                    {
+                        printf("p %d q %d  error =%lf i=%d j=%d k=%d rand_idx=%d vale=%lf pvale=%lf  qvalue=%lf\n", p_block_idx, q_block_idx, error, i, j, k, rand_idx,  rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx], oldP[i * K + k], oldQ[j * K + k] );
+                        getchar();
+
+                    }
+                }
+            }
+            //printf("Fini %d\n", td_id);
+            StartCalcUpdt[td_id] = false;
+
+
+        }
+    }
+
+
+}
+
+void CalcUpdt1(int td_id)
 {
 
 

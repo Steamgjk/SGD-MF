@@ -859,7 +859,7 @@ void SGD_MF()
 
     oldP = Pblocks[p_block_idx].eles;
     oldQ = Qblocks[q_block_idx].eles;
-    for (int i = 0; i < Psz; i++)
+    for (int i = 0; i < Pblocks[p_block_idx].ele_num; i++)
     {
         if (oldP[i] > 100 || oldP[i] < -100)
         {
@@ -869,7 +869,7 @@ void SGD_MF()
 
     }
     printf("comere hhe\n");
-    for (int i = 0; i < Qsz; i++)
+    for (int i = 0; i < Qblocks[q_block_idx].ele_num; i++)
     {
         if (oldQ[i] > 100 || oldQ[i] < -100)
         {

@@ -411,6 +411,7 @@ void CalcUpdt(int td_id)
             if (rtsz == 0)
             {
                 printf("p %d q %d\n", p_block_idx, q_block_idx );
+                getchar();
                 exit(0);
             }
             int rand_idx = -1;

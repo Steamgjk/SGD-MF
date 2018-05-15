@@ -422,7 +422,7 @@ void CalcUpdt(int td_id)
                 long i = real_hash_idx / M - row_sta_idx;
                 long j = real_hash_idx % M - col_sta_idx;
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
-                if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblocks[q_block_idx].height)
+                if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
                     printf("[%d] continue l \n", td_id);
                     continue;

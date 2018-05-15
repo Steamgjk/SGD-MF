@@ -424,12 +424,12 @@ void CalcUpdt(int td_id)
 
     while (1 == 1)
     {
-        printf("td = %d entercalc\n", td_id );
+        //printf("td = %d entercalc\n", td_id );
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
         if (StartCalcUpdt[td_id])
         {
-            int times_thresh = 1000;
+            int times_thresh = 200;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;
@@ -494,6 +494,7 @@ void CalcUpdt(int td_id)
                     }
                 }
             }
+            printf("Fini %d\n", td_id);
             StartCalcUpdt[td_id] = false;
 
 
@@ -622,7 +623,7 @@ void submf()
 
             if (StartCalcUpdt[ii])
             {
-                //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
+                printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
                 canbreak = false;
             }
 

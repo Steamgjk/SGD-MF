@@ -519,8 +519,11 @@ void submf()
 
     int Psz = Pblock.height * K;
     int Qsz = Qblock.height * K;
+    printf("copying ...\n");
     oldP = Pblock.eles;
+    printf("copy P fin\n");
     oldQ = Qblock.eles;
+    printf("copy Q fin\n");
     for (int i = 0; i < Psz; i++)
     {
         if (oldP[i] > 100 || oldP[i] < -100)

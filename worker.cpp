@@ -519,7 +519,7 @@ void submf()
     oldQ = Qblock.eles;
     for (int i = 0; i < Psz; i++)
     {
-        if (oldP[i] > 100 || oldP < -100)
+        if (oldP[i] > 100 || oldP[i] < -100)
         {
             printf("P Exception! [%d] %lf\n", i, oldP[i]);
         }
@@ -527,7 +527,7 @@ void submf()
     }
     for (int i = 0; i < Qsz; i++)
     {
-        if (oldQ[i] > 100 || oldQ < -100)
+        if (oldQ[i] > 100 || oldQ[i] < -100)
         {
             printf("Q Exception! [%d] %lf\n", i, oldQ[i]);
         }

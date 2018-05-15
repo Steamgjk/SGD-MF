@@ -169,7 +169,6 @@ void submf();
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void CalcUpdt(int thread_id);
-void LoadSplitData();
 void LoadData();
 void LoadRequiredData(int row, int col, int data_idx);
 
@@ -196,8 +195,7 @@ int main(int argc, const char * argv[])
         thresh_log = atoi(argv[2]);
     }
 
-    //LoadSplitData();
-    //LoadData();
+    LoadData();
     printf("Load Rating Success\n");
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -340,14 +338,18 @@ void LoadData()
         long ridx, cidx;
         while (!ifs.eof())
         {
-            ifs >> hash_id >> rate;
-            ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
-            cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+            hash_id = -1;
+            if (hash_id >= 0)
+            {
+                ifs >> hash_id >> rate;
+                ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
 
-            hash_for_row_threads[row][col][ridx].push_back(hash_id);
-            rates_for_row_threads[row][col][ridx].push_back(rate);
-            hash_for_col_threads[row][col][cidx].push_back(hash_id);
-            rates_for_col_threads[row][col][cidx].push_back(rate);
+                hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                rates_for_row_threads[row][col][ridx].push_back(rate);
+                hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                rates_for_col_threads[row][col][cidx].push_back(rate);
+            }
         }
     }
 }
@@ -508,33 +510,28 @@ void submf()
     long long mksp;
     gettimeofday(&beg, 0);
 
-    int r1 = Pblock.block_id * 2;
-    int c1 = Qblock.block_id * 2;
-    int f1 = r1 * 8 + c1;
-    int f2 = r1 * 8 + c1 + 1;
-    int f3 = (r1 + 1) * 8 + c1;
-    int f4 = (r1 + 1) * 8 + c1 + 1;
     /*
-    RMap.clear();
-    LoadRmatrix(f1, RMap);
-    LoadRmatrix(f2, RMap);
-    LoadRmatrix(f3, RMap);
-    LoadRmatrix(f4, RMap);
-    **/
-    int row = Pblock.block_id;
-    int col = Qblock.block_id;
-    for (int td = 0; td < WORKER_THREAD_NUM; td++)
-    {
-        hash_for_row_threads[row][col][td].clear();
-        rates_for_row_threads[row][col][td].clear();
-        hash_for_col_threads[row][col][td].clear();
-        rates_for_col_threads[row][col][td].clear();
-    }
-    LoadRequiredData(row, col, f1);
-    LoadRequiredData(row, col, f2);
-    LoadRequiredData(row, col, f3);
-    LoadRequiredData(row, col, f4);
+        int r1 = Pblock.block_id * 2;
+        int c1 = Qblock.block_id * 2;
+        int f1 = r1 * 8 + c1;
+        int f2 = r1 * 8 + c1 + 1;
+        int f3 = (r1 + 1) * 8 + c1;
+        int f4 = (r1 + 1) * 8 + c1 + 1;
 
+        int row = Pblock.block_id;
+        int col = Qblock.block_id;
+        for (int td = 0; td < WORKER_THREAD_NUM; td++)
+        {
+            hash_for_row_threads[row][col][td].clear();
+            rates_for_row_threads[row][col][td].clear();
+            hash_for_col_threads[row][col][td].clear();
+            rates_for_col_threads[row][col][td].clear();
+        }
+        LoadRequiredData(row, col, f1);
+        LoadRequiredData(row, col, f2);
+        LoadRequiredData(row, col, f3);
+        LoadRequiredData(row, col, f4);
+    **/
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);

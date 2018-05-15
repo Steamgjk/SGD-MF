@@ -529,8 +529,9 @@ void submf()
         if (oldP[i] > 100 || oldP[i] < -100)
         {
             printf("P Exception! [%d] %lf\n", i, oldP[i]);
+            getchar();
         }
-        getchar();
+
     }
     printf("comere hhe\n");
     for (int i = 0; i < Qsz; i++)
@@ -538,8 +539,9 @@ void submf()
         if (oldQ[i] > 100 || oldQ[i] < -100)
         {
             printf("Q Exception! [%d] %lf\n", i, oldQ[i]);
+            getchar();
         }
-        getchar();
+
     }
     printf("enter submf22\n");
     struct timeval beg, ed;

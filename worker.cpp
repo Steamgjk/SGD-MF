@@ -460,6 +460,10 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    if (Pblock.eles[i * K + k] + 1 == Pblock.eles[i * K + k] - 1)
+                    {
+                        printf("p %d q %d  error =%lf i=%d j=%d k=%d\n", p_block_idx, q_block_idx, error, i, j, k );
+                    }
                 }
 
                 rand_idx = random() % ctsz;
@@ -479,6 +483,11 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     Qblock.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    if (Qblock.eles[j * K + k] + 1 == Qblock.eles[j * K + k] - 1)
+                    {
+                        printf("p %d q %d  error =%lf i=%d j=%d k=%d\n", p_block_idx, q_block_idx, error, i, j, k );
+
+                    }
                 }
             }
             StartCalcUpdt[td_id] = false;

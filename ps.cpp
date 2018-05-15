@@ -250,6 +250,7 @@ int main(int argc, const char * argv[])
 
                 for (int bid = 0; bid < WORKER_NUM; bid++)
                 {
+
                     WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
                 }
 

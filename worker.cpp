@@ -463,6 +463,7 @@ void CalcUpdt(int td_id)
                     if (Pblock.eles[i * K + k] + 1 == Pblock.eles[i * K + k] - 1)
                     {
                         printf("p %d q %d  error =%lf i=%d j=%d k=%d\n", p_block_idx, q_block_idx, error, i, j, k );
+                        getchar();
                     }
                 }
 
@@ -486,6 +487,7 @@ void CalcUpdt(int td_id)
                     if (Qblock.eles[j * K + k] + 1 == Qblock.eles[j * K + k] - 1)
                     {
                         printf("p %d q %d  error =%lf i=%d j=%d k=%d\n", p_block_idx, q_block_idx, error, i, j, k );
+                        getchar();
 
                     }
                 }

@@ -402,8 +402,8 @@ void CalcUpdt(int td_id)
         {
             printf("enter CalcUpdt\n");
             int times_thresh = 200;
-            int row_sta_idx = Pblock.sta_idx;
-            int col_sta_idx = Qblock.sta_idx;
+            int row_sta_idx = Pblocks[p_block_idx].sta_idx;
+            int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
             size_t ctsz;
             rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();

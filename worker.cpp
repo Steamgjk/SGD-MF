@@ -234,7 +234,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
-            //printf("has Received\n");
+            printf("has Received\n");
             if (!isstart)
             {
                 isstart = true;
@@ -248,12 +248,14 @@ int main(int argc, const char * argv[])
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
             submf();
-            //printf("after submf\n");
+            printf("after submf\n");
             iter_cnt++;
+            /*
             if (iter_cnt % 10 == 0)
             {
                 WriteLog(Pblock, Qblock, iter_cnt);
             }
+            **/
             if (iter_cnt == thresh_log )
             {
                 gettimeofday(&stop, 0);
@@ -496,7 +498,7 @@ void CalcUpdt(int td_id)
                     }
                 }
             }
-            printf("Fini %d\n", td_id);
+            //printf("Fini %d\n", td_id);
             StartCalcUpdt[td_id] = false;
 
 
@@ -812,6 +814,7 @@ void recvTd(int recv_thread_id)
     printf("[Td:%d] worker get connection\n", recv_thread_id);
     while (1 == 1)
     {
+        printf("recv loop\n");
         struct timeval st, et;
 
         gettimeofday(&st, 0);

@@ -408,11 +408,12 @@ void CalcUpdt(int td_id)
             size_t ctsz;
             rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
-            if (rtsz == 0)
+            if (rtsz == 0 || ctsz == 0)
             {
-                printf("p %d q %d\n", p_block_idx, q_block_idx );
-                getchar();
-                exit(0);
+                printf("empty p %d q %d\n", p_block_idx, q_block_idx );
+                StartCalcUpdt[td_id] = false;
+                continue;
+                //exit(0);
             }
             int rand_idx = -1;
             while (times_thresh--)

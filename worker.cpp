@@ -336,6 +336,7 @@ void LoadData()
         }
         cnt = 0;
         long ridx, cidx;
+
         while (!ifs.eof())
         {
             hash_id = -1;

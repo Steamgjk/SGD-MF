@@ -446,6 +446,11 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     Pblocks[p_block_idx].eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+                    if (Pblock.eles[i * K + k] + 1 == Pblock.eles[i * K + k] - 1)
+                    {
+                        printf("p %d q %d  error =%lf i=%d j=%d k=%d rand_idx=%d vale=%lf pvale=%lf  qvalue=%lf\n", p_block_idx, q_block_idx, error, i, j, k, rand_idx,  rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx], oldP[i * K + k], oldQ[j * K + k] );
+                        getchar();
+                    }
                 }
                 cnt++;
             }
@@ -473,6 +478,12 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     Qblocks[q_block_idx].eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+                    if (Qblock.eles[j * K + k] + 1 == Qblock.eles[j * K + k] - 1)
+                    {
+                        printf("p %d q %d  error =%lf i=%d j=%d k=%d rand_idx=%d vale=%lf pvale=%lf  qvalue=%lf\n", p_block_idx, q_block_idx, error, i, j, k, rand_idx,  rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx], oldP[i * K + k], oldQ[j * K + k] );
+                        getchar();
+
+                    }
                 }
                 cnt++;
 
@@ -848,6 +859,27 @@ void SGD_MF()
 
     oldP = Pblocks[p_block_idx].eles;
     oldQ = Qblocks[q_block_idx].eles;
+    for (int i = 0; i < Psz; i++)
+    {
+        if (oldP[i] > 100 || oldP[i] < -100)
+        {
+            printf("P Exception! [%d] %lf\n", i, oldP[i]);
+            getchar();
+        }
+
+    }
+    printf("comere hhe\n");
+    for (int i = 0; i < Qsz; i++)
+    {
+        if (oldQ[i] > 100 || oldQ[i] < -100)
+        {
+            printf("Q Exception! [%d] %lf\n", i, oldQ[i]);
+            getchar();
+        }
+
+    }
+
+
 
     {
 

@@ -340,9 +340,9 @@ void LoadData()
         while (!ifs.eof())
         {
             hash_id = -1;
+            ifs >> hash_id >> rate;
             if (hash_id >= 0)
             {
-                ifs >> hash_id >> rate;
                 ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
                 cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
 

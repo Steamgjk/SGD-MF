@@ -400,8 +400,8 @@ void CalcUpdt(int td_id)
 
         if (StartCalcUpdt[td_id])
         {
-            printf("enter CalcUpdt\n");
-            int times_thresh = 200;
+            //printf("enter CalcUpdt\n");
+            int times_thresh = 100;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;

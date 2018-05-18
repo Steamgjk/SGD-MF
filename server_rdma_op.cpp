@@ -465,13 +465,6 @@ int disconnect_and_cleanup()
 }
 
 
-void usage()
-{
-	printf("Usage:\n");
-	printf("rdma_server: [-a <server_addr>] [-p <server_port>]\n");
-	printf("(default port is %d)\n", DEFAULT_RDMA_PORT);
-	exit(1);
-}
 
 int server_test_main(int argc, char **argv)
 {

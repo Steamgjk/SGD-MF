@@ -277,9 +277,7 @@ int client_send_metadata_to_server()
 	client_src_mr = rdma_buffer_register(pd,
 	                                     src,
 	                                     BLOCK_SZ,
-	                                     (IBV_ACCESS_LOCAL_WRITE |
-	                                      IBV_ACCESS_REMOTE_READ |
-	                                      IBV_ACCESS_REMOTE_WRITE));
+	                                     (IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE));
 	if (!client_src_mr)
 	{
 		rdma_error("Failed to register the first buffer, ret = %d \n", ret);
@@ -485,13 +483,6 @@ int client_disconnect_and_clean()
 	return 0;
 }
 
-void usage()
-{
-	printf("Usage:\n");
-	printf("rdma_client: [-a <server_addr>] [-p <server_port>] -s string (required)\n");
-	printf("(default IP is 127.0.0.1 and port is %d)\n", DEFAULT_RDMA_PORT);
-	exit(1);
-}
 
 int test_main(int argc, char **argv)
 {

@@ -160,10 +160,10 @@ bool canSend = false;
 bool hasRecved = false;
 int block_seq[SEQ_LEN];
 
-
+/*
 double yita = 0.003;
 double theta = 0.01;
-
+**/
 /* Jumbo **/
 double yita = 0.002;
 double theta = 0.05;

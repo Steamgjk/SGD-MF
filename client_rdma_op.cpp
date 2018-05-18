@@ -87,6 +87,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to receive a valid event, ret = %d \n", ret);
 		return ret;
 	}
+	printf("ack event\n");
 	/* we ack the event */
 	ret = rdma_ack_cm_event(cm_event);
 	if (ret)
@@ -94,7 +95,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to acknowledge the CM event, errno: %d\n", -errno);
 		return -errno;
 	}
-	debug("RDMA address is resolved \n");
+	printf("RDMA address is resolved \n");
 
 	/* Resolves an RDMA route to the destination address in order to
 	 * establish a connection */
@@ -104,7 +105,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to resolve route, erno: %d \n", -errno);
 		return -errno;
 	}
-	debug("waiting for cm event: RDMA_CM_EVENT_ROUTE_RESOLVED\n");
+	printf("waiting for cm event: RDMA_CM_EVENT_ROUTE_RESOLVED\n");
 	ret = process_rdma_cm_event(cm_event_channel,
 	                            RDMA_CM_EVENT_ROUTE_RESOLVED,
 	                            &cm_event);

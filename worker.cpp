@@ -211,8 +211,7 @@ int main(int argc, const char * argv[])
         thresh_log = atoi(argv[2]);
     }
 
-    LoadData();
-    printf("Load Rating Success\n");
+
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -249,6 +248,8 @@ int main(int argc, const char * argv[])
         printf("%d  has detached\n", i );
     }
 
+    LoadData();
+    printf("Load Rating Success\n");
     int iter_cnt = 0;
     bool isstart = false;
     while (1 == 1)

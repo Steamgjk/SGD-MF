@@ -57,7 +57,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Creating cm event channel failed, errno: %d \n", -errno);
 		return -errno;
 	}
-	debug("RDMA CM event channel is created at : %p \n", cm_event_channel);
+	printf("RDMA CM event channel is created at : %p \n", cm_event_channel);
 	/* rdma_cm_id is the connection identifier (like socket) which is used
 	 * to define an RDMA connection.
 	 */
@@ -78,7 +78,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to resolve address, errno: %d \n", -errno);
 		return -errno;
 	}
-	debug("waiting for cm event: RDMA_CM_EVENT_ADDR_RESOLVED\n");
+	printf("waiting for cm event: RDMA_CM_EVENT_ADDR_RESOLVED\n");
 	ret  = process_rdma_cm_event(cm_event_channel,
 	                             RDMA_CM_EVENT_ADDR_RESOLVED,
 	                             &cm_event);
@@ -133,7 +133,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to alloc pd, errno: %d \n", -errno);
 		return -errno;
 	}
-	debug("pd allocated at %p \n", pd);
+	printf("pd allocated at %p \n", pd);
 	/* Now we need a completion channel, were the I/O completion
 	 * notifications are sent. Remember, this is different from connection
 	 * management (CM) event notifications.
@@ -147,7 +147,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		           -errno);
 		return -errno;
 	}
-	debug("completion event channel created at : %p \n", io_completion_channel);
+	printf("completion event channel created at : %p \n", io_completion_channel);
 	/* Now we create a completion queue (CQ) where actual I/O
 	 * completion metadata is placed. The metadata is packed into a structure
 	 * called struct ibv_wc (wc = work completion). ibv_wc has detailed

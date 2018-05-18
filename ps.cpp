@@ -629,7 +629,7 @@ void rdma_sendTd(int send_thread_id)
 
     get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
     server_sockaddr.sin_port = htons(remote_port);
-
+    printf("prepare conn\n");
     ret = client_prepare_connection(&server_sockaddr);
     if (ret)
     {
@@ -659,7 +659,11 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-
+    while (1 == 1)
+    {
+        printf("rdma_sendTd\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
 
     while (1 == 1)
     {
@@ -710,7 +714,12 @@ void rdma_recvTd(int recv_thread_id)
     char* buf = to_recv_block_mem + recv_thread_id * BLOCK_MEM_SZ * 2;
 
     int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
-    printf("before enter\n");
+
+    while (1 == 1)
+    {
+        printf("before enter rdma_recvTd\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
     while (1 == 1)
     {
         printf("recving ...\n");

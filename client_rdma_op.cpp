@@ -227,7 +227,7 @@ int client_pre_post_recv_buffer()
 		rdma_error("Failed to pre-post the receive buffer, errno: %d \n", ret);
 		return ret;
 	}
-	debug("Receive buffer pre-posting is successful \n");
+	printf("Receive buffer pre-posting is successful \n");
 	return 0;
 }
 

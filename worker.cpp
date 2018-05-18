@@ -230,8 +230,8 @@ int main(int argc, const char * argv[])
         std::thread recv_thread(recvTd, thread_id);
         recv_thread.detach();
     **/
-    //std::thread send_thread(rdma_sendTd, thread_id);
-    //send_thread.detach();
+    std::thread send_thread(rdma_sendTd, thread_id);
+    send_thread.detach();
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
@@ -998,8 +998,12 @@ void rdma_sendTd(int send_thread_id)
         return ret;
     }
 
-    printf("send....\n");
-    getchar();
+    while (1 == 1)
+    {
+        printf("recv loop\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+
     size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
     char*buf = NULL;
     while (1 == 1)
@@ -1036,8 +1040,11 @@ void rdma_recvTd(int recv_thread_id)
     int*flag = (int*)(void*)to_recv_block_mem;
     size_t offset = recv_thread_id * BLOCK_MEM_SZ;
 
-    printf("recv....\n");
-    getchar();
+    while (1 == 1)
+    {
+        printf("recv loop\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
 
     while (1 == 1)
     {

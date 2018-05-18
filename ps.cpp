@@ -226,17 +226,17 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     }
 
-    /*
 
-        int iter_t = 0;
 
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            worker_pidx[i] = i;
-            worker_qidx[i] = 3 - i;
-        }
-        struct timeval beg, ed;
-    **/
+    int iter_t = 0;
+
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        worker_pidx[i] = i;
+        worker_qidx[i] = 3 - i;
+    }
+    struct timeval beg, ed;
+
     while (1 == 1)
     {
         srand(time(0));

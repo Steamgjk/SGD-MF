@@ -1,7 +1,7 @@
 all: ps
 CC=g++
 LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm -std=c++11
-CFLAGS=-O2 -Wall -g 
+CFLAGS=-O2 -Wall -g -fpermissive
 
 server_rdma_op.o: server_rdma_op.cpp
 	$(CC) $(CFLAGS) -c server_rdma_op.cpp

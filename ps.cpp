@@ -734,7 +734,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("successful rece one Block data_ele=%d", pb->ele_num);
 
 
-        struct Block * pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
+        pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
 
         while (pb->block_id < 0)
         {

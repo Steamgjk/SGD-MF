@@ -365,7 +365,7 @@ int client_remote_memory_ops()
 	rdma_write_wr.wr.rdma.remote_addr = server_metadata_attr.address;
 	rdma_write_wr.wr.rdma.rkey = server_metadata_attr.stag.local_stag;
 	int cnt = 0;
-	int* tmp_int = (void*)src;
+	int* tmp_int = (int*)(void*)src;
 	*tmp_int = 0;
 	debug("Trying to perform RDMA write... tmp_int=%d\n", *tmp_int);
 	getchar();

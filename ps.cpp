@@ -167,45 +167,41 @@ int main(int argc, const char * argv[])
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
+    /*
 
-
-
-
-
-
-
-    //gen P and Q
-    if (argc == 2)
-    {
-        WORKER_NUM = atoi(argv[1]) ;
-    }
-    srand(1);
-    //LoadTestRating();
-    //printf("Load Complete\n");
-    partitionP(WORKER_NUM, Pblocks);
-    partitionQ(WORKER_NUM, Qblocks);
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        for (int j = 0; j < Pblocks[i].ele_num; j++)
+        //gen P and Q
+        if (argc == 2)
         {
-            //Pblocks[i].eles[j] = drand48() * 0.6;
-            Pblocks[i].eles[j] = drand48() * 0.6;
+            WORKER_NUM = atoi(argv[1]) ;
         }
-        for (int j = 0; j < Qblocks[i].ele_num; j++)
+        srand(1);
+        //LoadTestRating();
+        //printf("Load Complete\n");
+        partitionP(WORKER_NUM, Pblocks);
+        partitionQ(WORKER_NUM, Qblocks);
+        for (int i = 0; i < WORKER_NUM; i++)
         {
-            //Qblocks[i].eles[j] = drand48() * 0.6;
-            Qblocks[i].eles[j] = drand48() * 0.6;
+            for (int j = 0; j < Pblocks[i].ele_num; j++)
+            {
+                //Pblocks[i].eles[j] = drand48() * 0.6;
+                Pblocks[i].eles[j] = drand48() * 0.6;
+            }
+            for (int j = 0; j < Qblocks[i].ele_num; j++)
+            {
+                //Qblocks[i].eles[j] = drand48() * 0.6;
+                Qblocks[i].eles[j] = drand48() * 0.6;
+            }
         }
-    }
 
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        canSend[i] = false;
-    }
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = worker_qidx[i] = i;
-    }
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            canSend[i] = false;
+        }
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            worker_pidx[i] = worker_qidx[i] = i;
+        }
+        **/
     /*
     for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
     {
@@ -230,17 +226,17 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     }
 
+    /*
 
+        int iter_t = 0;
 
-    int iter_t = 0;
-
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = i;
-        worker_qidx[i] = 3 - i;
-    }
-    struct timeval beg, ed;
-
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            worker_pidx[i] = i;
+            worker_qidx[i] = 3 - i;
+        }
+        struct timeval beg, ed;
+    **/
     while (1 == 1)
     {
         srand(time(0));

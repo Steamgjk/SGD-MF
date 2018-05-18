@@ -1,8 +1,8 @@
 all: ps
 CC=g++
 TARGET = ps
-LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm -std=c++11
-CFLAGS=-O2 -Wall -g -fpermissive
+LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm
+CFLAGS=-O2 -Wall -g -fpermissive -std=C++11
 OBJS=ps.o server_rdma_op.o client_rdma_op.o rdma_common.o
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)

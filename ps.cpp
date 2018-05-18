@@ -646,8 +646,7 @@ void rdma_sendTd(int send_thread_id)
 
     while (1 == 1)
     {
-        ret = start_remote_write(10);
-        getchar();
+        //ret = start_remote_write(10);
     }
     if (ret)
     {
@@ -668,7 +667,7 @@ void rdma_recvTd(int recv_thread_id)
     {
         if ( (*flag) > 0)
         {
-            printf("ok flag=%d\n", (*flag) );
+            printf("ok Irecv flag=%d\n", (*flag) );
             double*data = (double*)(void*)(to_recv_block_mem + sizeof(int));
             for (int i = 0; i < *flag; i++)
             {

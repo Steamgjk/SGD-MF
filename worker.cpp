@@ -1014,7 +1014,7 @@ void rdma_sendTd(int send_thread_id)
     printf("send to loop\n");
     while (1 == 1)
     {
-        printf("in sendTd canSend=%d\n", canSend );
+        //printf("in sendTd canSend=%d\n", canSend );
         if (canSend)
         {
             printf("going to send\n");

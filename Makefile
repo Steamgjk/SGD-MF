@@ -10,7 +10,7 @@ OBJS1=worker.o server_rdma_op.o client_rdma_op.o rdma_common.o
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 $(TARGET1): $(OBJS1)
-	$(CC) $(CFLAGS) -o $(TARGET1) $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(TARGET1) $(OBJS1) $(LIBS)
 worker.o: worker.cpp
 	$(CC) $(CFLAGS) -c worker.cpp
 ps.o: ps.cpp

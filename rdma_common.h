@@ -41,7 +41,7 @@
 #ifdef ACN_RDMA_DEBUG
 /* Debug Macro */
 #define debug(msg, args...) do {\
-    printf("DEBUG: "msg, ## args);\
+    printf("DEBUG: "msg, ##args);\
 }while(0);
 
 #else

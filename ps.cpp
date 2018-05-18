@@ -608,7 +608,7 @@ void recvTd(int recv_thread_id)
         free(sockBuf);
         free(dataBuf);
 
-        printf("successful rece one Block\n");
+        printf("successful rece one Block data_sz = %ld block_sz=%ld\n", data_sz, expected_len);
         expected_len = sizeof(Block);
         sockBuf = (char*)malloc(expected_len);
         cur_len = 0;

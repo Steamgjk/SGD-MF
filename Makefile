@@ -7,10 +7,10 @@ server_rdma_op.o: server_rdma_op.cpp
 	$(CC) $(CFLAGS) -c server_rdma_op.cpp
 client_rdma_op.o: client_rdma_op.cpp
 	$(CC) $(CFLAGS) -c client_rdma_op.cpp 
-rdma_common.o: rdma_common.c
-	$(CC) $(CFLAGS) -c rdma_common.c
+rdma_common.o: rdma_common.cpp
+	$(CC) $(CFLAGS) -c rdma_common.cpp
 ps.o: ps.cpp
-	$(CC) $(CFLAGS) ps.o server_rdma_op.o client_rdma_op.o rdma_common.o  -o ps $(LIBS)
+	$(CC) $(CFLAGS) ps.o server_rdma_op.o client_rdma_op.o rdma_common.o $(LIBS)
 
 clean:
 	rm -rf *.o  *~

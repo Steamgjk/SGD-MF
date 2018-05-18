@@ -236,8 +236,23 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
+    int* flag = (int*)(void*)to_send_block_mem;
+    *flag = 10;
+    char* data_ptr = (to_send_block_mem + sizeof(int));
+    double*send_buf = (double*)(void*)data_ptr;
+    for (int i = 0; i < 10; i++)
+    {
+        send_buf[i] = drand48();
+        printf("%lf\t", send_buf[i]);
+    }
+    printf("\n");
+    getchar();
+    canSend = true;
+    printf("canSend\n");
     while (1 == 1)
     {
+
+
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
@@ -998,14 +1013,23 @@ void rdma_sendTd(int send_thread_id)
 
     while (1 == 1)
     {
-        ret = start_remote_write();
-        getchar();
+        if (canSend)
+        {
+
+            ret = start_remote_write();
+            if (ret)
+            {
+                rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
+                return ret;
+            }
+            else
+            {
+                printf("write ok\n");
+            }
+        }
+
     }
-    if (ret)
-    {
-        rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
-        return ret;
-    }
+
     return ret;
 
 

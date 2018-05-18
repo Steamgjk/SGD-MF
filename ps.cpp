@@ -173,8 +173,10 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(rdma_recvTd, 2);
     recv_thread.detach();
+
     while (1 == 1)
     {
+
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
@@ -661,6 +663,7 @@ void rdma_recvTd(int recv_thread_id)
     printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
     int*flag = (int*)(void*)to_recv_block_mem;
+    *flag = 0;
     while (1 == 1)
     {
         if ( (*flag) > 0)

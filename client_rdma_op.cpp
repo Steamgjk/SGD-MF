@@ -478,7 +478,7 @@ int client_remote_memory_ops()
 	return 0;
 }
 
-int start_remote_write()
+int start_remote_write(int len)
 {
 	int ret = -1;
 
@@ -493,7 +493,9 @@ int start_remote_write()
 	// The remote address is set below in rdma_write_wr.wr.rdma.remote_addr.
 	struct ibv_sge rdma_write_sge;
 	rdma_write_sge.addr = (uint64_t)client_src_mr->addr;
-	rdma_write_sge.length = client_src_mr->length;
+	//rdma_write_sge.length = client_src_mr->length;
+	rdma_write_sge.length = len;
+	printf("len is changed to %d\n", len );
 	rdma_write_sge.lkey = client_src_mr->lkey;
 
 	// Create work request to send to local CA.

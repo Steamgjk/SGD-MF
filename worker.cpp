@@ -36,7 +36,8 @@ using namespace std;
 #define GROUP_NUM 1
 #define DIM_NUM 8
 
-#define MEM_SIZE (25000000*4)
+#define BLOCK_MEM_SZ (25000000)
+#define MEM_SIZE (BLOCK_MEM_SZ*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
@@ -50,19 +51,21 @@ char* to_recv_block_mem;
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
 
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
+**/
 
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
+
 
 #define WORKER_NUM 1
 char* remote_ips[10] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
@@ -70,8 +73,6 @@ int remote_ports[10] = {4411, 4412, 4413, 4414};
 
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
-
-
 
 
 #define ThreshIter 1000
@@ -163,10 +164,10 @@ int block_seq[SEQ_LEN];
 double yita = 0.003;
 double theta = 0.01;
 
-/* Jumbo
+/* Jumbo **/
 double yita = 0.002;
 double theta = 0.05;
-**/
+
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
@@ -205,105 +206,80 @@ int main(int argc, const char * argv[])
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
-    canSend = false;
     if (argc >= 3)
     {
         thresh_log = atoi(argv[2]);
     }
-    /*
-        LoadData();
-        printf("Load Rating Success\n");
 
-        StartCalcUpdt.resize(WORKER_THREAD_NUM);
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
-        {
-            StartCalcUpdt[i] = false;
-        }
+    LoadData();
+    printf("Load Rating Success\n");
 
-        memset(&start, 0, sizeof(struct timeval));
-        memset(&stop, 0, sizeof(struct timeval));
-        memset(&diff, 0, sizeof(struct timeval));
-
-    **/
+    StartCalcUpdt.resize(WORKER_THREAD_NUM);
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        StartCalcUpdt[i] = false;
+    }
+    canSend = false;
+    memset(&start, 0, sizeof(struct timeval));
+    memset(&stop, 0, sizeof(struct timeval));
+    memset(&diff, 0, sizeof(struct timeval));
     /*
         std::thread send_thread(sendTd, thread_id);
         send_thread.detach();
 
         std::thread recv_thread(recvTd, thread_id);
         recv_thread.detach();
-        **/
+    **/
     std::thread send_thread(rdma_sendTd, thread_id);
     send_thread.detach();
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
-    /*
-    int* flag = (int*)(void*)to_send_block_mem;
-    *flag = 10;
-    char* data_ptr = (to_send_block_mem + sizeof(int));
-    double*send_buf = (double*)(void*)data_ptr;
-    for (int i = 0; i < 10; i++)
+
+    std::vector<thread> td_vec;
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
-        send_buf[i] = drand48();
-        printf("%lf\t", send_buf[i]);
+        //std::thread td(CalcUpdt, i);
+        td_vec.push_back(std::thread(CalcUpdt, i));
     }
-    printf("\n");
-    **/
-    memcpy(to_send_block_mem, "abcdefghijklmnopqrstuvwxyz", 27);
-    canSend = true;
-    printf("canSend=%d\n", canSend);
+    //printf("come here\n");
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        td_vec[i].detach();
+        printf("%d  has detached\n", i );
+    }
+
+    int iter_cnt = 0;
+    bool isstart = false;
     while (1 == 1)
     {
 
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-
-    /*
-        std::vector<thread> td_vec;
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        if (hasRecved)
         {
-            //std::thread td(CalcUpdt, i);
-            td_vec.push_back(std::thread(CalcUpdt, i));
-        }
-        //printf("come here\n");
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
-        {
-            td_vec[i].detach();
-            printf("%d  has detached\n", i );
-        }
-
-        int iter_cnt = 0;
-        bool isstart = false;
-        while (1 == 1)
-        {
-
-            if (hasRecved)
+            printf("has Received\n");
+            if (!isstart)
             {
-                printf("has Received\n");
-                if (!isstart)
-                {
-                    isstart = true;
-                    gettimeofday(&start, 0);
-                }
+                isstart = true;
+                gettimeofday(&start, 0);
+            }
 
-                //SGD
-                int row_sta_idx = Pblock.sta_idx;
-                int row_len = Pblock.height;
-                int col_sta_idx = Qblock.sta_idx;
-                int col_len = Qblock.height;
-                int ele_num = row_len * col_len;
-                submf();
-                printf("after submf\n");
-                iter_cnt++;
-                **/
-    /*
-    if (iter_cnt % 10 == 0)
-    {
-        WriteLog(Pblock, Qblock, iter_cnt);
-    }
-    **/
-    /*
+            //SGD
+            int row_sta_idx = Pblock.sta_idx;
+            int row_len = Pblock.height;
+            int col_sta_idx = Qblock.sta_idx;
+            int col_len = Qblock.height;
+            int ele_num = row_len * col_len;
+            submf();
+            printf("after submf\n");
+            iter_cnt++;
+
+            /*
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblock, Qblock, iter_cnt);
+            }
+            **/
+
             if (iter_cnt == thresh_log )
             {
                 gettimeofday(&stop, 0);
@@ -318,7 +294,7 @@ int main(int argc, const char * argv[])
 
         }
     }
-    **/
+
 }
 void LoadRmatrix(int file_no, map<long, double>& myMap)
 {
@@ -1013,33 +989,34 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-    printf("send to loop\n");
-    getchar();
-    printf("here canSend=%d\n", canSend);
+
+    size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
+    char*buf = NULL;
     while (1 == 1)
     {
-        //printf("in sendTd canSend=%d\n", canSend );
         if (canSend)
         {
-            printf("going to write\n");
-            int len = 27;
-            ret = start_remote_write(len);
-            if (ret)
-            {
-                rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
-                return ret;
-            }
-            else
-            {
-                printf("write ok\n");
-            }
+            buf = to_send_block_mem;
+            size_t struct_sz = sizeof(Block);
+            size_t data_sz = sizeof(double) * Pblock.ele_num;
+            memcpy(buf, &(Pblock), struct_sz);
+            memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
+            size_t total_len = struct_sz + data_sz;
+            struct timeval st, et, tspan;
+            ret = start_remote_write(total_len, 0);
+            printf("writer one block\n");
+
+            buf = to_send_block_mem + BLOCK_MEM_SZ;
+            data_sz = sizeof(double) * Qblock.ele_num;
+            total_len = struct_sz + data_sz;
+            memcpy(buf, &(Qblock), struct_sz);
+            memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
+
+            ret = start_remote_write(total_len, BLOCK_MEM_SZ);
+            printf("writer another block\n");
             canSend = false;
         }
-
     }
-
-    return ret;
-
 
 }
 void rdma_recvTd(int recv_thread_id)
@@ -1047,19 +1024,65 @@ void rdma_recvTd(int recv_thread_id)
     printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
     int*flag = (int*)(void*)to_recv_block_mem;
+    size_t offset = recv_thread_id * BLOCK_MEM_SZ;
     while (1 == 1)
     {
-        /*
-        if ( (*flag) > 0)
+        printf("recv loop\n");
+        struct timeval st, et;
+        gettimeofday(&st, 0);
+        size_t struct_sz = sizeof(Pblock);
+
+        struct Block* pb = (struct Block*)(void*)to_recv_block_mem;
+        while (pb->block_id < 0)
         {
-            printf("ok flag=%d\n", (*flag) );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        else
+        Pblock.block_id = pb->block_id;
+        Pblock.data_age = pb->data_age;
+        Pblock.sta_idx = pb->sta_idx;
+        Pblock.height = pb->height;
+        Pblock.ele_num = pb->ele_num;
+        Pblock.eles.resize(pb->ele_num);
+
+        double* data_eles = (double*)(void*) (to_recv_block_mem + struct_sz);
+        for (int i = 0; i < Pblock.ele_num; i++)
         {
-            printf("flag=%d\n", (*flag) );
+            Pblock.eles[i] = data_eles[i];
+            if (Pblock.eles[i] > 100 || Pblock.eles[i] < -100 )
+            {
+                printf("P Exception!\n");
+            }
         }
-        **/
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+
+        struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
+        while (pb->block_id < 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        Qblock.block_id = qb->block_id;
+        Qblock.data_age = qb->data_age;
+        Qblock.sta_idx = qb->sta_idx;
+        Qblock.height = qb->height;
+        Qblock.ele_num = qb-> ele_num;
+        Qblock.eles.resize(qb->ele_num);
+        printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
+        data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
+        for (int i = 0; i < Qblock.ele_num; i++)
+        {
+            Qblock.eles[i] = data_eles[i];
+            if (Qblock.eles[i] > 100 || Qblock.eles[i] < -100 )
+            {
+                printf("Q Exception!\n");
+            }
+        }
+
+        gettimeofday(&et, 0);
+        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+        printf("recv two blocks time = %lld\n", mksp);
+
+        hasRecved = true;
 
     }
 }

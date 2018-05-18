@@ -478,7 +478,7 @@ int client_remote_memory_ops()
 	return 0;
 }
 
-int start_remote_write(int len)
+int start_remote_write(size_t len, size_t offset)
 {
 	int ret = -1;
 

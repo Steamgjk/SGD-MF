@@ -47,7 +47,8 @@ using namespace std;
 #define M 65133
 #define K  40 //主题个数
 
-#define MEM_SIZE (25000000*4)
+#define BLOCK_MEM_SZ (25000000)
+#define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
@@ -167,85 +168,92 @@ int main(int argc, const char * argv[])
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
 
-    std::thread send_thread(rdma_sendTd, 2);
-    send_thread.detach();
 
 
-    std::thread recv_thread(rdma_recvTd, 2);
-    recv_thread.detach();
 
-    while (1 == 1)
+
+
+
+    //gen P and Q
+    if (argc == 2)
+    {
+        WORKER_NUM = atoi(argv[1]) ;
+    }
+    srand(1);
+    //LoadTestRating();
+    //printf("Load Complete\n");
+    partitionP(WORKER_NUM, Pblocks);
+    partitionQ(WORKER_NUM, Qblocks);
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        for (int j = 0; j < Pblocks[i].ele_num; j++)
+        {
+            //Pblocks[i].eles[j] = drand48() * 0.6;
+            Pblocks[i].eles[j] = drand48() * 0.6;
+        }
+        for (int j = 0; j < Qblocks[i].ele_num; j++)
+        {
+            //Qblocks[i].eles[j] = drand48() * 0.6;
+            Qblocks[i].eles[j] = drand48() * 0.6;
+        }
+    }
+
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        canSend[i] = false;
+    }
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        worker_pidx[i] = worker_qidx[i] = i;
+    }
+    /*
+    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+    {
+        std::thread send_thread(sendTd, send_thread_id);
+        send_thread.detach();
+    }
+    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+    {
+        std::thread recv_thread(recvTd, recv_thread_id);
+        recv_thread.detach();
+    }
+    **/
+    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+    {
+        std::thread send_thread(rdma_sendTd, send_thread_id);
+        send_thread.detach();
+    }
+    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
     {
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::thread recv_thread(rdma_recvTd, recv_thread_id);
+        recv_thread.detach();
     }
 
 
-    /*
-        //gen P and Q
-        if (argc == 2)
-        {
-            WORKER_NUM = atoi(argv[1]) ;
-        }
-        srand(1);
-        //LoadTestRating();
-        //printf("Load Complete\n");
-        partitionP(WORKER_NUM, Pblocks);
-        partitionQ(WORKER_NUM, Qblocks);
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            for (int j = 0; j < Pblocks[i].ele_num; j++)
-            {
-                //Pblocks[i].eles[j] = drand48() * 0.6;
-                Pblocks[i].eles[j] = drand48() * 0.6;
-            }
-            for (int j = 0; j < Qblocks[i].ele_num; j++)
-            {
-                //Qblocks[i].eles[j] = drand48() * 0.6;
-                Qblocks[i].eles[j] = drand48() * 0.6;
-            }
-        }
 
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            canSend[i] = false;
-        }
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            worker_pidx[i] = worker_qidx[i] = i;
-        }
-        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
-        {
-            std::thread send_thread(sendTd, send_thread_id);
-            send_thread.detach();
-        }
-        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
-        {
-            std::thread recv_thread(recvTd, recv_thread_id);
-            recv_thread.detach();
-        }
-        int iter_t = 0;
+    int iter_t = 0;
 
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            worker_pidx[i] = i;
-            worker_qidx[i] = 3 - i;
-        }
-        struct timeval beg, ed;
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        worker_pidx[i] = i;
+        worker_qidx[i] = 3 - i;
+    }
+    struct timeval beg, ed;
 
-        while (1 == 1)
-        {
-            srand(time(0));
-            bool ret = false;
-            random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
-            **/
-    /*
-            for (int i = 0; i < WORKER_NUM; i++)
-            {
-                printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-            }
-    **/
-    /*
+    while (1 == 1)
+    {
+        srand(time(0));
+        bool ret = false;
+        random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
+
+        /*
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+                }
+        **/
+
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
@@ -290,7 +298,7 @@ int main(int argc, const char * argv[])
             }
         }
     }
-    **/
+
     return 0;
 }
 
@@ -637,22 +645,56 @@ void rdma_sendTd(int send_thread_id)
         return ret;
     }
     printf("connect  ok\n");
-    ret = client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
+
+    size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
+    char* buf = to_send_block_mem + offset;
+    ret = client_send_metadata_to_server1(buf, BLOCK_MEM_SZ * 2);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
 
+
     while (1 == 1)
     {
-        //ret = start_remote_write(10);
+        //
+        if (canSend[send_thread_id])
+        {
+            int pbid = worker_pidx[send_thread_id];
+            int qbid = worker_qidx[send_thread_id];
+            size_t struct_sz = sizeof( Pblocks[pbid]);
+            size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
+            size_t total_len = struct_sz + data_sz;
+            memcpy(buf, &(Pblocks[pbid]), struct_sz);
+            memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
+
+            ret = start_remote_write(total_len, 0);
+            if (ret == 0)
+            {
+                printf("sendok onePblock\n");
+            }
+            else
+            {
+                printf("fail ret=%d\n", ret );
+            }
+
+            struct_sz = sizeof( Qblocks[qbid]);
+            data_sz = sizeof(double) * Qblocks[qbid].eles.size();
+            total_len = struct_sz + data_sz;
+
+            memcpy(buf + BLOCK_MEM_SZ, &(Qblocks[qbid]), struct_sz);
+            memcpy(buf + BLOCK_MEM_SZ + struct_sz , (char*) & (Qblocks[qbid].eles[0]), data_sz);
+
+            ret = start_remote_write(total_len, BLOCK_MEM_SZ);
+            if (ret == 0 )
+            {
+                printf("[Td:%d] send success qbid=%d ret =%d\n", send_thread_id, qbid, ret);
+            }
+            canSend[send_thread_id] = false;
+        }
     }
-    if (ret)
-    {
-        rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
-        return ret;
-    }
+
     return ret;
 
 
@@ -660,33 +702,62 @@ void rdma_sendTd(int send_thread_id)
 void rdma_recvTd(int recv_thread_id)
 {
     printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
-    int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
-    int*flag = (int*)(void*)to_recv_block_mem;
-    *flag = 0;
+    char* buf = to_recv_block_mem + recv_thread_id * BLOCK_MEM_SZ * 2;
+
+    int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
+
     while (1 == 1)
     {
-        for (int i = 0; i < 27; i++)
-        {
-            printf("%c\t", to_recv_block_mem[i]);
-        }
-        getchar();
-        /*
-        if ( (*flag) > 0)
-        {
-            printf("ok Irecv flag=%d\n", (*flag) );
-            double*data = (double*)(void*)(to_recv_block_mem + sizeof(int));
-            for (int i = 0; i < *flag; i++)
-            {
-                printf("%lf\t", data[i]);
-            }
-            printf("\n");
-        }
-        else
-        {
-            printf("flag=%d\n", (*flag) );
-        }
-        **/
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        printf("recving ...\n");
+        struct timeval st, et, tspan;
+        gettimeofday(&st, 0);
+        struct Block * pb = (struct Block*)(void*)buf;
 
+        while (pb->block_id < 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        int block_idx = pb->block_id ;
+        Pblocks[block_idx].block_id = pb->block_id;
+        Pblocks[block_idx].sta_idx = pb->sta_idx;
+        Pblocks[block_idx].height = pb->height;
+        Pblocks[block_idx].ele_num = pb->ele_num;
+        Pblocks[block_idx].eles.resize(pb->ele_num);
+        Pblocks[block_idx].isP = pb->isP;
+        size_t struct_sz = sizeof(Block);
+        double*data_eles = (double*)(void*) (buf + struct_sz);
+        for (int i = 0; i < pb->ele_num; i++)
+        {
+            Pblocks[block_idx].eles[i] = data_eles[i];
+        }
+
+        printf("successful rece one Block data_ele=%d", pb->ele_num);
+
+
+        struct Block * pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
+
+        while (pb->block_id < 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        block_idx = pb->block_id ;
+        Qblocks[block_idx].block_id = pb->block_id;
+        Qblocks[block_idx].sta_idx = pb->sta_idx;
+        Qblocks[block_idx].height = pb->height;
+        Qblocks[block_idx].ele_num = pb->ele_num;
+        Qblocks[block_idx].eles.resize(pb->ele_num);
+        Qblocks[block_idx].isP = pb->isP;
+        for (int i = 0; i < pb->ele_num; i++)
+        {
+            Qblocks[block_idx].eles[i] = data_eles[i];
+        }
+
+        printf("successful rece another Block\n");
+
+        gettimeofday(&et, 0);
+        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+        printf("recv success time = %lld\n", mksp );
+        recvCount++;
     }
 }

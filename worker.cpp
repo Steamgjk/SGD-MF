@@ -1015,8 +1015,8 @@ void rdma_sendTd(int send_thread_id)
     {
         if (canSend)
         {
-
-            ret = start_remote_write();
+            int len = sizeof(int) + 10 * sizeof(double);
+            ret = start_remote_write(len);
             if (ret)
             {
                 rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);

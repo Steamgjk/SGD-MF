@@ -646,7 +646,7 @@ void rdma_sendTd(int send_thread_id)
 
     while (1 == 1)
     {
-        ret = start_remote_write();
+        ret = start_remote_write(10);
         getchar();
     }
     if (ret)

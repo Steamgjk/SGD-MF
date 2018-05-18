@@ -225,76 +225,79 @@ int main(int argc, const char * argv[])
         std::thread recv_thread(rdma_recvTd, recv_thread_id);
         recv_thread.detach();
     }
-
-
-
-    int iter_t = 0;
-
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = i;
-        worker_qidx[i] = 3 - i;
-    }
-    struct timeval beg, ed;
-
     while (1 == 1)
     {
-        srand(time(0));
-        bool ret = false;
-        random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
-        /*
-                for (int i = 0; i < WORKER_NUM; i++)
-                {
-                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-                }
-        **/
+    }
+
+    /*
+        int iter_t = 0;
 
         for (int i = 0; i < WORKER_NUM; i++)
         {
-            canSend[i] = true;
+            worker_pidx[i] = i;
+            worker_qidx[i] = 3 - i;
         }
+        struct timeval beg, ed;
 
-        while (recvCount != WORKER_NUM)
+        while (1 == 1)
         {
-            cout << "RecvCount\t" << recvCount << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-
-        if (iter_t == 0)
-        {
-            gettimeofday(&beg, 0);
-        }
-        if (recvCount == WORKER_NUM)
-        {
-            if (iter_t % 10 == 0)
+            srand(time(0));
+            bool ret = false;
+            random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
+    **/
+    /*
+            for (int i = 0; i < WORKER_NUM; i++)
             {
-                gettimeofday(&ed, 0);
+                printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+            }
+    **/
+    /*
+            for (int i = 0; i < WORKER_NUM; i++)
+            {
+                canSend[i] = true;
+            }
 
-                for (int bid = 0; bid < WORKER_NUM; bid++)
+            while (recvCount != WORKER_NUM)
+            {
+                cout << "RecvCount\t" << recvCount << endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+
+            if (iter_t == 0)
+            {
+                gettimeofday(&beg, 0);
+            }
+            if (recvCount == WORKER_NUM)
+            {
+                if (iter_t % 10 == 0)
                 {
+                    gettimeofday(&ed, 0);
 
-                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
+                    for (int bid = 0; bid < WORKER_NUM; bid++)
+                    {
+
+                        WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
+                    }
+
+
+                    time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+                    printf("%d\t%lld\n", iter_t, time_span[iter_t / 10] );
+
                 }
-
-
-                time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-                printf("%d\t%lld\n", iter_t, time_span[iter_t / 10] );
-
+                //printf("iter_t=%d\n", iter_t );
+                recvCount = 0;
             }
-            //printf("iter_t=%d\n", iter_t );
-            recvCount = 0;
-        }
-        iter_t++;
-        if (iter_t == 2000)
-        {
-            for (int i = 0; i < 200; i++)
+            iter_t++;
+            if (iter_t == 2000)
             {
-                printf("%lld\n", time_span[i] );
+                for (int i = 0; i < 200; i++)
+                {
+                    printf("%lld\n", time_span[i] );
+                }
             }
         }
-    }
-
+    **/
     return 0;
 }
 

@@ -13,3 +13,5 @@ int client_send_metadata_to_server();
 int client_remote_memory_ops();
 int client_disconnect_and_clean();
 void usage();
+
+#endif

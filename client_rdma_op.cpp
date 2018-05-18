@@ -514,7 +514,7 @@ int start_remote_write()
 	}
 
 
-	printf("FIN Performed RMDA write... tmp_int= %d\n", *tmp_int);
+	printf("FIN Performed RMDA write...\n");
 
 	if (ret)
 	{

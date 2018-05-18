@@ -10,6 +10,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr);
 int client_pre_post_recv_buffer();
 int client_connect_to_server();
 int client_send_metadata_to_server();
+int client_send_metadata_to_server1(void* send_buf, size_t send_sz);
 int client_remote_memory_ops();
 int client_disconnect_and_clean();
 

@@ -48,8 +48,8 @@ using namespace std;
 #define K  40 //主题个数
 
 #define MEM_SIZE (25000000*4)
-char* block_mem;
-
+char* to_send_block_mem;
+char* to_recv_block_mem;
 
 /*
 #define FILE_NAME "./data/TrainingMap-"
@@ -63,10 +63,6 @@ char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.1
 int local_ports[CAP] = {4411, 4412, 4413, 4414};
 char* remote_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int remote_ports[CAP] = {5511, 5512, 5513, 5514};
-
-
-
-
 
 double P[N][K];
 double Q[K][M];
@@ -155,6 +151,7 @@ void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
+int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz);
 atomic_int recvCount(0);
 bool canSend[CAP] = {false};
 int worker_pidx[CAP];
@@ -164,6 +161,8 @@ long long time_span[300];
 
 int main(int argc, const char * argv[])
 {
+
+
 
     //gen P and Q
     if (argc == 2)
@@ -272,7 +271,7 @@ int main(int argc, const char * argv[])
             }
         }
     }
-
+    ** /
     return 0;
 }
 
@@ -583,7 +582,7 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 
 
-int rdma_server_init()
+int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz)
 {
     int ret, option;
     struct sockaddr_in server_sockaddr;
@@ -591,8 +590,8 @@ int rdma_server_init()
     server_sockaddr.sin_family = AF_INET; /* standard IP NET address */
     server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY); /* passed address */
 
-    get_addr("12.12.10.16", (struct sockaddr*) &server_sockaddr);
-    server_sockaddr.sin_port = htons(DEFAULT_RDMA_PORT); /* use default port */
+    get_addr(local_ip, (struct sockaddr*) &server_sockaddr);
+    server_sockaddr.sin_port = htons(local_port); /* use default port */
 
     ret = start_rdma_server(&server_sockaddr);
     if (ret)
@@ -612,39 +611,97 @@ int rdma_server_init()
         rdma_error("Failed to handle client cleanly, ret = %d \n", ret);
         return ret;
     }
-    ret = send_server_metadata_to_client();
+    ret = send_server_metadata_to_client1(register_buf, register_sz);
     if (ret)
     {
         rdma_error("Failed to send server metadata to the client, ret = %d \n", ret);
         return ret;
     }
-    int* buf = (void*)block_mem[0];
+    /*
+        ret = disconnect_and_cleanup();
+        if (ret)
+        {
+            rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
+            return ret;
+        }
+        **/
+    return 0;
+}
+
+void rdma_sendTd(int send_thread_id)
+{
+    printf("send_thread_id=%d\n", send_thread_id);
+    char* remote_ip = remote_ips[send_thread_id];
+    int remote_port = remote_ports[send_thread_id];
+
+    struct sockaddr_in server_sockaddr;
+    int ret, option;
+    bzero(&server_sockaddr, sizeof server_sockaddr);
+    server_sockaddr.sin_family = AF_INET;
+    server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    /* buffers are NULL */
+    src = dst = NULL;
+    get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
+    server_sockaddr.sin_port = htons(remote_port);
+
+
+
+
+    ret = client_prepare_connection(&server_sockaddr);
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+    ret = client_pre_post_recv_buffer();
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+    ret = client_connect_to_server();
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+
+    ret = client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+
     while (1 == 1)
     {
-        printf("buf=%d\n", *buf);
-        if (*buf > 0 )
+        ret = start_remote_write();
+        getchar();
+    }
+    if (ret)
+    {
+        rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
+        return ret;
+    }
+    return ret;
+
+
+}
+void rdma_recvTd(int recv_thread_id)
+{
+    int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
+    int*flag = (int*)(void*)to_recv_block_mem;
+    while (1 == 1)
+    {
+        if ( (*flag) > 0)
         {
-            printf("recv=%d\n", *buf );
-            char* ddata = (void*)buf;
-            ddata = ddata + sizeof(int);
-            double* real_data = (void*)ddata;
-            for (int j = 0; j < *buf; j++)
-            {
-                printf("%lf", real_data[j]);
-            }
-            printf("\n");
+            printf("ok flag=%d\n", (*flag) );
         }
         else
         {
-            printf("no data\n");
+            printf("flag=%d\n", (*flag) );
         }
-        sleep(1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
     }
-    ret = disconnect_and_cleanup();
-    if (ret)
-    {
-        rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
-        return ret;
-    }
-    return 0;
 }

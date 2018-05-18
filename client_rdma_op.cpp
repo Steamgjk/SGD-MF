@@ -330,6 +330,68 @@ int client_send_metadata_to_server()
 	return 0;
 }
 
+int client_send_metadata_to_server1(void* send_buf, size_t send_sz)
+{
+	struct ibv_wc wc[2];
+	int ret = -1;
+	//strlen-sizeof
+	client_src_mr = rdma_buffer_register(pd,
+	                                     send_buf,
+	                                     send_sz,
+	                                     (IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE));
+	if (!client_src_mr)
+	{
+		rdma_error("Failed to register the first buffer, ret = %d \n", ret);
+		return ret;
+	}
+	/* we prepare metadata for the first buffer */
+	client_metadata_attr.address = (uint64_t) client_src_mr->addr;
+	client_metadata_attr.length = client_src_mr->length;
+	client_metadata_attr.stag.local_stag = client_src_mr->lkey;
+	/* now we register the metadata memory */
+	client_metadata_mr = rdma_buffer_register(pd,
+	                     &client_metadata_attr,
+	                     sizeof(client_metadata_attr),
+	                     IBV_ACCESS_LOCAL_WRITE);
+	if (!client_metadata_mr)
+	{
+		rdma_error("Failed to register the client metadata buffer, ret = %d \n", ret);
+		return ret;
+	}
+	/* now we fill up SGE */
+	client_send_sge.addr = (uint64_t) client_metadata_mr->addr;
+	client_send_sge.length = (uint32_t) client_metadata_mr->length;
+	client_send_sge.lkey = client_metadata_mr->lkey;
+	/* now we link to the send work request */
+	bzero(&client_send_wr, sizeof(client_send_wr));
+	client_send_wr.sg_list = &client_send_sge;
+	client_send_wr.num_sge = 1;
+	client_send_wr.opcode = IBV_WR_SEND;
+	client_send_wr.send_flags = IBV_SEND_SIGNALED;
+	/* Now we post it */
+	ret = ibv_post_send(client_qp,
+	                    &client_send_wr,
+	                    &bad_client_send_wr);
+	if (ret)
+	{
+		rdma_error("Failed to send client metadata, errno: %d \n",
+		           -errno);
+		return -errno;
+	}
+	/* at this point we are expecting 2 work completion. One for our
+	 * send and one for recv that we will get from the server for
+	 * its buffer information */
+	ret = process_work_completion_events(io_completion_channel, wc, 2);
+	if (ret != 2)
+	{
+		rdma_error("We failed to get 2 work completions , ret = %d \n", ret);
+		return ret;
+	}
+	debug("Server sent us its buffer location and credentials, showing \n");
+	show_rdma_buffer_attr(&server_metadata_attr);
+	return 0;
+}
+
 /* This function does :
  * 1) Prepare memory buffers for RDMA operations
  * 1) RDMA write from src -> remote buffer
@@ -399,6 +461,60 @@ int client_remote_memory_ops()
 
 
 	debug("FIN Performed RMDA write... tmp_int= %d\n", *tmp_int);
+
+	if (ret)
+	{
+		rdma_error("Failed to do rdma write, errno: %d\n", -ret);
+		return -ret;
+	}
+
+	return 0;
+}
+
+int start_remote_write()
+{
+	int ret = -1;
+
+	struct ibv_send_wr *bad_wr = NULL;
+
+	/***************************
+	 * Send RDMA write request *
+	 ***************************/
+
+	// In RDMA write, the sge is used to tell the local CA what memory
+	// we want to transfer to the remote CA.
+	// The remote address is set below in rdma_write_wr.wr.rdma.remote_addr.
+	struct ibv_sge rdma_write_sge;
+	rdma_write_sge.addr = (uint64_t)client_src_mr->addr;
+	rdma_write_sge.length = client_src_mr->length;
+	rdma_write_sge.lkey = client_src_mr->lkey;
+
+	// Create work request to send to local CA.
+	struct ibv_send_wr rdma_write_wr;
+	bzero(&rdma_write_wr, sizeof(rdma_write_wr));
+	rdma_write_wr.sg_list = &rdma_write_sge;
+	rdma_write_wr.num_sge = 1;
+	rdma_write_wr.opcode = IBV_WR_RDMA_WRITE;
+	rdma_write_wr.wr.rdma.remote_addr = server_metadata_attr.address;
+	rdma_write_wr.wr.rdma.rkey = server_metadata_attr.stag.local_stag;
+
+	printf("Trying to perform RDMA write...\n");
+
+	//while (1 == 1)
+	{
+		ret = ibv_post_send(client_qp, &rdma_write_wr, &bad_wr);
+
+		if (ret == 12)
+		{
+			debug("ret = %d  cnt=%d *src =%d\n", ret, cnt, *src);
+			sleep(1);
+		}
+
+
+	}
+
+
+	printf("FIN Performed RMDA write... tmp_int= %d\n", *tmp_int);
 
 	if (ret)
 	{

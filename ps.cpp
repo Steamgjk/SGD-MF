@@ -639,13 +639,9 @@ void rdma_sendTd(int send_thread_id)
     bzero(&server_sockaddr, sizeof server_sockaddr);
     server_sockaddr.sin_family = AF_INET;
     server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    /* buffers are NULL */
-    src = dst = NULL;
+
     get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
     server_sockaddr.sin_port = htons(remote_port);
-
-
-
 
     ret = client_prepare_connection(&server_sockaddr);
     if (ret)

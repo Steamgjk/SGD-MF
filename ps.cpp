@@ -229,8 +229,8 @@ int main(int argc, const char * argv[])
     **/
     std::thread send_thread(rdma_sendTd, 2);
     send_thread.detach();
-    //std::thread recv_thread(rdma_recvTd, 2);
-    //recv_thread.detach();
+    std::thread recv_thread(rdma_recvTd, 2);
+    recv_thread.detach();
     while (1 == 1)
     {
 

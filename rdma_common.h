@@ -26,6 +26,9 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+#define BLOCK_SZ 25000000
+#define BLOCK_NUM 4
+
 #include <rdma/rdma_cma.h>
 #include <infiniband/verbs.h>
 

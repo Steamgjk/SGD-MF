@@ -665,7 +665,10 @@ void rdma_recvTd(int recv_thread_id)
     *flag = 0;
     while (1 == 1)
     {
-        printf("%s\n", to_recv_block_mem );
+        for (int i = 0; i < 27; i++)
+        {
+            printf("%c\t", to_recv_block_mem[i]);
+        }
         getchar();
         /*
         if ( (*flag) > 0)

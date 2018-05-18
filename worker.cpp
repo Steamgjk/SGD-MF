@@ -247,9 +247,8 @@ int main(int argc, const char * argv[])
         printf("%lf\t", send_buf[i]);
     }
     printf("\n");
-    getchar();
     canSend = true;
-    printf("canSend\n");
+    printf("canSend=%d\n", canSend);
     while (1 == 1)
     {
 
@@ -1012,12 +1011,14 @@ void rdma_sendTd(int send_thread_id)
         return ret;
     }
     printf("send to loop\n");
+    getchar();
+    printf("here canSend=%d\n", canSend);
     while (1 == 1)
     {
         //printf("in sendTd canSend=%d\n", canSend );
         if (canSend)
         {
-            printf("going to send\n");
+            printf("going to write\n");
             int len = sizeof(int) + 10 * sizeof(double);
             ret = start_remote_write(len);
             if (ret)

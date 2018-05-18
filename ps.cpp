@@ -162,71 +162,83 @@ long long time_span[300];
 int main(int argc, const char * argv[])
 {
 
+    std::thread send_thread(rdma_sendTd, 2);
+    send_thread.detach();
 
 
-    //gen P and Q
-    if (argc == 2)
-    {
-        WORKER_NUM = atoi(argv[1]) ;
-    }
-    srand(1);
-    //LoadTestRating();
-    //printf("Load Complete\n");
-    partitionP(WORKER_NUM, Pblocks);
-    partitionQ(WORKER_NUM, Qblocks);
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        for (int j = 0; j < Pblocks[i].ele_num; j++)
-        {
-            //Pblocks[i].eles[j] = drand48() * 0.6;
-            Pblocks[i].eles[j] = drand48() * 0.6;
-        }
-        for (int j = 0; j < Qblocks[i].ele_num; j++)
-        {
-            //Qblocks[i].eles[j] = drand48() * 0.6;
-            Qblocks[i].eles[j] = drand48() * 0.6;
-        }
-    }
-
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        canSend[i] = false;
-    }
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = worker_qidx[i] = i;
-    }
-    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
-    {
-        std::thread send_thread(sendTd, send_thread_id);
-        send_thread.detach();
-    }
-    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
-    {
-        std::thread recv_thread(recvTd, recv_thread_id);
-        recv_thread.detach();
-    }
-    int iter_t = 0;
-
-    for (int i = 0; i < WORKER_NUM; i++)
-    {
-        worker_pidx[i] = i;
-        worker_qidx[i] = 3 - i;
-    }
-    struct timeval beg, ed;
-
+    std::thread recv_thread(rdma_recvTd, 2);
+    recv_thread.detach();
     while (1 == 1)
     {
-        srand(time(0));
-        bool ret = false;
-        random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
-        /*
-                for (int i = 0; i < WORKER_NUM; i++)
-                {
-                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-                }
-        **/
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
 
+
+    /*
+        //gen P and Q
+        if (argc == 2)
+        {
+            WORKER_NUM = atoi(argv[1]) ;
+        }
+        srand(1);
+        //LoadTestRating();
+        //printf("Load Complete\n");
+        partitionP(WORKER_NUM, Pblocks);
+        partitionQ(WORKER_NUM, Qblocks);
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            for (int j = 0; j < Pblocks[i].ele_num; j++)
+            {
+                //Pblocks[i].eles[j] = drand48() * 0.6;
+                Pblocks[i].eles[j] = drand48() * 0.6;
+            }
+            for (int j = 0; j < Qblocks[i].ele_num; j++)
+            {
+                //Qblocks[i].eles[j] = drand48() * 0.6;
+                Qblocks[i].eles[j] = drand48() * 0.6;
+            }
+        }
+
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            canSend[i] = false;
+        }
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            worker_pidx[i] = worker_qidx[i] = i;
+        }
+        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+        {
+            std::thread send_thread(sendTd, send_thread_id);
+            send_thread.detach();
+        }
+        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+        {
+            std::thread recv_thread(recvTd, recv_thread_id);
+            recv_thread.detach();
+        }
+        int iter_t = 0;
+
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            worker_pidx[i] = i;
+            worker_qidx[i] = 3 - i;
+        }
+        struct timeval beg, ed;
+
+        while (1 == 1)
+        {
+            srand(time(0));
+            bool ret = false;
+            random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
+            **/
+    /*
+            for (int i = 0; i < WORKER_NUM; i++)
+            {
+                printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+            }
+    **/
+    /*
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
@@ -271,6 +283,7 @@ int main(int argc, const char * argv[])
             }
         }
     }
+    **/
     return 0;
 }
 

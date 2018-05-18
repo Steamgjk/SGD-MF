@@ -29,6 +29,9 @@
 #include <fstream>
 #include <sys/time.h>
 #include <map>
+
+#include "client_rdma_op.h"
+#include "server_rdma_op.h"
 using namespace std;
 #define GROUP_NUM 1
 #define DIM_NUM 8
@@ -162,6 +165,10 @@ double theta = 0.05;
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
+
+void rdma_sendTd(int send_thread_id);
+void rdma_recvTd(int recv_thread_id);
+
 //void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 //void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
 void submf();
@@ -194,68 +201,83 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
+    /*
+        LoadData();
+        printf("Load Rating Success\n");
 
-    LoadData();
-    printf("Load Rating Success\n");
+        StartCalcUpdt.resize(WORKER_THREAD_NUM);
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            StartCalcUpdt[i] = false;
+        }
 
-    StartCalcUpdt.resize(WORKER_THREAD_NUM);
-    for (int i = 0; i < WORKER_THREAD_NUM; i++)
-    {
-        StartCalcUpdt[i] = false;
-    }
+        memset(&start, 0, sizeof(struct timeval));
+        memset(&stop, 0, sizeof(struct timeval));
+        memset(&diff, 0, sizeof(struct timeval));
 
-    memset(&start, 0, sizeof(struct timeval));
-    memset(&stop, 0, sizeof(struct timeval));
-    memset(&diff, 0, sizeof(struct timeval));
+    **/
+    /*
+        std::thread send_thread(sendTd, thread_id);
+        send_thread.detach();
 
-    std::thread send_thread(sendTd, thread_id);
+        std::thread recv_thread(recvTd, thread_id);
+        recv_thread.detach();
+        **/
+    std::thread send_thread(rdma_sendTd, thread_id);
     send_thread.detach();
 
-    std::thread recv_thread(recvTd, thread_id);
+    std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
-
-    std::vector<thread> td_vec;
-    for (int i = 0; i < WORKER_THREAD_NUM; i++)
-    {
-        //std::thread td(CalcUpdt, i);
-        td_vec.push_back(std::thread(CalcUpdt, i));
-    }
-    //printf("come here\n");
-    for (int i = 0; i < WORKER_THREAD_NUM; i++)
-    {
-        td_vec[i].detach();
-        printf("%d  has detached\n", i );
-    }
-
-    int iter_cnt = 0;
-    bool isstart = false;
     while (1 == 1)
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
 
-        if (hasRecved)
+    /*
+        std::vector<thread> td_vec;
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            printf("has Received\n");
-            if (!isstart)
-            {
-                isstart = true;
-                gettimeofday(&start, 0);
-            }
+            //std::thread td(CalcUpdt, i);
+            td_vec.push_back(std::thread(CalcUpdt, i));
+        }
+        //printf("come here\n");
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            td_vec[i].detach();
+            printf("%d  has detached\n", i );
+        }
 
-            //SGD
-            int row_sta_idx = Pblock.sta_idx;
-            int row_len = Pblock.height;
-            int col_sta_idx = Qblock.sta_idx;
-            int col_len = Qblock.height;
-            int ele_num = row_len * col_len;
-            submf();
-            printf("after submf\n");
-            iter_cnt++;
-            /*
-            if (iter_cnt % 10 == 0)
+        int iter_cnt = 0;
+        bool isstart = false;
+        while (1 == 1)
+        {
+
+            if (hasRecved)
             {
-                WriteLog(Pblock, Qblock, iter_cnt);
-            }
-            **/
+                printf("has Received\n");
+                if (!isstart)
+                {
+                    isstart = true;
+                    gettimeofday(&start, 0);
+                }
+
+                //SGD
+                int row_sta_idx = Pblock.sta_idx;
+                int row_len = Pblock.height;
+                int col_sta_idx = Qblock.sta_idx;
+                int col_len = Qblock.height;
+                int ele_num = row_len * col_len;
+                submf();
+                printf("after submf\n");
+                iter_cnt++;
+                **/
+    /*
+    if (iter_cnt % 10 == 0)
+    {
+        WriteLog(Pblock, Qblock, iter_cnt);
+    }
+    **/
+    /*
             if (iter_cnt == thresh_log )
             {
                 gettimeofday(&stop, 0);
@@ -270,7 +292,7 @@ int main(int argc, const char * argv[])
 
         }
     }
-
+    **/
 }
 void LoadRmatrix(int file_no, map<long, double>& myMap)
 {
@@ -924,3 +946,77 @@ void recvTd(int recv_thread_id)
 }
 
 
+
+void rdma_sendTd(int send_thread_id)
+{
+    printf("send_thread_id=%d\n", send_thread_id);
+    char* remote_ip = remote_ips[send_thread_id];
+    int remote_port = remote_ports[send_thread_id];
+
+    struct sockaddr_in server_sockaddr;
+    int ret, option;
+    bzero(&server_sockaddr, sizeof server_sockaddr);
+    server_sockaddr.sin_family = AF_INET;
+    server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+    get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
+    server_sockaddr.sin_port = htons(remote_port);
+
+    ret = client_prepare_connection(&server_sockaddr);
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+    ret = client_pre_post_recv_buffer();
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+    ret = client_connect_to_server();
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+
+    ret = client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+
+    while (1 == 1)
+    {
+        ret = start_remote_write();
+        getchar();
+    }
+    if (ret)
+    {
+        rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
+        return ret;
+    }
+    return ret;
+
+
+}
+void rdma_recvTd(int recv_thread_id)
+{
+    int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
+    int*flag = (int*)(void*)to_recv_block_mem;
+    while (1 == 1)
+    {
+        if ( (*flag) > 0)
+        {
+            printf("ok flag=%d\n", (*flag) );
+        }
+        else
+        {
+            printf("flag=%d\n", (*flag) );
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    }
+}

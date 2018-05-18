@@ -38,17 +38,8 @@
 
 #define ACN_RDMA_DEBUG
 
-#ifdef ACN_RDMA_DEBUG
-/* Debug Macro */
-#define debug(msg, args...) do {\
-    printf("DEBUG: " msg, ##args);\
-}while(0);
-
-#else
-
 #define debug(msg, args...)
 
-#endif /* ACN_RDMA_DEBUG */
 
 /* Capacity of the completion queue (CQ) */
 #define CQ_CAPACITY (16)

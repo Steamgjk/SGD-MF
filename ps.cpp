@@ -28,6 +28,8 @@
 #include <fstream>
 #include <sys/time.h>
 #include <map>
+#include "server_rdma_op.h"
+#include "client_rdma_op.h"
 using namespace std;
 #define CAP 30
 //#define FILE_NAME "./netflix_row.txt"

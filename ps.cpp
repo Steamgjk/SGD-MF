@@ -45,6 +45,10 @@ using namespace std;
 #define M 65133
 #define K  40 //主题个数
 
+#define BLOCK_NUM 4
+#define BLOCK_SZ (25000000*BLOCK_NUM)
+char* block_mem;
+
 
 /*
 #define FILE_NAME "./data/TrainingMap-"
@@ -63,8 +67,6 @@ int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
 
 
-map<long, double> RMap;
-map<long, double> TestMap;
 double P[N][K];
 double Q[K][M];
 bool worker_debug = false;
@@ -152,8 +154,6 @@ void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
-void LoadRating();
-void LoadTestRating();
 atomic_int recvCount(0);
 bool canSend[CAP] = {false};
 int worker_pidx[CAP];
@@ -170,8 +170,8 @@ int main(int argc, const char * argv[])
         WORKER_NUM = atoi(argv[1]) ;
     }
     srand(1);
-    LoadTestRating();
-    printf("Load Complete\n");
+    //LoadTestRating();
+    //printf("Load Complete\n");
     partitionP(WORKER_NUM, Pblocks);
     partitionQ(WORKER_NUM, Qblocks);
     for (int i = 0; i < WORKER_NUM; i++)
@@ -304,63 +304,6 @@ void WriteLog(Block & Pb, Block & Qb, int iter_cnt)
     //getchar();
 }
 
-void LoadRating()
-{
-    char fn[100];
-    for (int f_no = 0; f_no < 64; f_no++)
-    {
-        sprintf(fn, "%s%d", FILE_NAME, f_no);
-        ifstream ifs(fn);
-        if (!ifs.is_open())
-        {
-            printf("fail to open the file %s\n", fn);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            RMap.insert(pair<long, double>(hash_idx, ra));
-            cnt++;
-            if (cnt % 1000000 == 0)
-            {
-                printf("cnt = %ld\n", cnt );
-            }
-        }
-    }
-
-}
-void LoadTestRating()
-{
-    char fn[100];
-    for (int f_no = 0; f_no < 64; f_no++)
-    {
-        sprintf(fn, "%s%d", TEST_NAME, f_no);
-        ifstream ifs(fn);
-        if (!ifs.is_open())
-        {
-            printf("fail to open the file %s\n", TEST_NAME);
-            exit(-1);
-        }
-        int cnt = 0;
-        int temp = 0;
-        long hash_idx = 0;
-        double ra = 0;
-        while (!ifs.eof())
-        {
-            ifs >> hash_idx >> ra;
-            TestMap.insert(pair<long, double>(hash_idx, ra));
-            cnt++;
-            if (cnt % 10000 == 0)
-            {
-                printf("cnt = %ld\n", cnt );
-            }
-        }
-    }
-}
 void sendTd(int send_thread_id)
 {
     printf("send_thread_id=%d\n", send_thread_id);

@@ -579,3 +579,70 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 }
 
+
+
+int rdma_server_init()
+{
+    int ret, option;
+    struct sockaddr_in server_sockaddr;
+    bzero(&server_sockaddr, sizeof server_sockaddr);
+    server_sockaddr.sin_family = AF_INET; /* standard IP NET address */
+    server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY); /* passed address */
+
+    get_addr("12.12.10.16", (struct sockaddr*) &server_sockaddr);
+    server_sockaddr.sin_port = htons(DEFAULT_RDMA_PORT); /* use default port */
+
+    ret = start_rdma_server(&server_sockaddr);
+    if (ret)
+    {
+        rdma_error("RDMA server failed to start cleanly, ret = %d \n", ret);
+        return ret;
+    }
+    ret = setup_client_resources();
+    if (ret)
+    {
+        rdma_error("Failed to setup client resources, ret = %d \n", ret);
+        return ret;
+    }
+    ret = accept_client_connection();
+    if (ret)
+    {
+        rdma_error("Failed to handle client cleanly, ret = %d \n", ret);
+        return ret;
+    }
+    ret = send_server_metadata_to_client();
+    if (ret)
+    {
+        rdma_error("Failed to send server metadata to the client, ret = %d \n", ret);
+        return ret;
+    }
+    int* buf = (void*)block_mem[0];
+    while (1 == 1)
+    {
+        printf("buf=%d\n", *buf);
+        if (*buf > 0 )
+        {
+            printf("recv=%d\n", *buf );
+            char* ddata = (void*)buf;
+            ddata = ddata + sizeof(int);
+            double* real_data = (void*)ddata;
+            for (int j = 0; j < *buf; j++)
+            {
+                printf("%lf", real_data[j]);
+            }
+            printf("\n");
+        }
+        else
+        {
+            printf("no data\n");
+        }
+        sleep(1);
+    }
+    ret = disconnect_and_cleanup();
+    if (ret)
+    {
+        rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
+        return ret;
+    }
+    return 0;
+}

@@ -26,9 +26,7 @@ static struct ibv_recv_wr client_recv_wr, *bad_client_recv_wr = NULL;
 static struct ibv_sge client_recv_sge;
 
 static char* buf_for_rwrite = NULL;
-#define BLOCK_SZ 25000000
-#define BLOCK_NUM 4
-char* block_mem[BLOCK_NUM];
+static char* block_mem[BLOCK_NUM];
 /* When we call this function cm_client_id must be set to a valid identifier.
  * This is where, we prepare client connection before we accept it. This
  * mainly involve pre-posting a receive buffer to receive client side

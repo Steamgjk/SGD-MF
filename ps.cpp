@@ -45,8 +45,7 @@ using namespace std;
 #define M 65133
 #define K  40 //主题个数
 
-#define BLOCK_NUM 4
-#define BLOCK_SZ (25000000*BLOCK_NUM)
+#define MEM_SIZE (25000000*4)
 char* block_mem;
 
 
@@ -370,124 +369,6 @@ void sendTd(int send_thread_id)
 
 }
 
-void recvTd1(int recv_thread_id)
-{
-    printf("recv_thread_id=%d\n", recv_thread_id);
-    int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
-    while (1 == 1)
-    {
-        //printf("Loop recving...\n");
-        size_t expected_len = sizeof(Updates);
-        char* sockBuf = (char*)malloc(expected_len);
-        size_t cur_len = 0;
-        int ret = 0;
-        while (cur_len < expected_len)
-        {
-            //printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
-            ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
-            if (ret <=  0)
-            {
-                printf("Mimatch! %d\n", ret);
-                if (ret == 0)
-                {
-                    exit(-1);
-                }
-            }
-            cur_len += ret;
-        }
-        struct Updates* updt = (struct Updates*)(void*)sockBuf;
-        int block_id = updt->block_id;
-        Pupdts[block_id].block_id = block_id;
-        Pupdts[block_id].clock_t = updt->clock_t;
-        Pupdts[block_id].ele_num = updt->ele_num;
-        Pupdts[block_id].eles.resize(updt->ele_num);
-        free(sockBuf);
-
-        size_t data_sz = sizeof(double) * (Pupdts[block_id].ele_num);
-        sockBuf = (char*)malloc(data_sz);
-
-        cur_len = 0;
-        ret = 0;
-        while (cur_len < data_sz)
-        {
-            ret = recv(connfd, sockBuf + cur_len, data_sz - cur_len, 0);
-            if (ret <=  0)
-            {
-                printf("Mimatch! %d\n", ret);
-                if (ret == 0)
-                {
-                    exit(-1);
-                }
-            }
-            cur_len += ret;
-        }
-
-        double* data_eles = (double*)(void*)sockBuf;
-        for (int i = 0; i < Pupdts[block_id].ele_num; i++)
-        {
-            Pupdts[block_id].eles[i] = data_eles[i];
-        }
-        free(data_eles);
-
-        //printf("getPupdates block_id = %ld\n", block_id);
-        //Pupdts[block_id].printUpdates();
-
-        expected_len = sizeof(Updates);
-        sockBuf = (char*)malloc(expected_len);
-        cur_len = 0;
-        ret = 0;
-        while (cur_len < expected_len)
-        {
-            ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
-            if (ret <=  0)
-            {
-                printf("Mimatch! %d\n", ret);
-                if (ret == 0)
-                {
-                    exit(-1);
-                }
-            }
-            cur_len += ret;
-        }
-        updt = (struct Updates*)(void*)sockBuf;
-        block_id = updt->block_id;
-        Qupdts[block_id].block_id = block_id;
-        Qupdts[block_id].clock_t = updt->clock_t;
-        Qupdts[block_id].ele_num = updt->ele_num;
-        Qupdts[block_id].eles.resize(Qupdts[block_id].ele_num);
-        free(sockBuf);
-
-        data_sz = sizeof(double) * (updt->ele_num);
-        sockBuf = (char*)malloc(data_sz);
-
-        cur_len = 0;
-        ret = 0;
-        while (cur_len < data_sz)
-        {
-            ret = recv(connfd, sockBuf + cur_len, data_sz - cur_len, 0);
-            if (ret <=  0)
-            {
-                printf("Mimatch! %d\n", ret);
-                if (ret == 0)
-                {
-                    exit(-1);
-                }
-            }
-            cur_len += ret;
-        }
-
-        data_eles = (double*)(void*)sockBuf;
-        for (int i = 0; i < Qupdts[block_id].ele_num; i++)
-        {
-            Qupdts[block_id].eles[i] = data_eles[i];
-        }
-        free(data_eles);
-        //printf("get Qupdts\n");
-        //Qupdts[block_id].printUpdates();
-        recvCount++;
-    }
-}
-
 void recvTd(int recv_thread_id)
 {
     printf("recv_thread_id=%d\n", recv_thread_id);
@@ -648,10 +529,6 @@ int wait4connection(char*local_ip, int local_port)
 
 
 
-
-
-
-
 void partitionP(int portion_num,  Block * Pblocks)
 {
     int i = 0;
@@ -702,66 +579,3 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 }
 
-
-
-void partitionP1(int portion_num,  Block* Pblocks)
-{
-    int i = 0;
-    int height = N / portion_num;
-    int last_height = N - (portion_num - 1) * height;
-
-    for (i = 0; i < portion_num; i++)
-    {
-        Pblocks[i].block_id = i;
-        Pblocks[i].data_age = 0;
-        Pblocks[i].eles.clear();
-        Pblocks[i].height = height;
-        int sta_idx = i * height;
-        if ( i == portion_num - 1)
-        {
-            Pblocks[i].height = last_height;
-        }
-        Pblocks[i].sta_idx = sta_idx;
-
-        for (int h = 0; h < Pblocks[i].height; h++)
-        {
-            for (int j = 0; j < K; j++)
-            {
-                Pblocks[i].eles.push_back(P[h][j]);
-            }
-        }
-        Pblocks[i].ele_num = Pblocks[i].eles.size();
-    }
-
-}
-
-void partitionQ1(int portion_num,  Block* Qblocks)
-{
-    int i = 0;
-    int height = M / portion_num;
-    int last_height = M - (portion_num - 1) * height;
-
-    for (i = 0; i < portion_num; i++)
-    {
-        Qblocks[i].block_id = i;
-        Qblocks[i].data_age = 0;
-        Qblocks[i].eles.clear();
-        Qblocks[i].height = height;
-        int sta_idx = i * height;
-        if ( i == portion_num - 1)
-        {
-            Qblocks[i].height = last_height;
-        }
-        Qblocks[i].sta_idx = sta_idx;
-
-        for (int h = 0; h < Qblocks[i].height; h++)
-        {
-            for (int j = 0; j < K; j++)
-            {
-                Qblocks[i].eles.push_back(Q[j][h]);
-            }
-        }
-        Qblocks[i].ele_num = Qblocks[i].eles.size();
-    }
-
-}

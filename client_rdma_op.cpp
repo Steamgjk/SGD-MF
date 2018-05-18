@@ -9,9 +9,8 @@
 #include "client_rdma_op.h"
 
 
-#define BLOCK_SZ 25000000
-#define BLOCK_NUM 4
-char* block_mem[BLOCK_NUM];
+
+static char* block_mem[BLOCK_NUM];
 
 /* These are basic RDMA resources */
 /* These are RDMA connection related resources */

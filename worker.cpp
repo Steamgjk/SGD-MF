@@ -205,6 +205,7 @@ int main(int argc, const char * argv[])
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
+    canSend = false;
     if (argc >= 3)
     {
         thresh_log = atoi(argv[2]);
@@ -1010,11 +1011,12 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-
+    printf("send to loop\n");
     while (1 == 1)
     {
         if (canSend)
         {
+            printf("going to send\n");
             int len = sizeof(int) + 10 * sizeof(double);
             ret = start_remote_write(len);
             if (ret)

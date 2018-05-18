@@ -214,6 +214,7 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     }
     **/
+    /*
     for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
     {
         std::thread send_thread(rdma_sendTd, send_thread_id);
@@ -225,6 +226,11 @@ int main(int argc, const char * argv[])
         std::thread recv_thread(rdma_recvTd, recv_thread_id);
         recv_thread.detach();
     }
+    **/
+    std::thread send_thread(rdma_sendTd, 2);
+    send_thread.detach();
+    //std::thread recv_thread(rdma_recvTd, 2);
+    //recv_thread.detach();
     while (1 == 1)
     {
 

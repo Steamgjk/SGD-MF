@@ -665,8 +665,12 @@ void rdma_recvTd(int recv_thread_id)
     *flag = 0;
     while (1 == 1)
     {
+
         if ( (*flag) > 0)
         {
+            printf("%s\n", to_recv_block_mem );
+            getchar();
+            /*
             printf("ok Irecv flag=%d\n", (*flag) );
             double*data = (double*)(void*)(to_recv_block_mem + sizeof(int));
             for (int i = 0; i < *flag; i++)
@@ -674,6 +678,7 @@ void rdma_recvTd(int recv_thread_id)
                 printf("%lf\t", data[i]);
             }
             printf("\n");
+            **/
         }
         else
         {

@@ -240,12 +240,18 @@ int client_connect_to_server()
 	conn_param.initiator_depth = 3;
 	conn_param.responder_resources = 3;
 	conn_param.retry_count = 3; // if fail, then how many times to retry
-	ret = rdma_connect(cm_client_id, &conn_param);
-	if (ret)
+	do
 	{
-		rdma_error("Failed to connect to remote host , errno: %d\n", -errno);
-		return -errno;
+		ret = rdma_connect(cm_client_id, &conn_param);
+		if (ret)
+		{
+			rdma_error("Failed to connect to remote host , errno: %d\n", -errno);
+
+			//return -errno;
+		}
 	}
+	while (ret != 0);
+
 	debug("waiting for cm event: RDMA_CM_EVENT_ESTABLISHED\n");
 	ret = process_rdma_cm_event(cm_event_channel,
 	                            RDMA_CM_EVENT_ESTABLISHED,
@@ -335,13 +341,14 @@ int client_send_metadata_to_server1(void* send_buf, size_t send_sz)
 	struct ibv_wc wc[2];
 	int ret = -1;
 	//strlen-sizeof
+	printf("send_buf=%p  send_sz= %ld\n", send_buf, send_sz );
 	client_src_mr = rdma_buffer_register(pd,
 	                                     send_buf,
 	                                     send_sz,
 	                                     (IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE));
 	if (!client_src_mr)
 	{
-		rdma_error("Failed to register the first buffer, ret = %d \n", ret);
+		rdma_error("Failed to register the first buffer, ret = %d error=%d \n", ret, errno);
 		return ret;
 	}
 	/* we prepare metadata for the first buffer */

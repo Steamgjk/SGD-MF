@@ -617,6 +617,7 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
+
     ret = client_pre_post_recv_buffer();
     if (ret)
     {
@@ -629,7 +630,7 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-
+    printf("connect  ok\n");
     ret = client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
     if (ret)
     {

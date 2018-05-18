@@ -237,6 +237,7 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
+    /*
     int* flag = (int*)(void*)to_send_block_mem;
     *flag = 10;
     char* data_ptr = (to_send_block_mem + sizeof(int));
@@ -247,6 +248,8 @@ int main(int argc, const char * argv[])
         printf("%lf\t", send_buf[i]);
     }
     printf("\n");
+    **/
+    memcpy(to_send_block_mem, "abcdefghijklmnopqrstuvwxyz", 27);
     canSend = true;
     printf("canSend=%d\n", canSend);
     while (1 == 1)
@@ -1019,7 +1022,7 @@ void rdma_sendTd(int send_thread_id)
         if (canSend)
         {
             printf("going to write\n");
-            int len = sizeof(int) + 10 * sizeof(double);
+            int len = 27;
             ret = start_remote_write(len);
             if (ret)
             {

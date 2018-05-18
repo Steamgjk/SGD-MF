@@ -35,6 +35,11 @@
 using namespace std;
 #define GROUP_NUM 1
 #define DIM_NUM 8
+
+#define MEM_SIZE (25000000*4)
+char* to_send_block_mem;
+char* to_recv_block_mem;
+
 //cnt=15454227 sizeof(long)=8
 //#define FILE_NAME "./netflix_row.txt"
 //#define TEST_NAME "./test_out.txt"

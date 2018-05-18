@@ -949,7 +949,7 @@ void recvTd(int recv_thread_id)
 
 void rdma_sendTd(int send_thread_id)
 {
-    printf("send_thread_id=%d\n", send_thread_id);
+    printf("worker send_thread_id=%d\n", send_thread_id);
     char* remote_ip = remote_ips[send_thread_id];
     int remote_port = remote_ports[send_thread_id];
 
@@ -1004,6 +1004,7 @@ void rdma_sendTd(int send_thread_id)
 }
 void rdma_recvTd(int recv_thread_id)
 {
+    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
     int*flag = (int*)(void*)to_recv_block_mem;
     while (1 == 1)

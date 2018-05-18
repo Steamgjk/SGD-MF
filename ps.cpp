@@ -149,6 +149,8 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
+void rdma_sendTd(int send_thread_id)
+void rdma_recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz);

@@ -644,7 +644,7 @@ int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t 
 
 void rdma_sendTd(int send_thread_id)
 {
-    printf("send_thread_id=%d\n", send_thread_id);
+    printf("ps  send_thread_id=%d\n", send_thread_id);
     char* remote_ip = remote_ips[send_thread_id];
     int remote_port = remote_ports[send_thread_id];
 

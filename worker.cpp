@@ -1000,7 +1000,7 @@ void rdma_sendTd(int send_thread_id)
 
     while (1 == 1)
     {
-        printf("recv loop\n");
+        printf("send loop\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 

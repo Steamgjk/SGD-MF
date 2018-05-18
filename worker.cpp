@@ -1026,6 +1026,7 @@ void rdma_sendTd(int send_thread_id)
             {
                 printf("write ok\n");
             }
+            canSend = false;
         }
 
     }
@@ -1041,6 +1042,7 @@ void rdma_recvTd(int recv_thread_id)
     int*flag = (int*)(void*)to_recv_block_mem;
     while (1 == 1)
     {
+        /*
         if ( (*flag) > 0)
         {
             printf("ok flag=%d\n", (*flag) );
@@ -1049,6 +1051,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             printf("flag=%d\n", (*flag) );
         }
+        **/
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     }

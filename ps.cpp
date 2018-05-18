@@ -669,11 +669,18 @@ void rdma_recvTd(int recv_thread_id)
         if ( (*flag) > 0)
         {
             printf("ok flag=%d\n", (*flag) );
+            double*data = (double*)(void*)(to_recv_block_mem + sizeof(int));
+            for (int i = 0; i < *flag; i++)
+            {
+                printf("%lf\t", data[i]);
+            }
+            printf("\n");
         }
         else
         {
             printf("flag=%d\n", (*flag) );
         }
+
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     }

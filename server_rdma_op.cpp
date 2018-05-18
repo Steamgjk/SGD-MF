@@ -143,8 +143,8 @@ int start_rdma_server(struct sockaddr_in *server_addr)
 		rdma_error("Creating cm event channel failed with errno : (%d)", -errno);
 		return -errno;
 	}
-	debug("RDMA CM event channel is created successfully at %p \n",
-	      cm_event_channel);
+	printf("RDMA CM event channel is created successfully at %p \n",
+	       cm_event_channel);
 	/* rdma_cm_id is the connection identifier (like socket) which is used
 	 * to define an RDMA connection.
 	 */
@@ -154,7 +154,7 @@ int start_rdma_server(struct sockaddr_in *server_addr)
 		rdma_error("Creating server cm id failed with errno: %d ", -errno);
 		return -errno;
 	}
-	debug("A RDMA connection id for the server is created \n");
+	printf("A RDMA connection id for the server is created \n");
 	/* Explicit binding of rdma cm id to the socket credentials */
 	ret = rdma_bind_addr(cm_server_id, (struct sockaddr*) server_addr);
 	if (ret)
@@ -162,7 +162,7 @@ int start_rdma_server(struct sockaddr_in *server_addr)
 		rdma_error("Failed to bind server address, errno: %d \n", -errno);
 		return -errno;
 	}
-	debug("Server RDMA CM id is successfully binded \n");
+	printf("Server RDMA CM id is successfully binded \n");
 	/* Now we start to listen on the passed IP and port. However unlike
 	 * normal TCP listen, this is a non-blocking call. When a new client is
 	 * connected, a new connection management (CM) event is generated on the
@@ -613,5 +613,53 @@ int server_test_main(int argc, char **argv)
 		rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
 		return ret;
 	}
+	return 0;
+}
+
+
+
+int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz)
+{
+	int ret, option;
+	struct sockaddr_in server_sockaddr;
+	bzero(&server_sockaddr, sizeof server_sockaddr);
+	server_sockaddr.sin_family = AF_INET; /* standard IP NET address */
+	server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY); /* passed address */
+
+	get_addr(local_ip, (struct sockaddr*) &server_sockaddr);
+	server_sockaddr.sin_port = htons(local_port); /* use default port */
+	printf("local_ip=%s  local_port = %d\n", local_ip, local_port );
+	ret = start_rdma_server(&server_sockaddr);
+	if (ret)
+	{
+		rdma_error("RDMA server failed to start cleanly, ret = %d \n", ret);
+		return ret;
+	}
+	ret = setup_client_resources();
+	if (ret)
+	{
+		rdma_error("Failed to setup client resources, ret = %d \n", ret);
+		return ret;
+	}
+	ret = accept_client_connection();
+	if (ret)
+	{
+		rdma_error("Failed to handle client cleanly, ret = %d \n", ret);
+		return ret;
+	}
+	ret = send_server_metadata_to_client1(register_buf, register_sz);
+	if (ret)
+	{
+		rdma_error("Failed to send server metadata to the client, ret = %d \n", ret);
+		return ret;
+	}
+	/*
+	    ret = disconnect_and_cleanup();
+	    if (ret)
+	    {
+	        rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
+	        return ret;
+	    }
+	    **/
 	return 0;
 }

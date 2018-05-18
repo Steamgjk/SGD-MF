@@ -153,7 +153,6 @@ void rdma_sendTd(int send_thread_id);
 void rdma_recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
-int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz);
 atomic_int recvCount(0);
 bool canSend[CAP] = {false};
 int worker_pidx[CAP];
@@ -596,51 +595,6 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 
 
-int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz)
-{
-    int ret, option;
-    struct sockaddr_in server_sockaddr;
-    bzero(&server_sockaddr, sizeof server_sockaddr);
-    server_sockaddr.sin_family = AF_INET; /* standard IP NET address */
-    server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY); /* passed address */
-
-    get_addr(local_ip, (struct sockaddr*) &server_sockaddr);
-    server_sockaddr.sin_port = htons(local_port); /* use default port */
-    printf("local_ip=%s  local_port = %d\n", local_ip, local_port );
-    ret = start_rdma_server(&server_sockaddr);
-    if (ret)
-    {
-        rdma_error("RDMA server failed to start cleanly, ret = %d \n", ret);
-        return ret;
-    }
-    ret = setup_client_resources();
-    if (ret)
-    {
-        rdma_error("Failed to setup client resources, ret = %d \n", ret);
-        return ret;
-    }
-    ret = accept_client_connection();
-    if (ret)
-    {
-        rdma_error("Failed to handle client cleanly, ret = %d \n", ret);
-        return ret;
-    }
-    ret = send_server_metadata_to_client1(register_buf, register_sz);
-    if (ret)
-    {
-        rdma_error("Failed to send server metadata to the client, ret = %d \n", ret);
-        return ret;
-    }
-    /*
-        ret = disconnect_and_cleanup();
-        if (ret)
-        {
-            rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
-            return ret;
-        }
-        **/
-    return 0;
-}
 
 void rdma_sendTd(int send_thread_id)
 {

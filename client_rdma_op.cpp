@@ -383,7 +383,7 @@ int client_remote_memory_ops()
 			printf("%lf\t", d_data[i] );
 		}
 		printf("\n");
-		char* buf = (void*) tmp_int;
+		char* buf = (char*)(void*) tmp_int;
 		memcpy(buf + sizeof(int), d_data, data_sz);
 		printf("cnt=%d *src =%d\n",  cnt, *((int*)((void*)src)) );
 
@@ -394,11 +394,6 @@ int client_remote_memory_ops()
 			debug("ret = %d  cnt=%d *src =%d\n", ret, cnt, *src);
 			sleep(1);
 		}
-
-
-
-
-
 
 		getchar();
 
@@ -502,7 +497,7 @@ int test_main(int argc, char **argv)
 {
 	for (int i = 0; i < BLOCK_NUM ; i++)
 	{
-		block_mem[i] = calloc(BLOCK_SZ, 1);
+		block_mem[i] = (char*)calloc(BLOCK_SZ, 1);
 	}
 	struct sockaddr_in server_sockaddr;
 	int ret, option;

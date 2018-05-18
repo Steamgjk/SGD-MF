@@ -606,7 +606,7 @@ int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t 
 
     get_addr(local_ip, (struct sockaddr*) &server_sockaddr);
     server_sockaddr.sin_port = htons(local_port); /* use default port */
-
+    printf("local_port = %d\n", local_port );
     ret = start_rdma_server(&server_sockaddr);
     if (ret)
     {

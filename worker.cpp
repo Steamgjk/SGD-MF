@@ -202,6 +202,9 @@ int main(int argc, const char * argv[])
 
     int thresh_log = 2000;
     thread_id = atoi(argv[1]);
+    to_send_block_mem = (void*)malloc(MEM_SIZE);
+    to_recv_block_mem = (void*)malloc(MEM_SIZE);
+    printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
     if (argc >= 3)
     {
         thresh_log = atoi(argv[2]);

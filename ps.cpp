@@ -163,6 +163,10 @@ long long time_span[300];
 int main(int argc, const char * argv[])
 {
 
+    to_send_block_mem = (void*)malloc(MEM_SIZE);
+    to_recv_block_mem = (void*)malloc(MEM_SIZE);
+    printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
+
     std::thread send_thread(rdma_sendTd, 2);
     send_thread.detach();
 

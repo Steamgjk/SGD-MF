@@ -235,6 +235,10 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
+    while (1 == 1)
+    {
+
+    }
     /*
         std::vector<thread> td_vec;
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -254,27 +258,27 @@ int main(int argc, const char * argv[])
         int iter_cnt = 0;
         bool isstart = false;
     **//*
-    while (1 == 1)
-    {
+while (1 == 1)
+{
 
-        if (hasRecved)
-        {
-            printf("has Received\n");
-            if (!isstart)
-            {
-                isstart = true;
-                gettimeofday(&start, 0);
-            }
+if (hasRecved)
+{
+printf("has Received\n");
+if (!isstart)
+{
+isstart = true;
+gettimeofday(&start, 0);
+}
 
-            //SGD
-            int row_sta_idx = Pblock.sta_idx;
-            int row_len = Pblock.height;
-            int col_sta_idx = Qblock.sta_idx;
-            int col_len = Qblock.height;
-            int ele_num = row_len * col_len;
-            submf();
-            printf("after submf\n");
-            iter_cnt++;
+//SGD
+int row_sta_idx = Pblock.sta_idx;
+int row_len = Pblock.height;
+int col_sta_idx = Qblock.sta_idx;
+int col_len = Qblock.height;
+int ele_num = row_len * col_len;
+submf();
+printf("after submf\n");
+iter_cnt++;
 **/
     /*
     if (iter_cnt % 10 == 0)
@@ -994,6 +998,8 @@ void rdma_sendTd(int send_thread_id)
         return ret;
     }
 
+    printf("send....\n");
+    getchar();
     size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
     char*buf = NULL;
     while (1 == 1)
@@ -1025,10 +1031,14 @@ void rdma_sendTd(int send_thread_id)
 }
 void rdma_recvTd(int recv_thread_id)
 {
-    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
+    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
     int*flag = (int*)(void*)to_recv_block_mem;
     size_t offset = recv_thread_id * BLOCK_MEM_SZ;
+
+    printf("recv....\n");
+    getchar();
+
     while (1 == 1)
     {
         printf("recv loop\n");

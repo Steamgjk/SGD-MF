@@ -167,7 +167,7 @@ int process_rdma_cm_event(struct rdma_event_channel *echannel,
 	/* lets see, if it was a good event */
 	if (0 != (*cm_event)->status)
 	{
-		rdma_error("CM event has non zero status: %d\n", (*cm_event)->status);
+		rdma_error("CM event has non zero status: %d  errno=%d\n", (*cm_event)->status, errno);
 		ret = -((*cm_event)->status);
 		/* important, we acknowledge the event */
 		rdma_ack_cm_event(*cm_event);

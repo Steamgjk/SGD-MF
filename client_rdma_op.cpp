@@ -95,7 +95,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to acknowledge the CM event, errno: %d\n", -errno);
 		return -errno;
 	}
-	printf("RDMA address is resolved \n");
+	printf("RDMA address will be resolved \n");
 
 	/* Resolves an RDMA route to the destination address in order to
 	 * establish a connection */

@@ -482,10 +482,7 @@ void CalcUpdt(int td_id)
 
         }
         printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
-        {
-            printf("[%d:] pidx %d qidx %d td=%d  rsz=%ld csz=%ld\n", td_id, p_block_idx, q_block_idx, i,  hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size());
-        }
+
         if (StartCalcUpdt[td_id] == 1)
         {
             printf("enter CalcUpdt\n");
@@ -573,7 +570,6 @@ void CalcUpdt(int td_id)
 }
 void submf()
 {
-    printf("enter submf111\n");
     double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;
@@ -649,7 +645,8 @@ void submf()
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
-
+    printf("before set flag p=%d q=%d\n", Pblock.block_id, Qblock.block_id );
+    getchar();
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {

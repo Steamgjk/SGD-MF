@@ -85,6 +85,7 @@ int main()
 			OutPutTrain[i * DIM_SZ + j].clear();
 		}
 	}
+	/*
 	int test_cnt = 0;
 	while (!ifstest.eof())
 	{
@@ -103,7 +104,7 @@ int main()
 	}
 	printf("test fini\n");
 	exit(0);
-
+	**/
 	while (!ifs.eof())
 	{
 		ifs >> user_id >> tmp >> anum;

@@ -324,7 +324,7 @@ void InitFlag()
     {
         offset = i * BLOCK_MEM_SZ;
         sta = to_recv_block_mem + offset;
-        bk = (Block*)(void*)to_recv_block_mem;
+        bk = (Block*)(void*)sta;
         bk->block_id = -1;
     }
 }

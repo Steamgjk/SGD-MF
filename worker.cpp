@@ -571,6 +571,7 @@ void submf()
     printf("copy P fin ele=%ld\n", oldP.size());
     oldQ = Qblock.eles;
     printf("copy Q fin ele=%ld\n", oldQ.size());
+    getchar();
     for (int i = 0; i < Psz; i++)
     {
         printf("[%d]:%lf\n", i, oldP[i] );

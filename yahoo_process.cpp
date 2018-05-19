@@ -85,8 +85,9 @@ int main()
 			OutPutTrain[i * DIM_SZ + j].clear();
 		}
 	}
-	/*
 	int test_cnt = 0;
+	/*
+
 	while (!ifstest.eof())
 	{
 		ifstest >> user_id >> tmp >> anum;
@@ -105,6 +106,7 @@ int main()
 	printf("test fini\n");
 	exit(0);
 	**/
+	test_cnt = 0;
 	while (!ifs.eof())
 	{
 		ifs >> user_id >> tmp >> anum;
@@ -123,6 +125,11 @@ int main()
 			}
 			long hash_id = user_id * M + movie_id;
 			OutPutTrain[row * DIM_SZ + col].insert(pair<long, double>(hash_id, rate));
+			test_cnt++;
+			if (test_cnt % 10000 == 0)
+			{
+				printf("test_cnt=%d\n", test_cnt );
+			}
 		}
 
 	}

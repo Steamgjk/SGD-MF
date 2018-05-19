@@ -41,9 +41,9 @@
 
 #define ACN_RDMA_DEBUG
 
-#define debug(msg, args...) fprintf(stderr, "%s : %d : DEBUG : " msg, __FILE__, __LINE__, ##args);
+//#define debug(msg, args...) fprintf(stderr, "%s : %d : DEBUG : " msg, __FILE__, __LINE__, ##args);
 
-
+#define debug(msg, args...)
 /* Capacity of the completion queue (CQ) */
 #define CQ_CAPACITY (16)
 /* MAX SGE capacity */

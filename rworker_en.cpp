@@ -423,7 +423,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 100;
+            int times_thresh = 1000;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -448,7 +448,7 @@ void CalcUpdt(int td_id)
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
-                    printf("[%d] continue l \n", td_id);
+                    //printf("[%d] continue l i=\n", td_id);
                     continue;
                 }
                 for (int k = 0; k < K; ++k)
@@ -471,7 +471,7 @@ void CalcUpdt(int td_id)
                 j = real_hash_idx % M - col_sta_idx;
                 if (i < 0 || j < 0 || i >= Pblocks[p_block_idx].height || j >= Qblocks[q_block_idx].height)
                 {
-                    printf("[%d] continue l11 \n", td_id);
+                    //printf("[%d] continue l11 \n", td_id);
                     continue;
                 }
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];
@@ -1416,7 +1416,7 @@ void rdma_sendTd(int send_thread_id)
                 //printf("before memcpy2\n");
                 memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
                 ret = cro.start_remote_write(total_len, offset);
-                printf("writer one Pblock\n");
+                //printf("writer one Pblock\n");
             }
             else
             {
@@ -1427,7 +1427,7 @@ void rdma_sendTd(int send_thread_id)
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
                 ret = cro.start_remote_write(total_len, offset);
-                printf("writer one Qblock\n");
+                //printf("writer one Qblock\n");
             }
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);

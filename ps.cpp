@@ -264,7 +264,7 @@ int main(int argc, const char * argv[])
 
         while (recvCount != WORKER_NUM)
         {
-            cout << "RecvCount\t" << recvCount << endl;
+            //cout << "RecvCount\t" << recvCount << endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 

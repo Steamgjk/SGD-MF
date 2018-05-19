@@ -168,40 +168,40 @@ int main(int argc, const char * argv[])
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
 
-    /*
-        //gen P and Q
-        if (argc == 2)
-        {
-            WORKER_NUM = atoi(argv[1]) ;
-        }
-        srand(1);
-        //LoadTestRating();
-        //printf("Load Complete\n");
-        partitionP(WORKER_NUM, Pblocks);
-        partitionQ(WORKER_NUM, Qblocks);
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            for (int j = 0; j < Pblocks[i].ele_num; j++)
-            {
-                //Pblocks[i].eles[j] = drand48() * 0.6;
-                Pblocks[i].eles[j] = drand48() * 0.6;
-            }
-            for (int j = 0; j < Qblocks[i].ele_num; j++)
-            {
-                //Qblocks[i].eles[j] = drand48() * 0.6;
-                Qblocks[i].eles[j] = drand48() * 0.6;
-            }
-        }
 
-        for (int i = 0; i < WORKER_NUM; i++)
+    //gen P and Q
+    if (argc == 2)
+    {
+        WORKER_NUM = atoi(argv[1]) ;
+    }
+    srand(1);
+    //LoadTestRating();
+    //printf("Load Complete\n");
+    partitionP(WORKER_NUM, Pblocks);
+    partitionQ(WORKER_NUM, Qblocks);
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            canSend[i] = false;
+            //Pblocks[i].eles[j] = drand48() * 0.6;
+            Pblocks[i].eles[j] = drand48() * 0.6;
         }
-        for (int i = 0; i < WORKER_NUM; i++)
+        for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
-            worker_pidx[i] = worker_qidx[i] = i;
+            //Qblocks[i].eles[j] = drand48() * 0.6;
+            Qblocks[i].eles[j] = drand48() * 0.6;
         }
-    **/
+    }
+
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        canSend[i] = false;
+    }
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        worker_pidx[i] = worker_qidx[i] = i;
+    }
+
     /*
     for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
     {
@@ -214,7 +214,7 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     }
     **/
-    /*
+
     for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
     {
         std::thread send_thread(rdma_sendTd, send_thread_id);
@@ -226,11 +226,12 @@ int main(int argc, const char * argv[])
         std::thread recv_thread(rdma_recvTd, recv_thread_id);
         recv_thread.detach();
     }
+    /*
+        std::thread send_thread(rdma_sendTd, 2);
+        send_thread.detach();
+        std::thread recv_thread(rdma_recvTd, 2);
+        recv_thread.detach();
     **/
-    std::thread send_thread(rdma_sendTd, 2);
-    send_thread.detach();
-    std::thread recv_thread(rdma_recvTd, 2);
-    recv_thread.detach();
     while (1 == 1)
     {
 

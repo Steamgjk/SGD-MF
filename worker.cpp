@@ -178,12 +178,12 @@ void rdma_recvTd(int recv_thread_id);
 //void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
 //void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
 void submf();
-
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void CalcUpdt(int thread_id);
 void LoadData();
 void LoadRequiredData(int row, int col, int data_idx);
+void InitFlag();
 
 int thread_id = -1;
 struct timeval start, stop, diff;
@@ -205,6 +205,7 @@ int main(int argc, const char * argv[])
     thread_id = atoi(argv[1]);
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
+    InitFlag();
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
     if (argc >= 3)
     {
@@ -302,6 +303,13 @@ int main(int argc, const char * argv[])
     }
 
 
+}
+void InitFlag()
+{
+    Block* pb = (Block*)(void*)(to_recv_block_mem);
+    pb->block_id = -1;
+    pb = (Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
+    pb->block_id = -1;
 }
 void LoadRmatrix(int file_no, map<long, double>& myMap)
 {
@@ -1053,7 +1061,7 @@ void rdma_recvTd(int recv_thread_id)
     **/
     while (1 == 1)
     {
-        printf("recv loop\n");
+        //printf("recv loop\n");
         struct timeval st, et;
         gettimeofday(&st, 0);
         size_t struct_sz = sizeof(Pblock);

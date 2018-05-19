@@ -144,8 +144,6 @@ struct Updates Pupdts[CAP];
 struct Updates Qupdts[CAP];
 
 
-
-
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
@@ -154,6 +152,8 @@ void rdma_sendTd(int send_thread_id);
 void rdma_recvTd(int recv_thread_id);
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
+void InitFlag();
+
 atomic_int recvCount(0);
 bool canSend[CAP] = {false};
 int worker_pidx[CAP];
@@ -167,7 +167,7 @@ int main(int argc, const char * argv[])
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
-
+    InitFlag();
 
     //gen P and Q
     if (argc == 2)
@@ -305,7 +305,19 @@ int main(int argc, const char * argv[])
     return 0;
 }
 
-
+void InitFlag()
+{
+    size_t offset = 0;
+    char* sta = to_recv_block_mem;
+    Block* bk = NULL;
+    for (int i = 0; i < 8; i++)
+    {
+        offset = i * BLOCK_MEM_SZ;
+        sta = to_recv_block_mem + offset;
+        bk = (Block*)(void*)to_recv_block_mem;
+        bk->block_id = -1;
+    }
+}
 void WriteLog(Block & Pb, Block & Qb, int iter_cnt)
 {
     char fn[100];
@@ -728,7 +740,7 @@ void rdma_recvTd(int recv_thread_id)
     **/
     while (1 == 1)
     {
-        printf("recving ...\n");
+        //printf("recving ...\n");
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)buf;

@@ -481,12 +481,12 @@ void CalcUpdt(int td_id)
         }
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
-        printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
+        //printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
         //printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, Pblock.block_id, Qblock.block_id );
         //getchar();
         if (StartCalcUpdt[td_id] == 1)
         {
-            printf("enter CalcUpdt\n");
+            //printf("enter CalcUpdt\n");
             int times_thresh = 1000;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
@@ -504,7 +504,7 @@ void CalcUpdt(int td_id)
             int rand_idx = -1;
             for (times_thresh; times_thresh > 0; times_thresh--)
             {
-                printf("times_thresh=%d\n", times_thresh );
+                //printf("times_thresh=%d\n", times_thresh );
                 rand_idx = random() % rtsz;
                 long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
@@ -594,7 +594,7 @@ void submf()
         }
 
     }
-    printf("comere hhe\n");
+    //printf("comere hhe\n");
     for (int i = 0; i < Qsz; i++)
     {
         if (oldQ[i] > 100 || oldQ[i] < -100)
@@ -643,7 +643,7 @@ void submf()
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
     printf("before set flag p=%d q=%d\n", Pblock.block_id, Qblock.block_id );
-    getchar();
+    //getchar();
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {

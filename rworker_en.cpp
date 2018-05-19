@@ -379,7 +379,7 @@ int main(int argc, const char * argv[])
 
             //patch the two above mutual
             has_processed++;
-            printf("processed success has_processed=%d\n", has_processed );
+            //printf("processed success has_processed=%d\n", has_processed );
             while (has_processed > recved_head || has_processed >= disk_read_tail_idx)
             {
                 //Wait
@@ -1286,7 +1286,7 @@ void recvTd(int recv_thread_id)
 
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
+            //printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
 
             recved_head = (recved_head + 1) % QU_LEN;
         }

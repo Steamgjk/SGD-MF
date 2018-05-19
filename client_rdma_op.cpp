@@ -104,9 +104,9 @@ int client_rdma_op::client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to acknowledge the CM event, errno: %d \n", -errno);
 		return -errno;
 	}
-	printf("Trying to connect to server at : %s port: %d \n",
-	       inet_ntoa(s_addr->sin_addr),
-	       ntohs(s_addr->sin_port));
+	debug("Trying to connect to server at : %s port: %d \n",
+	      inet_ntoa(s_addr->sin_addr),
+	      ntohs(s_addr->sin_port));
 	/* Protection Domain (PD) is similar to a "process abstraction"
 	 * in the operating system. All resources are tied to a particular PD.
 	 * And accessing recourses across PD will result in a protection fault.
@@ -479,7 +479,7 @@ int client_rdma_op::start_remote_write(size_t len, size_t offset)
 	rdma_write_sge.addr = (uint64_t)client_src_mr->addr;
 	//rdma_write_sge.length = client_src_mr->length;
 	rdma_write_sge.length = len;
-	printf("len is changed to %d\n", len );
+	debug("len is changed to %d\n", len );
 	rdma_write_sge.lkey = client_src_mr->lkey;
 
 	// Create work request to send to local CA.
@@ -507,7 +507,7 @@ int client_rdma_op::start_remote_write(size_t len, size_t offset)
 	}
 
 
-	printf("FIN Performed RMDA write...\n");
+	debug("FIN Performed RMDA write...\n");
 
 	if (ret)
 	{

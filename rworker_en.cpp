@@ -1341,8 +1341,9 @@ void rdma_sendTd(int send_thread_id)
     printf("worker send_thread_id=%d\n", send_thread_id);
     printf("worker send waiting for 3s...\n");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    char* remote_ip = remote_ips[send_thread_id];
-    int remote_port = remote_ports[send_thread_id];
+    int right_idx = (send_thread_id + 1) % WORKER_NUM;
+    char* remote_ip = local_ips[right_idx];
+    int remote_port = local_ports[right_idx];
 
     struct sockaddr_in server_sockaddr;
     int ret, option;

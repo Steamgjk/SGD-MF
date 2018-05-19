@@ -488,8 +488,7 @@ int client_rdma_op::start_remote_write(size_t len, size_t offset)
 	rdma_write_wr.sg_list = &rdma_write_sge;
 	rdma_write_wr.num_sge = 1;
 	rdma_write_wr.opcode = IBV_WR_RDMA_WRITE;
-	rdma_write_wr.wr.rdma.remote_addr = server_metadata_attr.address + 15;
-	printf("addre +1\n");
+	rdma_write_wr.wr.rdma.remote_addr = server_metadata_attr.address;
 	rdma_write_wr.wr.rdma.rkey = server_metadata_attr.stag.local_stag;
 
 	printf("Trying to perform RDMA write...\n");

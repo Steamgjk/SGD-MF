@@ -311,7 +311,7 @@ int server_rdma_op::send_server_metadata_to_client1(void* buf_to_rwrite, size_t 
 
 	// Allocate buffer to be used by client for RDMA.
 	//here it is changed to the buffer passed from outside
-	printf("Before register buf = %p   sz=%ld\n", buf_to_rwrite, buf_sz);
+	debug("Before register buf = %p   sz=%ld\n", buf_to_rwrite, buf_sz);
 	server_buffer_mr = rdma_buffer_alloc1(pd, buf_to_rwrite, buf_sz,
 	                                      (IBV_ACCESS_REMOTE_READ |
 	                                       IBV_ACCESS_LOCAL_WRITE | // Must be set when REMOTE_WRITE is set.
@@ -331,6 +331,11 @@ int server_rdma_op::send_server_metadata_to_client1(void* buf_to_rwrite, size_t 
 		rdma_error("Failed to register the server metadata buffer, ret = %d \n", -errno);
 		return -errno;
 	}
+	else
+	{
+		debug("rdma_buffer_register success\n");
+	}
+
 
 	// Create sge which holds information required by client to access
 	// the buffer allocated above.

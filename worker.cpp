@@ -279,6 +279,7 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblock.sta_idx;
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
+            printf("before submf\n");
             submf();
             printf("after submf\n");
             iter_cnt++;
@@ -1072,7 +1073,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("pb->block_id = %d\n", pb->block_id );
         while (pb->block_id < 0)
         {
-            printf("waiting... block_id = %d\n", pb->block_id );
+            //printf("waiting... block_id = %d\n", pb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);

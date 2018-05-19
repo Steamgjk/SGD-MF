@@ -474,6 +474,10 @@ void CalcUpdt(int td_id)
         //printf("td = %d entercalc\n", td_id );
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
+        while (StartCalcUpdt[td_id] == 0)
+        {
+
+        }
         if (StartCalcUpdt[td_id] == 1)
         {
             printf("enter CalcUpdt\n");

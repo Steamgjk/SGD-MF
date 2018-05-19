@@ -474,9 +474,10 @@ void CalcUpdt(int td_id)
         //printf("td = %d entercalc\n", td_id );
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
+        printf("p_block_idx=%d q_block_idx=%d\n", p_block_idx, q_block_idx );
         while (StartCalcUpdt[td_id] == 0)
         {
-            printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
+            //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         }
@@ -620,6 +621,7 @@ void submf()
 
     int row = Pblock.block_id;
     int col = Qblock.block_id;
+    printf("row=%d col=%d\n", row, col );
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {
         hash_for_row_threads[row][col][td].clear();

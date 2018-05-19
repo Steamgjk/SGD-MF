@@ -491,7 +491,7 @@ int client_rdma_op::start_remote_write(size_t len, size_t offset)
 	rdma_write_wr.wr.rdma.remote_addr = server_metadata_attr.address + offset;
 	rdma_write_wr.wr.rdma.rkey = server_metadata_attr.stag.local_stag;
 
-	printf("Trying to perform RDMA write...\n");
+	debug("Trying to perform RDMA write...\n");
 
 	//while (1 == 1)
 	{

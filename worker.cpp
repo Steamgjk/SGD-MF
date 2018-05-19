@@ -490,10 +490,12 @@ void CalcUpdt(int td_id)
             size_t ctsz;
             rtsz = hash_for_row_threads[p_block_idx][q_block_idx][td_id].size();
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
-            if (rtsz == 0)
+            if (rtsz == 0 || ctsz == 0)
             {
-                printf("p %d q %d\n", p_block_idx, q_block_idx );
-                exit(0);
+                printf("p %d q %d td=%d\n", p_block_idx, q_block_idx, td_id );
+                //exit(0);
+                StartCalcUpdt[td_id] = 0;
+                continue;
             }
             int rand_idx = -1;
             for (times_thresh; times_thresh > 0; times_thresh--)

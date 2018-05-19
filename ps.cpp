@@ -698,6 +698,10 @@ void rdma_sendTd(int send_thread_id)
         //
         //printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        while (canSend[send_thread_id] == false)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
         if (canSend[send_thread_id] == true)
         {
             printf("[%d] canSend\n",  send_thread_id);
@@ -735,11 +739,7 @@ void rdma_sendTd(int send_thread_id)
             }
             canSend[send_thread_id] = false;
         }
-        else
-        {
-            //printf("cannotsend\n");
-            //getchar();
-        }
+
     }
 
     return ret;

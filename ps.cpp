@@ -273,11 +273,11 @@ int main(int argc, const char * argv[])
         {
             canSend[i] = true;
         }
-        printf("canSend! flag ok\n");
+        //printf("canSend! flag ok\n");
         while (recvCount != WORKER_NUM)
         {
-            cout << "RecvCount\t" << recvCount << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //cout << "RecvCount\t" << recvCount << endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
         if (iter_t == 0)
@@ -704,7 +704,7 @@ void rdma_sendTd(int send_thread_id)
         }
         if (canSend[send_thread_id] == true)
         {
-            printf("[%d] canSend\n",  send_thread_id);
+            //printf("[%d] canSend\n",  send_thread_id);
             int pbid = worker_pidx[send_thread_id];
             int qbid = worker_qidx[send_thread_id];
             size_t struct_sz = sizeof( Pblocks[pbid]);
@@ -714,11 +714,11 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf, &(Pblocks[pbid]), struct_sz);
             //printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
-            printf("start send...\n");
+            //printf("start send...\n");
             ret = cro.start_remote_write(total_len, 0);
             if (ret == 0)
             {
-                printf("[Td:%d] send success pbid=%d isP=%d ret =%d\n", send_thread_id, pbid, Pblocks[pbid].isP, ret);
+                //printf("[Td:%d] send success pbid=%d isP=%d ret =%d\n", send_thread_id, pbid, Pblocks[pbid].isP, ret);
             }
             else
             {
@@ -735,7 +735,7 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             if (ret == 0 )
             {
-                printf("[Td:%d] send success qbid=%d isP=%d ret =%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret);
+                //printf("[Td:%d] send success qbid=%d isP=%d ret =%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret);
             }
             canSend[send_thread_id] = false;
         }
@@ -767,7 +767,7 @@ void rdma_recvTd(int recv_thread_id)
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)buf;
-        printf("ps: pb blockid =%d\n", pb->block_id);
+        //printf("ps: pb blockid =%d\n", pb->block_id);
         while (pb->block_id < 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -786,7 +786,7 @@ void rdma_recvTd(int recv_thread_id)
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("successful reve one Block id=%d data_ele=%d\n", pb->block_id, pb->ele_num);
+        //printf("successful reve one Block id=%d data_ele=%d\n", pb->block_id, pb->ele_num);
         pb->block_id = -1;
 
         pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
@@ -808,13 +808,13 @@ void rdma_recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("successful rece another Block\n");
+        //printf("successful rece another Block\n");
 
         pb->block_id = -1;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("recv success time = %lld\n", mksp );
+        //printf("recv success time = %lld\n", mksp );
         recvCount++;
     }
 }

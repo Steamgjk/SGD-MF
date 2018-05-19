@@ -263,6 +263,8 @@ int main(int argc, const char * argv[])
 
     while (1 == 1)
     {
+        printf(" hasRecved? %d\n", hasRecved);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         if (hasRecved)
         {
@@ -1070,7 +1072,7 @@ void rdma_recvTd(int recv_thread_id)
         size_t struct_sz = sizeof(Pblock);
 
         struct Block* pb = (struct Block*)(void*)to_recv_block_mem;
-        printf("pb->block_id = %d\n", pb->block_id );
+        //printf("pb->block_id = %d\n", pb->block_id );
         while (pb->block_id < 0)
         {
             //printf("waiting... block_id = %d\n", pb->block_id );
@@ -1125,6 +1127,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("recv two blocks time = %lld\n", mksp);
 
         hasRecved = true;
+        printf("hasRecved=%d\n", hasRecved );
 
     }
 }

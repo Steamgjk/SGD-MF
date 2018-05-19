@@ -211,18 +211,18 @@ int main(int argc, const char * argv[])
         thresh_log = atoi(argv[2]);
     }
 
-    /*
 
-        StartCalcUpdt.resize(WORKER_THREAD_NUM);
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
-        {
-            StartCalcUpdt[i] = false;
-        }
-        canSend = false;
-        memset(&start, 0, sizeof(struct timeval));
-        memset(&stop, 0, sizeof(struct timeval));
-        memset(&diff, 0, sizeof(struct timeval));
-        **/
+
+    StartCalcUpdt.resize(WORKER_THREAD_NUM);
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        StartCalcUpdt[i] = false;
+    }
+    canSend = false;
+    memset(&start, 0, sizeof(struct timeval));
+    memset(&stop, 0, sizeof(struct timeval));
+    memset(&diff, 0, sizeof(struct timeval));
+
     /*
         std::thread send_thread(sendTd, thread_id);
         send_thread.detach();

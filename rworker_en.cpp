@@ -44,20 +44,20 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
 
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-
+**/
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -66,8 +66,8 @@ std::vector<double> oldQ ;
 
 #define WORKER_THREAD_NUM 30
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -346,14 +346,14 @@ int main(int argc, const char * argv[])
             }
 
             //patch
+            /*
+                        if (thread_id != WORKER_NUM - 1)
+                        {
+                            to_send_tail = (to_send_tail + 1) % QU_LEN;
+                        }
+            **/
 
-            if (thread_id != WORKER_NUM - 1)
-            {
-                to_send_tail = (to_send_tail + 1) % QU_LEN;
-            }
-
-
-            //to_send_tail = (to_send_tail + 1) % QU_LEN;
+            to_send_tail = (to_send_tail + 1) % QU_LEN;
 
             //patch the two above mutual
             has_processed++;
@@ -369,12 +369,12 @@ int main(int argc, const char * argv[])
         }
 
         //patch
-
-        if (thread_id == WORKER_NUM - 1)
-        {
-            to_send_tail =  (to_send_tail + 2) % QU_LEN;
-        }
-
+        /*
+                if (thread_id == WORKER_NUM - 1)
+                {
+                    to_send_tail =  (to_send_tail + 2) % QU_LEN;
+                }
+        **/
 
 
         iter_cnt++;
@@ -596,10 +596,10 @@ void LoadActionConfig(char* fn)
         {
             loc = i * GROUP_NUM + gp;
 
-            //actions[loc] = gp % 2;
+            actions[loc] = gp % 2;
 
             //only one direction  patch
-            actions[loc] = 0;
+            //actions[loc] = 0;
 
         }
     }
@@ -608,25 +608,24 @@ void LoadActionConfig(char* fn)
 void LoadStateConfig(char* fn)
 {
 
+    for (int gp = 0; gp < GROUP_NUM; gp++)
+    {
+        int row = thread_id * GROUP_NUM + gp;
+        int col = DIM_NUM - 1 - ( thread_id * GROUP_NUM + gp);
+        states[gp] = row * DIM_NUM + col;
+        printf("state[%d] %d\n", gp, states[gp] );
+    }
+
+
+    //right patch
     /*
         for (int gp = 0; gp < GROUP_NUM; gp++)
         {
-            int row = thread_id * GROUP_NUM + gp;
-            int col = DIM_NUM - 1 - ( thread_id * GROUP_NUM + gp);
+            int row = thread_id  + gp * WORKER_NUM;
+            int col = DIM_NUM - 1 - row;
             states[gp] = row * DIM_NUM + col;
-            printf("state[%d] %d\n", gp, states[gp] );
         }
     **/
-
-    //right patch
-
-    for (int gp = 0; gp < GROUP_NUM; gp++)
-    {
-        int row = thread_id  + gp * WORKER_NUM;
-        int col = DIM_NUM - 1 - row;
-        states[gp] = row * DIM_NUM + col;
-    }
-
 
 
     for (size_t i = 0; i < SEQ_LEN; i++ )
@@ -638,20 +637,21 @@ void LoadStateConfig(char* fn)
             //printf("loc [%d] act %d\n", loc, actions[loc]);
             if (actions[loc] == 0)
             {
-                /*
-                                to_send[loc] = states[loc] % DIM_NUM;
-                                has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
 
-                                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
-                **/
+                to_send[loc] = states[loc] % DIM_NUM;
+                has_recved[loc] = (to_send[loc] + GROUP_NUM) % DIM_NUM;
+
+                states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + GROUP_NUM) % DIM_NUM);
+
 
 
                 //patch
+                /*
                 to_send[loc] = states[loc] % DIM_NUM;
                 has_recved[loc] = (to_send[loc] + 1) % DIM_NUM;
 
                 states[loc + GROUP_NUM] = (states[loc] / DIM_NUM) * DIM_NUM + ((states[loc] + 1) % DIM_NUM);
-
+                **/
 
 
             }
@@ -664,22 +664,22 @@ void LoadStateConfig(char* fn)
             }
 
             //patch
+            /*
+                        if (thread_id == WORKER_NUM - 1)
+                        {
+                            if (gp == 1)
+                            {
+                                int tmp = states[loc];
+                                states[loc] = states[loc - 1];
+                                states[loc - 1] = tmp;
+                                tmp = to_send[loc] ;
+                                to_send[loc] = to_send[loc - 1];
+                                to_send[loc - 1] = tmp;
 
-            if (thread_id == WORKER_NUM - 1)
-            {
-                if (gp == 1)
-                {
-                    int tmp = states[loc];
-                    states[loc] = states[loc - 1];
-                    states[loc - 1] = tmp;
-                    tmp = to_send[loc] ;
-                    to_send[loc] = to_send[loc - 1];
-                    to_send[loc - 1] = tmp;
+                            }
 
-                }
-
-            }
-
+                        }
+            **/
 
             //
         }

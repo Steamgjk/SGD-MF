@@ -237,6 +237,7 @@ int main(int argc, const char * argv[])
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
 
+    LoadData();
     std::vector<thread> td_vec;
     printf("wait for you for 3s\n");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -245,16 +246,14 @@ int main(int argc, const char * argv[])
         //std::thread td(CalcUpdt, i);
         td_vec.push_back(std::thread(CalcUpdt, i));
     }
-    /*
+    //printf("come here\n");
+    for (int i = 0; i < WORKER_THREAD_NUM; i++)
+    {
+        td_vec[i].detach();
+        printf("%d  has detached\n", i );
+    }
 
-        //printf("come here\n");
-        for (int i = 0; i < WORKER_THREAD_NUM; i++)
-        {
-            td_vec[i].detach();
-            printf("%d  has detached\n", i );
-        }
-    **/
-    LoadData();
+
     while (1 == 1)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));

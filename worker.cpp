@@ -504,7 +504,7 @@ void CalcUpdt(int td_id)
             int rand_idx = -1;
             for (times_thresh; times_thresh > 0; times_thresh--)
             {
-                //printf("times_thresh=%d\n", times_thresh );
+                printf("times_thresh=%d\n", times_thresh );
                 rand_idx = random() % rtsz;
                 long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;

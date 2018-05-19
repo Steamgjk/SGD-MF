@@ -773,7 +773,7 @@ void rdma_recvTd(int recv_thread_id)
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("successful rece one Block data_ele=%d", pb->ele_num);
+        printf("successful reve one Block id=%d data_ele=%d\n", pb->block_id, pb->ele_num);
         pb->block_id = -1;
 
         pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);

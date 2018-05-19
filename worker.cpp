@@ -555,7 +555,7 @@ void CalcUpdt(int td_id)
                     }
                 }
             }
-            printf("Fini %d\n", td_id);
+            //printf("Fini %d\n", td_id);
             StartCalcUpdt[td_id] = false;
 
 
@@ -642,14 +642,13 @@ void submf()
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
-    printf("before set flag p=%d q=%d\n", Pblock.block_id, Qblock.block_id );
-    //getchar();
+
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {
         StartCalcUpdt[ii] = 1;
     }
-    printf("all true then p =%d q=%d\n", Pblock.block_id, Qblock.block_id);
+
     while (1 == 1)
     {
         canbreak = true;
@@ -1062,7 +1061,7 @@ void rdma_recvTd(int recv_thread_id)
             //printf("waiting... block_id = %d\n", pb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);
+        //printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
         Pblock.sta_idx = pb->sta_idx;
@@ -1094,7 +1093,7 @@ void rdma_recvTd(int recv_thread_id)
         Qblock.height = qb->height;
         Qblock.ele_num = qb-> ele_num;
         Qblock.eles.resize(qb->ele_num);
-        printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
+        //printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
         data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
         for (int i = 0; i < Qblock.ele_num; i++)
         {
@@ -1111,7 +1110,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("recv two blocks time = %lld\n", mksp);
 
         hasRecved = true;
-        printf("hasRecved=%d\n", hasRecved );
+        //printf("hasRecved=%d\n", hasRecved );
 
     }
 }

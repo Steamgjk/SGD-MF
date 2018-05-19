@@ -474,16 +474,17 @@ void CalcUpdt(int td_id)
         //printf("td = %d entercalc\n", td_id );
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
-        printf("p_block_idx=%d q_block_idx=%d\n", p_block_idx, q_block_idx );
+        printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
         while (StartCalcUpdt[td_id] == 0)
         {
             //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         }
+        printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
         for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            printf("p %d q %d td=%d  rsz=%ld csz=%ld\n", p_block_idx, q_block_idx, i,  hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size());
+            printf("[%d:] pidx %d qidx %d td=%d  rsz=%ld csz=%ld\n", td_id, p_block_idx, q_block_idx, i,  hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size());
         }
         if (StartCalcUpdt[td_id] == 1)
         {

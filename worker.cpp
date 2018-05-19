@@ -472,17 +472,18 @@ void CalcUpdt(int td_id)
     while (1 == 1)
     {
         //printf("td = %d entercalc\n", td_id );
-        int p_block_idx = Pblock.block_id;
-        int q_block_idx = Qblock.block_id;
-        printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
+
         while (StartCalcUpdt[td_id] == 0)
         {
             //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         }
-        printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, Pblock.block_id, Qblock.block_id );
-        getchar();
+        int p_block_idx = Pblock.block_id;
+        int q_block_idx = Qblock.block_id;
+        printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
+        //printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, Pblock.block_id, Qblock.block_id );
+        //getchar();
         if (StartCalcUpdt[td_id] == 1)
         {
             printf("enter CalcUpdt\n");
@@ -559,11 +560,7 @@ void CalcUpdt(int td_id)
 
 
         }
-        else
-        {
-            //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
-            //getchar();
-        }
+
     }
 
 

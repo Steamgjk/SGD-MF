@@ -36,7 +36,7 @@ using namespace std;
 #define GROUP_NUM 1
 #define DIM_NUM 8
 
-#define BLOCK_MEM_SZ (25000000)
+#define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;

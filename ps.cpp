@@ -47,7 +47,7 @@ using namespace std;
 #define M 65133
 #define K  40 //主题个数
 **/
-#define BLOCK_MEM_SZ (25000000)
+#define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
@@ -706,7 +706,9 @@ void rdma_sendTd(int send_thread_id)
             size_t struct_sz = sizeof( Pblocks[pbid]);
             size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             size_t total_len = struct_sz + data_sz;
+            printf("[%d] canSend check 1\n",  send_thread_id);
             memcpy(buf, &(Pblocks[pbid]), struct_sz);
+            printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
             printf("start send...\n");
             ret = cro.start_remote_write(total_len, 0);

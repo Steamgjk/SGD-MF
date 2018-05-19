@@ -263,8 +263,8 @@ int main(int argc, const char * argv[])
 
     while (1 == 1)
     {
-        printf(" hasRecved? %d\n", hasRecved);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        //printf(" hasRecved? %d\n", hasRecved);
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         if (hasRecved)
         {

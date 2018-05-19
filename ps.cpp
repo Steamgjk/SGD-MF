@@ -305,9 +305,9 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t == 2000)
+        if (iter_t == 1010)
         {
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 102; i++)
             {
                 printf("%lld\n", time_span[i] );
             }

@@ -658,7 +658,7 @@ void submf()
 
             if (StartCalcUpdt[ii] == true)
             {
-                printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
+                //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
                 canbreak = false;
             }
 

@@ -50,7 +50,7 @@ void writeFile(int idx)
 		double rate = iter->second;
 		ofs << hash_id << "\t" << rate << endl;
 		cnt++;
-		if (cnt % 10000 == 0)
+		if (cnt % 100000 == 0)
 		{
 			printf("[%d]:%d\n", idx, cnt );
 		}

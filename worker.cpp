@@ -550,7 +550,7 @@ void CalcUpdt(int td_id)
         }
         else
         {
-            printf("stat - false\n");
+            printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
             getchar();
         }
     }
@@ -628,15 +628,12 @@ void submf()
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
 
-
-
-
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {
         StartCalcUpdt[ii] = true;
     }
-
+    printf("all true\n");
     while (1 == 1)
     {
         canbreak = true;

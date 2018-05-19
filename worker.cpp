@@ -573,6 +573,7 @@ void submf()
     printf("copy Q fin ele=%ld\n", oldQ.size());
     for (int i = 0; i < Psz; i++)
     {
+        printf("[%d]:%lf\n", i, oldP[i] );
         if (oldP[i] > 100 || oldP[i] < -100)
         {
             printf("P Exception! [%d] %lf\n", i, oldP[i]);

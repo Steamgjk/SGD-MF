@@ -481,6 +481,10 @@ void CalcUpdt(int td_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         }
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            printf("p %d q %d td=%d  rsz=%ld csz=%ld\n", p_block_idx, q_block_idx, i,  hash_for_row_threads[p_block_idx][q_block_idx][i].size(), hash_for_col_threads[p_block_idx][q_block_idx][i].size());
+        }
         if (StartCalcUpdt[td_id] == 1)
         {
             printf("enter CalcUpdt\n");

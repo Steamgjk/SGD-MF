@@ -1453,9 +1453,8 @@ void rdma_recvTd(int recv_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         gettimeofday(&st, 0);
-        struct Block* pb = (struct Block*)(void*)blockBuf;
         size_t data_sz = sizeof(double) * (pb->ele_num);
-        char* dataBuf = buf + struct_sz;
+        double* data_eles  = (double*) (void*)(buf + struct_sz);
 
         if (block_p_or_q == 0)
         {

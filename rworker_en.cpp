@@ -1382,6 +1382,7 @@ void rdma_sendTd(int send_thread_id)
 
     char*buf = NULL;
     size_t offset = 0;
+    struct timeval st, et, tspan;
     while (1 == 1)
     {
         if (to_send_head < to_send_tail)

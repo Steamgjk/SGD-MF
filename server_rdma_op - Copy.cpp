@@ -10,24 +10,29 @@
 
 #include "server_rdma_op.h"
 
-server_rdma_op::server_rdma_op()
-{
-
-}
-server_rdma_op::~server_rdma_op()
-{
-
-}
-
 /* These are the RDMA resources needed to setup an RDMA connection */
 /* Event channel, where connection management (cm) related events are relayed */
+static struct rdma_event_channel *cm_event_channel = NULL;
+static struct rdma_cm_id *cm_server_id = NULL, *cm_client_id = NULL;
+static struct ibv_pd *pd = NULL;
+static struct ibv_comp_channel *io_completion_channel = NULL;
+static struct ibv_cq *cq = NULL;
+static struct ibv_qp_init_attr qp_init_attr;
+static struct ibv_qp *client_qp = NULL;
+/* RDMA memory resources */
+static struct ibv_mr *client_metadata_mr = NULL, *server_buffer_mr = NULL, *server_metadata_mr = NULL;
+static struct rdma_buffer_attr client_metadata_attr, server_metadata_attr;
+static struct ibv_recv_wr client_recv_wr, *bad_client_recv_wr = NULL;
+static struct ibv_sge client_recv_sge;
 
+static char* buf_for_rwrite = NULL;
+static char* block_mem[BLOCK_NUM];
 /* When we call this function cm_client_id must be set to a valid identifier.
  * This is where, we prepare client connection before we accept it. This
  * mainly involve pre-posting a receive buffer to receive client side
  * RDMA credentials
  */
-int server_rdma_op::setup_client_resources()
+int setup_client_resources()
 {
 	int ret = -1;
 	if (!cm_client_id)
@@ -127,7 +132,7 @@ int server_rdma_op::setup_client_resources()
 }
 
 /* Starts an RDMA server by allocating basic connection resources */
-int server_rdma_op::start_rdma_server(struct sockaddr_in *server_addr)
+int start_rdma_server(struct sockaddr_in *server_addr)
 {
 	struct rdma_cm_event *cm_event = NULL;
 	int ret = -1;
@@ -206,7 +211,7 @@ int server_rdma_op::start_rdma_server(struct sockaddr_in *server_addr)
 }
 
 /* Pre-posts a receive buffer and accepts an RDMA client connection */
-int server_rdma_op::accept_client_connection()
+int accept_client_connection()
 {
 	struct rdma_conn_param conn_param;
 	struct rdma_cm_event *cm_event = NULL;
@@ -289,9 +294,104 @@ int server_rdma_op::accept_client_connection()
 	return ret;
 }
 
+/* This function sends server side buffer metadata to the connected client */
+int send_server_metadata_to_client()
+{
+	int ret = -1;
 
+	// At this point we expect to have one work completion; the receival of
+	// client meta data.
+	struct ibv_wc wc[1];
+	ret = process_work_completion_events(io_completion_channel, wc, 1);
+	if (ret != 1)
+	{
+		rdma_error("We failed to get 1 work completions , ret = %d \n", ret);
+		return ret;
+	}
 
-int server_rdma_op::send_server_metadata_to_client1(void* buf_to_rwrite, size_t buf_sz)
+	debug("Client side buffer information is received...\n");
+	show_rdma_buffer_attr(&client_metadata_attr);
+	debug("The client has requested buffer length of : %d bytes\n", client_metadata_attr.length);
+
+	// Allocate buffer to be used by client for RDMA.
+	//buf_for_rwrite = calloc(client_metadata_attr.length, 0);
+	buf_for_rwrite = block_mem[0];
+	debug("Before register buf = %s   %p\n", buf_for_rwrite, buf_for_rwrite);
+	server_buffer_mr = rdma_buffer_alloc1(pd, buf_for_rwrite, client_metadata_attr.length,
+	                                      (IBV_ACCESS_REMOTE_READ |
+	                                       IBV_ACCESS_LOCAL_WRITE | // Must be set when REMOTE_WRITE is set.
+	                                       IBV_ACCESS_REMOTE_WRITE));
+
+	// Prepare memory region which will be sent to client,
+	// holding information required to access buffer allocated above.
+	server_metadata_attr.address = (uint64_t)server_buffer_mr->addr;
+	server_metadata_attr.length = server_buffer_mr->length;
+	server_metadata_attr.stag.local_stag = server_buffer_mr->lkey;
+	server_metadata_mr = rdma_buffer_register(pd,
+	                     &server_metadata_attr,
+	                     sizeof(server_metadata_attr),
+	                     IBV_ACCESS_LOCAL_WRITE);
+	if (!server_metadata_mr)
+	{
+		rdma_error("Failed to register the server metadata buffer, ret = %d \n", -errno);
+		return -errno;
+	}
+
+	// Create sge which holds information required by client to access
+	// the buffer allocated above.
+	struct ibv_sge server_send_sge;
+	server_send_sge.addr = (uint64_t)server_metadata_mr->addr;
+	server_send_sge.length = server_metadata_mr->length;
+	server_send_sge.lkey = server_metadata_mr->lkey;
+
+	// Create work request to send to client
+	struct ibv_send_wr server_send_wr;
+	bzero(&server_send_wr, sizeof(server_send_wr));
+	server_send_wr.sg_list = &server_send_sge;
+	server_send_wr.num_sge = 1;
+	server_send_wr.opcode = IBV_WR_SEND;
+	// This is what's used on the client.
+	// sq_sig_all is (implicitly) set to 0, so according to the docs (
+	// man ibv_post_send(3)) this should be OK.
+	server_send_wr.send_flags = IBV_SEND_SIGNALED;
+
+	// Create WR used by ibv_post_send(3) to tell us which of the WRs
+	// given was bad. Since we give only one value, it should be
+	// bad_wr == server_send_wr in case of an error and
+	// bad_wr == NULL if everything's OK.
+	struct ibv_send_wr *bad_wr = NULL;
+
+	//change  to 5
+	int* tmp_cnt = (int*)(void*)buf_for_rwrite;
+	*tmp_cnt = (int)(-1);
+	debug("tmp_cnt=%d\n", *tmp_cnt );
+	// Send WR to client.
+	ret = ibv_post_send(client_qp, &server_send_wr, &bad_wr);
+	debug("After11  post send  to sleep\n");
+	long long L1, L2;
+	struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+	L1 = tv.tv_sec * 1000 * 1000 + tv.tv_usec;
+	int sh = 1;
+	gettimeofday(&tv, NULL);
+	L2 = tv.tv_sec * 1000 * 1000 + tv.tv_usec;
+	printf("%d ops  duration =  %lld  micro seconds \n", (*tmp_cnt), L2 - L1);
+
+	if (ret)
+	{
+		rdma_error("Failed to send server metadata, errno: %d\n", -ret);
+		return -ret;
+	}
+
+	// Here, we could check how many work completions we have on our
+	// io_completion_channel, to "ensure" that everything went well.
+	// This is done in rdma_client.c->client_send_metadata_to_server.
+	// I guess we don't really have to do that.
+	return 0;
+}
+
+int send_server_metadata_to_client1(void* buf_to_rwrite, size_t buf_sz)
 {
 	int ret = -1;
 
@@ -375,7 +475,7 @@ int server_rdma_op::send_server_metadata_to_client1(void* buf_to_rwrite, size_t 
 
 /* This is server side logic. Server passively waits for the client to call
  * rdma_disconnect() and then it will clean up its resources */
-int server_rdma_op::disconnect_and_cleanup()
+int disconnect_and_cleanup()
 {
 	struct rdma_cm_event *cm_event = NULL;
 	int ret = -1;
@@ -446,9 +546,79 @@ int server_rdma_op::disconnect_and_cleanup()
 
 
 
+int server_test_main(int argc, char **argv)
+{
+	for (int i = 0; i < BLOCK_NUM ; i++)
+	{
+		block_mem[i] = calloc(BLOCK_SZ, 1);
+	}
+	int ret, option;
+	struct sockaddr_in server_sockaddr;
+	bzero(&server_sockaddr, sizeof server_sockaddr);
+	server_sockaddr.sin_family = AF_INET; /* standard IP NET address */
+	server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY); /* passed address */
+
+	get_addr("12.12.10.16", (struct sockaddr*) &server_sockaddr);
+	server_sockaddr.sin_port = htons(DEFAULT_RDMA_PORT); /* use default port */
+
+	ret = start_rdma_server(&server_sockaddr);
+	if (ret)
+	{
+		rdma_error("RDMA server failed to start cleanly, ret = %d \n", ret);
+		return ret;
+	}
+	ret = setup_client_resources();
+	if (ret)
+	{
+		rdma_error("Failed to setup client resources, ret = %d \n", ret);
+		return ret;
+	}
+	ret = accept_client_connection();
+	if (ret)
+	{
+		rdma_error("Failed to handle client cleanly, ret = %d \n", ret);
+		return ret;
+	}
+	ret = send_server_metadata_to_client();
+	if (ret)
+	{
+		rdma_error("Failed to send server metadata to the client, ret = %d \n", ret);
+		return ret;
+	}
+	int* buf = (void*)block_mem[0];
+	while (1 == 1)
+	{
+		printf("buf=%d\n", *buf);
+		if (*buf > 0 )
+		{
+			printf("recv=%d\n", *buf );
+			char* ddata = (void*)buf;
+			ddata = ddata + sizeof(int);
+			double* real_data = (void*)ddata;
+			for (int j = 0; j < *buf; j++)
+			{
+				printf("%lf", real_data[j]);
+			}
+			printf("\n");
+		}
+		else
+		{
+			printf("no data\n");
+		}
+		sleep(1);
+	}
+	ret = disconnect_and_cleanup();
+	if (ret)
+	{
+		rdma_error("Failed to clean up resources properly, ret = %d \n", ret);
+		return ret;
+	}
+	return 0;
+}
 
 
-int server_rdma_op::rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz)
+
+int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t register_sz)
 {
 	int ret, option;
 	struct sockaddr_in server_sockaddr;

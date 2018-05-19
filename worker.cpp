@@ -551,6 +551,7 @@ void CalcUpdt(int td_id)
         else
         {
             printf("stat - false\n");
+            getchar();
         }
     }
 

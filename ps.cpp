@@ -738,6 +738,7 @@ void rdma_sendTd(int send_thread_id)
         else
         {
             printf("cannotsend\n");
+            getchar();
         }
     }
 

@@ -490,7 +490,7 @@ void CalcUpdt(int td_id)
                 exit(0);
             }
             int rand_idx = -1;
-            while (times_thresh--)
+            for (times_thresh; times_thresh > 0; times_thresh--)
             {
                 //printf("times_thresh=%d\n", times_thresh );
                 rand_idx = random() % rtsz;
@@ -543,15 +543,15 @@ void CalcUpdt(int td_id)
                     }
                 }
             }
-            //printf("Fini %d\n", td_id);
+            printf("Fini %d\n", td_id);
             StartCalcUpdt[td_id] = 0;
 
 
         }
         else
         {
-            printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
-            getchar();
+            //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
+            //getchar();
         }
     }
 

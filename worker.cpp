@@ -476,6 +476,8 @@ void CalcUpdt(int td_id)
         int q_block_idx = Qblock.block_id;
         while (StartCalcUpdt[td_id] == 0)
         {
+            printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         }
         if (StartCalcUpdt[td_id] == 1)

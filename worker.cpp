@@ -244,8 +244,8 @@ int main(int argc, const char * argv[])
     int iter_cnt = 0;
     bool isstart = false;
     std::vector<thread> td_vec;
-    printf("wait for you for 3s\n");
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    //printf("wait for you for 3s\n");
+    //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
         //std::thread td(CalcUpdt, i);
@@ -1070,7 +1070,8 @@ void rdma_recvTd(int recv_thread_id)
         printf("pb->block_id = %d\n", pb->block_id );
         while (pb->block_id < 0)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            printf("waiting... block_id = %d\n", pb->block_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;

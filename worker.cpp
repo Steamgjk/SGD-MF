@@ -985,26 +985,27 @@ void rdma_sendTd(int send_thread_id)
     get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
     server_sockaddr.sin_port = htons(remote_port);
 
-    ret = client_prepare_connection(&server_sockaddr);
+    client_rdma_op cro;
+    ret = cro.client_prepare_connection(&server_sockaddr);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-    ret = client_pre_post_recv_buffer();
+    ret = cro.client_pre_post_recv_buffer();
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-    ret = client_connect_to_server();
+    ret = cro.client_connect_to_server();
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
 
-    ret = client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
+    ret = cro.client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
@@ -1039,7 +1040,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf, &(Qblock), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
 
-            ret = start_remote_write(total_len, BLOCK_MEM_SZ);
+            ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             printf("writer another block\n");
             canSend = false;
         }

@@ -8,33 +8,16 @@
 
 #include "client_rdma_op.h"
 
+client_rdma_op::client_rdma_op()
+{
 
+}
+client_rdma_op::~client_rdma_op()
+{
 
-static char* block_mem[BLOCK_NUM];
-
-/* These are basic RDMA resources */
-/* These are RDMA connection related resources */
-static struct rdma_event_channel *cm_event_channel = NULL;
-static struct rdma_cm_id *cm_client_id = NULL;
-static struct ibv_pd *pd = NULL;
-static struct ibv_comp_channel *io_completion_channel = NULL;
-static struct ibv_cq *client_cq = NULL;
-static struct ibv_qp_init_attr qp_init_attr;
-static struct ibv_qp *client_qp;
-/* These are memory buffers related resources */
-static struct ibv_mr *client_metadata_mr = NULL,
-	                      *client_src_mr = NULL,
-	                       *client_dst_mr = NULL,
-	                        *server_metadata_mr = NULL;
-static struct rdma_buffer_attr client_metadata_attr, server_metadata_attr;
-static struct ibv_send_wr client_send_wr, *bad_client_send_wr = NULL;
-static struct ibv_recv_wr server_recv_wr, *bad_server_recv_wr = NULL;
-static struct ibv_sge client_send_sge, server_recv_sge;
-/* Source and Destination buffers, where RDMA operations source and sink */
-static char *src = NULL, *dst = NULL;
-
+}
 /* This is our testing function */
-int check_src_dst()
+int client_rdma_op::check_src_dst()
 {
 	debug("src: '%s'\n", src);
 	debug("dst: '%s'\n", dst);
@@ -46,7 +29,7 @@ int check_src_dst()
 }
 
 /* This function prepares client side connection resources for an RDMA connection */
-int client_prepare_connection(struct sockaddr_in *s_addr)
+int client_rdma_op::client_prepare_connection(struct sockaddr_in *s_addr)
 {
 	struct rdma_cm_event *cm_event = NULL;
 	int ret = -1;
@@ -199,7 +182,7 @@ int client_prepare_connection(struct sockaddr_in *s_addr)
 }
 
 /* Pre-posts a receive buffer before calling rdma_connect () */
-int client_pre_post_recv_buffer()
+int client_rdma_op::client_pre_post_recv_buffer()
 {
 	int ret = -1;
 	server_metadata_mr = rdma_buffer_register(pd,
@@ -232,7 +215,7 @@ int client_pre_post_recv_buffer()
 }
 
 /* Connects to the RDMA server */
-int client_connect_to_server()
+int client_rdma_op::client_connect_to_server()
 {
 	struct rdma_conn_param conn_param;
 	struct rdma_cm_event *cm_event = NULL;
@@ -275,7 +258,7 @@ int client_connect_to_server()
 
 /* Send client side src buffer metadata to the server. This metadata on
  * the server side is unused. This is shown for the illustration purpose. */
-int client_send_metadata_to_server()
+int client_rdma_op::client_send_metadata_to_server()
 {
 	struct ibv_wc wc[2];
 	int ret = -1;
@@ -337,7 +320,7 @@ int client_send_metadata_to_server()
 	return 0;
 }
 
-int client_send_metadata_to_server1(void* send_buf, size_t send_sz)
+int client_rdma_op::client_send_metadata_to_server1(void* send_buf, size_t send_sz)
 {
 	struct ibv_wc wc[2];
 	int ret = -1;
@@ -405,7 +388,7 @@ int client_send_metadata_to_server1(void* send_buf, size_t send_sz)
  * 1) RDMA write from src -> remote buffer
  * 2) RDMA read from remote bufer -> dst
  */
-int client_remote_memory_ops()
+int client_rdma_op::client_remote_memory_ops()
 {
 	int ret = -1;
 
@@ -479,7 +462,7 @@ int client_remote_memory_ops()
 	return 0;
 }
 
-int start_remote_write(size_t len, size_t offset)
+int client_rdma_op::start_remote_write(size_t len, size_t offset)
 {
 	int ret = -1;
 
@@ -539,7 +522,7 @@ int start_remote_write(size_t len, size_t offset)
 /* This function disconnects the RDMA connection from the server and cleans up
  * all the resources.
  */
-int client_disconnect_and_clean()
+int client_rdma_op::client_disconnect_and_clean()
 {
 	struct rdma_cm_event *cm_event = NULL;
 	int ret = -1;
@@ -609,73 +592,4 @@ int client_disconnect_and_clean()
 	return 0;
 }
 
-
-int test_main(int argc, char **argv)
-{
-	for (int i = 0; i < BLOCK_NUM ; i++)
-	{
-		block_mem[i] = (char*)calloc(BLOCK_SZ, 1);
-	}
-	struct sockaddr_in server_sockaddr;
-	int ret, option;
-	bzero(&server_sockaddr, sizeof server_sockaddr);
-	server_sockaddr.sin_family = AF_INET;
-	server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-	/* buffers are NULL */
-	src = dst = NULL;
-
-	get_addr("12.12.10.16", (struct sockaddr*) &server_sockaddr);
-	server_sockaddr.sin_port = htons(DEFAULT_RDMA_PORT);
-	//src = calloc(INT_SIZE , 1);
-	//dst = calloc(INT_SIZE, 1);
-
-	src = block_mem[0];
-	debug("currently src(int) = %d", *((int*)(void*)src));
-	ret = client_prepare_connection(&server_sockaddr);
-	if (ret)
-	{
-		rdma_error("Failed to setup client connection , ret = %d \n", ret);
-		return ret;
-	}
-	ret = client_pre_post_recv_buffer();
-	if (ret)
-	{
-		rdma_error("Failed to setup client connection , ret = %d \n", ret);
-		return ret;
-	}
-	ret = client_connect_to_server();
-	if (ret)
-	{
-		rdma_error("Failed to setup client connection , ret = %d \n", ret);
-		return ret;
-	}
-
-	ret = client_send_metadata_to_server();
-	if (ret)
-	{
-		rdma_error("Failed to setup client connection , ret = %d \n", ret);
-		return ret;
-	}
-
-	ret = client_remote_memory_ops();
-	if (ret)
-	{
-		rdma_error("Failed to finish remote memory ops, ret = %d \n", ret);
-		return ret;
-	}
-	if (check_src_dst() != 0)
-	{
-		rdma_error("src and dst buffers do not match \n");
-	}
-	else
-	{
-		printf("...\nSUCCESS, source and destination buffers match \n");
-	}
-	ret = client_disconnect_and_clean();
-	if (ret)
-	{
-		rdma_error("Failed to cleanly disconnect and clean up resources \n");
-	}
-	return ret;
-}
 

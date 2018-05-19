@@ -626,7 +626,6 @@ void rdma_sendTd(int send_thread_id)
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     char* remote_ip = remote_ips[send_thread_id];
     int remote_port = remote_ports[send_thread_id];
-
     struct sockaddr_in server_sockaddr;
     int ret, option;
     bzero(&server_sockaddr, sizeof server_sockaddr);
@@ -635,21 +634,22 @@ void rdma_sendTd(int send_thread_id)
 
     get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
     server_sockaddr.sin_port = htons(remote_port);
+    client_rdma_op cro;
     printf("prepare conn\n");
-    ret = client_prepare_connection(&server_sockaddr);
+    ret = cro.client_prepare_connection(&server_sockaddr);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
 
-    ret = client_pre_post_recv_buffer();
+    ret = cro.client_pre_post_recv_buffer();
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-    ret = client_connect_to_server();
+    ret = cro.client_connect_to_server();
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
@@ -659,7 +659,7 @@ void rdma_sendTd(int send_thread_id)
 
     size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
     char* buf = to_send_block_mem + offset;
-    ret = client_send_metadata_to_server1(buf, BLOCK_MEM_SZ * 2);
+    ret = cro.client_send_metadata_to_server1(buf, BLOCK_MEM_SZ * 2);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
@@ -684,7 +684,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf, &(Pblocks[pbid]), struct_sz);
             memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
 
-            ret = start_remote_write(total_len, 0);
+            ret = cro.start_remote_write(total_len, 0);
             if (ret == 0)
             {
                 printf("sendok onePblock\n");
@@ -701,7 +701,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + BLOCK_MEM_SZ, &(Qblocks[qbid]), struct_sz);
             memcpy(buf + BLOCK_MEM_SZ + struct_sz , (char*) & (Qblocks[qbid].eles[0]), data_sz);
 
-            ret = start_remote_write(total_len, BLOCK_MEM_SZ);
+            ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d ret =%d\n", send_thread_id, qbid, ret);

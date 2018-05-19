@@ -93,7 +93,7 @@ int main()
 		{
 			ifstest >> movie_id >> rate >> tmpstr >> tmpstr;
 			long hash_id = user_id * M + movie_id;
-			ofstest << hash_id << "\t" << rate << end;
+			ofstest << hash_id << "\t" << rate << endl;
 			test_cnt++;
 			if (test_cnt % 10000 == 0)
 			{

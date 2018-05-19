@@ -660,11 +660,13 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
+    /*
     while (1 == 1)
     {
         printf("rdma_sendTd\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    **/
 
     while (1 == 1)
     {
@@ -717,12 +719,13 @@ void rdma_recvTd(int recv_thread_id)
     server_rdma_op sro;
 
     int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
-
+    /*
     while (1 == 1)
     {
         printf("before enter rdma_recvTd\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    **/
     while (1 == 1)
     {
         printf("recving ...\n");

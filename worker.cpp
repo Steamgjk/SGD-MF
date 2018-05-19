@@ -999,13 +999,13 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-
+    /*
     while (1 == 1)
     {
         printf("send loop\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-
+    **/
     size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
     char*buf = NULL;
     while (1 == 1)
@@ -1044,13 +1044,13 @@ void rdma_recvTd(int recv_thread_id)
     printf("rdma_recvTd:rdma_server_init...\n");
     int*flag = (int*)(void*)to_recv_block_mem;
     size_t offset = recv_thread_id * BLOCK_MEM_SZ;
-
+    /*
     while (1 == 1)
     {
         printf("recv loop\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-
+    **/
     while (1 == 1)
     {
         printf("recv loop\n");

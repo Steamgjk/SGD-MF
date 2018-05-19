@@ -192,7 +192,9 @@ int main(int argc, const char * argv[])
         std::thread send_thread(rdma_sendTd, send_thread_id);
         send_thread.detach();
     }
+    printf("wait foe 10s\n");
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     srand(1);
     //LoadTestRating();
     //printf("Load Complete\n");

@@ -66,13 +66,13 @@ char* to_recv_block_mem;
 #define M 1000000
 #define K  100 //主题个数
 
-
+#define CAP 200
 #define WORKER_NUM 1
-char* remote_ips[10] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
-int remote_ports[10] = {4411, 4412, 4413, 4414};
+char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
+int remote_ports[CAP] = {4411, 4412, 4413, 4414};
 
-char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
-int local_ports[10] = {5511, 5512, 5513, 5514};
+char* local_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
+int local_ports[CAP] = {5511, 5512, 5513, 5514};
 
 
 #define ThreshIter 1000

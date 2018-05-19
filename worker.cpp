@@ -250,10 +250,11 @@ int main(int argc, const char * argv[])
     }
     /*
         LoadData();
-        printf("Load Rating Success\n");
-        int iter_cnt = 0;
-        bool isstart = false;
         **/
+    printf("Load Rating Success\n");
+    int iter_cnt = 0;
+    bool isstart = false;
+
 
     while (1 == 1)
     {

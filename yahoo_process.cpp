@@ -121,13 +121,13 @@ int main()
 				col = DIM_SZ - 1;
 			}
 			long hash_id = user_id * M + movie_id;
-			OutTrainF[row * DIM_SZ + col].insert(pair<long, double>(hash_id, rate));
+			OutPutTrain[row * DIM_SZ + col].insert(pair<long, double>(hash_id, rate));
 		}
 
 	}
 	for (int i = 0; i < DIM_SZ * DIM_SZ; i++)
 	{
-		std::thread WriteTd(writeFile, thread_id);
+		std::thread WriteTd(writeFile, i);
 		WriteTd.detach();
 	}
 

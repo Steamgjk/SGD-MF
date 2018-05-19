@@ -212,6 +212,13 @@ int main(int argc, const char * argv[])
         thresh_log = atoi(argv[2]);
     }
 
+    std::thread recv_thread(rdma_recvTd, thread_id);
+    recv_thread.detach();
+
+    printf("wait for you for 3s\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    std::thread send_thread(rdma_sendTd, thread_id);
+    send_thread.detach();
 
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -232,16 +239,11 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     **/
 
+    int iter_cnt = 0;
+    bool isstart = false;
 
     LoadData();
     printf("Load Rating Success\n");
-    int iter_cnt = 0;
-    bool isstart = false;
-    std::thread recv_thread(rdma_recvTd, thread_id);
-    recv_thread.detach();
-
-    std::thread send_thread(rdma_sendTd, thread_id);
-    send_thread.detach();
 
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");

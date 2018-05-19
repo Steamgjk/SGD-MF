@@ -169,11 +169,30 @@ int main(int argc, const char * argv[])
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
     InitFlag();
 
+
     //gen P and Q
     if (argc == 2)
     {
         WORKER_NUM = atoi(argv[1]) ;
     }
+
+    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+    {
+
+        std::thread recv_thread(rdma_recvTd, recv_thread_id);
+        recv_thread.detach();
+    }
+
+
+    printf("wait for you for 3s\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+    {
+        std::thread send_thread(rdma_sendTd, send_thread_id);
+        send_thread.detach();
+    }
+
     srand(1);
     //LoadTestRating();
     //printf("Load Complete\n");
@@ -215,18 +234,7 @@ int main(int argc, const char * argv[])
     }
     **/
 
-    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
-    {
 
-        std::thread recv_thread(rdma_recvTd, recv_thread_id);
-        recv_thread.detach();
-    }
-
-    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
-    {
-        std::thread send_thread(rdma_sendTd, send_thread_id);
-        send_thread.detach();
-    }
 
     /*
         std::thread send_thread(rdma_sendTd, 2);

@@ -482,7 +482,7 @@ void CalcUpdt(int td_id)
 
         }
         printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
-
+        getchar();
         if (StartCalcUpdt[td_id] == 1)
         {
             printf("enter CalcUpdt\n");

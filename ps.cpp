@@ -675,7 +675,7 @@ void rdma_sendTd(int send_thread_id)
     get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
     server_sockaddr.sin_port = htons(remote_port);
     client_rdma_op cro;
-    printf("prepare conn\n");
+    printf("prepare conn remote_ip=%s  remote_port=%d\n", remote_ip, remote_port);
     ret = cro.client_prepare_connection(&server_sockaddr);
     if (ret)
     {

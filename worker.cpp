@@ -201,6 +201,11 @@ std::vector<double> rates_for_col_threads[10][10][WORKER_THREAD_NUM];
 int main(int argc, const char * argv[])
 {
 
+    for (int i = 0; i < CAP; i++)
+    {
+        local_ports[i] = 4411 + i;
+        remote_ports[i] = 5511 + i;
+    }
     int thresh_log = 2000;
     thread_id = atoi(argv[1]);
     to_send_block_mem = (void*)malloc(MEM_SIZE);

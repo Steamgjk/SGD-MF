@@ -31,7 +31,7 @@
 #include "server_rdma_op.h"
 #include "client_rdma_op.h"
 using namespace std;
-#define CAP 30
+#define CAP 200
 //#define FILE_NAME "./netflix_row.txt"
 //#define TEST_NAME "./test_out.txt"
 //#define N  17770 // row number
@@ -164,7 +164,11 @@ long long time_span[300];
 
 int main(int argc, const char * argv[])
 {
-
+    for (int i = 0; i < CAP; i++)
+    {
+        local_ports[i] = 4411 + i;
+        remote_ports[i] = 5511 + i;
+    }
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );

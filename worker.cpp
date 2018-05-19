@@ -1004,6 +1004,10 @@ void rdma_sendTd(int send_thread_id)
     char*buf = NULL;
     while (1 == 1)
     {
+        while (canSend == false)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
         if (canSend)
         {
             buf = to_send_block_mem;

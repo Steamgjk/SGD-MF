@@ -60,7 +60,7 @@ int setup_client_resources()
 		           -errno);
 		return -errno;
 	}
-	debug("A new protection domain is allocated at %p \n", pd);
+	printf("A new protection domain is allocated at %p \n", pd);
 	/* Now we need a completion channel, were the I/O completion
 	 * notifications are sent. Remember, this is different from connection
 	 * management (CM) event notifications.
@@ -206,7 +206,7 @@ int start_rdma_server(struct sockaddr_in *server_addr)
 		rdma_error("Failed to acknowledge the cm event errno: %d \n", -errno);
 		return -errno;
 	}
-	debug("A new RDMA client connection id is stored at %p\n", cm_client_id);
+	printf("A new RDMA client connection id is stored at %p\n", cm_client_id);
 	return ret;
 }
 
@@ -625,10 +625,10 @@ int rdma_server_init(char* local_ip, int local_port, void* register_buf, size_t 
 	bzero(&server_sockaddr, sizeof server_sockaddr);
 	server_sockaddr.sin_family = AF_INET; /* standard IP NET address */
 
-
+	//original
 	//server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY); /* passed address */
 	//get_addr(local_ip, (struct sockaddr*) &server_sockaddr);
-
+//////////////////////////////////////////////
 	server_sockaddr.sin_addr.s_addr = INADDR_ANY;
 	server_sockaddr.sin_port = htons(local_port); /* use default port */
 	printf("local_ip=%s  local_port = %d\n", local_ip, local_port );

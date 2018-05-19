@@ -41,7 +41,7 @@
 
 #define ACN_RDMA_DEBUG
 
-#define debug(msg, args...)
+#define debug(msg, args...) fprintf(stderr, "%s : %d : DEBUG : " msg, __FILE__, __LINE__, ##args);
 
 
 /* Capacity of the completion queue (CQ) */

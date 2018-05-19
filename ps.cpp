@@ -695,10 +695,11 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
         //
-        printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        //printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         if (canSend[send_thread_id])
         {
+            printf("[%d] canSend\n",  send_thread_id);
             int pbid = worker_pidx[send_thread_id];
             int qbid = worker_qidx[send_thread_id];
             size_t struct_sz = sizeof( Pblocks[pbid]);
@@ -706,7 +707,7 @@ void rdma_sendTd(int send_thread_id)
             size_t total_len = struct_sz + data_sz;
             memcpy(buf, &(Pblocks[pbid]), struct_sz);
             memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
-
+            printf("start send...\n");
             ret = cro.start_remote_write(total_len, 0);
             if (ret == 0)
             {

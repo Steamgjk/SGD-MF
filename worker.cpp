@@ -1073,7 +1073,7 @@ void rdma_recvTd(int recv_thread_id)
             printf("waiting... block_id = %d\n", pb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        printf("get one\n");
+        printf("get one id=%d  ele_num=%d\n", pb->block_id, pb->ele_num);
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
         Pblock.sta_idx = pb->sta_idx;

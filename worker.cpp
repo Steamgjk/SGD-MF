@@ -235,71 +235,71 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
-
-    std::vector<thread> td_vec;
-    for (int i = 0; i < WORKER_THREAD_NUM; i++)
-    {
-        //std::thread td(CalcUpdt, i);
-        td_vec.push_back(std::thread(CalcUpdt, i));
-    }
-    //printf("come here\n");
-    for (int i = 0; i < WORKER_THREAD_NUM; i++)
-    {
-        td_vec[i].detach();
-        printf("%d  has detached\n", i );
-    }
     /*
-        LoadData();
-        **/
-    printf("Load Rating Success\n");
-    int iter_cnt = 0;
-    bool isstart = false;
-
-
-    while (1 == 1)
-    {
-
-        if (hasRecved)
+        std::vector<thread> td_vec;
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
         {
-            printf("has Received\n");
-            if (!isstart)
-            {
-                isstart = true;
-                gettimeofday(&start, 0);
-            }
-
-            //SGD
-            int row_sta_idx = Pblock.sta_idx;
-            int row_len = Pblock.height;
-            int col_sta_idx = Qblock.sta_idx;
-            int col_len = Qblock.height;
-            int ele_num = row_len * col_len;
-            submf();
-            printf("after submf\n");
-            iter_cnt++;
-
-            /*
-            if (iter_cnt % 10 == 0)
-            {
-                WriteLog(Pblock, Qblock, iter_cnt);
-            }
-            **/
-
-            if (iter_cnt == thresh_log )
-            {
-                gettimeofday(&stop, 0);
-
-                long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
-                printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
-                //WriteLog(Pblock, Qblock, iter_cnt);
-                //exit(0);
-            }
-            canSend = true;
-            hasRecved = false;
-
+            //std::thread td(CalcUpdt, i);
+            td_vec.push_back(std::thread(CalcUpdt, i));
         }
-    }
+        //printf("come here\n");
+        for (int i = 0; i < WORKER_THREAD_NUM; i++)
+        {
+            td_vec[i].detach();
+            printf("%d  has detached\n", i );
+        }
 
+        LoadData();
+
+        printf("Load Rating Success\n");
+        int iter_cnt = 0;
+        bool isstart = false;
+
+
+        while (1 == 1)
+        {
+
+            if (hasRecved)
+            {
+                printf("has Received\n");
+                if (!isstart)
+                {
+                    isstart = true;
+                    gettimeofday(&start, 0);
+                }
+
+                //SGD
+                int row_sta_idx = Pblock.sta_idx;
+                int row_len = Pblock.height;
+                int col_sta_idx = Qblock.sta_idx;
+                int col_len = Qblock.height;
+                int ele_num = row_len * col_len;
+                submf();
+                printf("after submf\n");
+                iter_cnt++;
+    **/
+    /*
+    if (iter_cnt % 10 == 0)
+    {
+        WriteLog(Pblock, Qblock, iter_cnt);
+    }
+    **/
+    /*
+                if (iter_cnt == thresh_log )
+                {
+                    gettimeofday(&stop, 0);
+
+                    long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
+                    printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
+                    //WriteLog(Pblock, Qblock, iter_cnt);
+                    //exit(0);
+                }
+                canSend = true;
+                hasRecved = false;
+
+            }
+        }
+    **/
 
 }
 void LoadRmatrix(int file_no, map<long, double>& myMap)

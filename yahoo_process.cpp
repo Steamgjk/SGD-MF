@@ -27,14 +27,15 @@
 using namespace std;
 #define N 1000990
 #define M 624961
-#define DIM_SZ 4
+#define DIM_SZ 8
 #define TrainF "./yahoo/trainIdx1.txt"
 #define TestF "./yahoo/testIdx1.txt"
 std::map<long, double> Rmap;
 std::map<long, double> RTest;
 std::map<long, double> OutPutTrain[DIM_SZ * DIM_SZ];
 
-#define OutTrainF "./yahoo-output/train-"
+//#define OutTrainF "./yahoo-output/train-"
+#define OutTrainF "./yahoo-output64/train-"
 #define OutTestF "./yahoo-output/test"
 
 void writeFile(int idx)

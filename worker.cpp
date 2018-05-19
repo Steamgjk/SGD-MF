@@ -231,8 +231,8 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     **/
 
-    std::thread send_thread(rdma_sendTd, thread_id);
-    send_thread.detach();
+    //std::thread send_thread(rdma_sendTd, thread_id);
+    //send_thread.detach();
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();

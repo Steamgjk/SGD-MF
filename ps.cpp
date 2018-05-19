@@ -217,8 +217,8 @@ int main(int argc, const char * argv[])
 
     for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
     {
-        std::thread send_thread(rdma_sendTd, send_thread_id);
-        send_thread.detach();
+        //std::thread send_thread(rdma_sendTd, send_thread_id);
+        //send_thread.detach();
     }
     for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
     {

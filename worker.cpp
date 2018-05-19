@@ -233,16 +233,16 @@ int main(int argc, const char * argv[])
     **/
 
 
+    LoadData();
+    printf("Load Rating Success\n");
+    int iter_cnt = 0;
+    bool isstart = false;
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
 
     std::thread send_thread(rdma_sendTd, thread_id);
     send_thread.detach();
 
-    LoadData();
-    printf("Load Rating Success\n");
-    int iter_cnt = 0;
-    bool isstart = false;
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");
     //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -255,8 +255,9 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
         td_vec[i].detach();
-        printf("%d  has detached\n", i );
+        //printf("%d  has detached\n", i );
     }
+    printf("detached well\n");
 
     while (1 == 1)
     {
@@ -1094,7 +1095,7 @@ void rdma_recvTd(int recv_thread_id)
         pb->block_id = -1;
 
         struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
-        while (pb->block_id < 0)
+        while (qb->block_id < 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }

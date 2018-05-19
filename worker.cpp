@@ -239,6 +239,9 @@ int main(int argc, const char * argv[])
     send_thread.detach();
 
     LoadData();
+    printf("Load Rating Success\n");
+    int iter_cnt = 0;
+    bool isstart = false;
     std::vector<thread> td_vec;
     printf("wait for you for 3s\n");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -254,65 +257,50 @@ int main(int argc, const char * argv[])
         printf("%d  has detached\n", i );
     }
 
-
     while (1 == 1)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    /*
 
-
-
-
-        printf("Load Rating Success\n");
-        int iter_cnt = 0;
-        bool isstart = false;
-
-
-        while (1 == 1)
+        if (hasRecved)
         {
-
-            if (hasRecved)
+            printf("has Received\n");
+            if (!isstart)
             {
-                printf("has Received\n");
-                if (!isstart)
-                {
-                    isstart = true;
-                    gettimeofday(&start, 0);
-                }
-
-                //SGD
-                int row_sta_idx = Pblock.sta_idx;
-                int row_len = Pblock.height;
-                int col_sta_idx = Qblock.sta_idx;
-                int col_len = Qblock.height;
-                int ele_num = row_len * col_len;
-                submf();
-                printf("after submf\n");
-                iter_cnt++;
-    **/
-    /*
-    if (iter_cnt % 10 == 0)
-    {
-        WriteLog(Pblock, Qblock, iter_cnt);
-    }
-    **/
-    /*
-                if (iter_cnt == thresh_log )
-                {
-                    gettimeofday(&stop, 0);
-
-                    long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
-                    printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
-                    //WriteLog(Pblock, Qblock, iter_cnt);
-                    //exit(0);
-                }
-                canSend = true;
-                hasRecved = false;
-
+                isstart = true;
+                gettimeofday(&start, 0);
             }
+
+            //SGD
+            int row_sta_idx = Pblock.sta_idx;
+            int row_len = Pblock.height;
+            int col_sta_idx = Qblock.sta_idx;
+            int col_len = Qblock.height;
+            int ele_num = row_len * col_len;
+            submf();
+            printf("after submf\n");
+            iter_cnt++;
+
+            /*
+            if (iter_cnt % 10 == 0)
+            {
+                WriteLog(Pblock, Qblock, iter_cnt);
+            }
+            **/
+
+            if (iter_cnt == thresh_log )
+            {
+                gettimeofday(&stop, 0);
+
+                long long mksp = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
+                printf("itercnt = %d  time = %lld\n", iter_cnt, mksp);
+                //WriteLog(Pblock, Qblock, iter_cnt);
+                //exit(0);
+            }
+            canSend = true;
+            hasRecved = false;
+
         }
-    **/
+    }
+
 
 }
 void LoadRmatrix(int file_no, map<long, double>& myMap)

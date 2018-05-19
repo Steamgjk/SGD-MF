@@ -187,7 +187,7 @@ void InitFlag();
 
 int thread_id = -1;
 struct timeval start, stop, diff;
-vector<int> StartCalcUpdt;
+vector<bool> StartCalcUpdt;
 map<long, double> RMap;
 map<long, double> RMaps[8][8];
 
@@ -224,7 +224,7 @@ int main(int argc, const char * argv[])
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
-        StartCalcUpdt[i] = 0;
+        StartCalcUpdt[i] = false;
     }
     canSend = false;
     memset(&start, 0, sizeof(struct timeval));
@@ -473,7 +473,7 @@ void CalcUpdt(int td_id)
     {
         //printf("td = %d entercalc\n", td_id );
 
-        while (StartCalcUpdt[td_id] == 0)
+        while (StartCalcUpdt[td_id] == false)
         {
             //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -484,7 +484,7 @@ void CalcUpdt(int td_id)
         //printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
         //printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, Pblock.block_id, Qblock.block_id );
         //getchar();
-        if (StartCalcUpdt[td_id] == 1)
+        if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
             int times_thresh = 1000;
@@ -498,7 +498,7 @@ void CalcUpdt(int td_id)
             {
                 printf("p %d q %d td=%d\n", p_block_idx, q_block_idx, td_id );
                 //exit(0);
-                StartCalcUpdt[td_id] = 0;
+                StartCalcUpdt[td_id] = false;
                 continue;
             }
             int rand_idx = -1;
@@ -556,7 +556,7 @@ void CalcUpdt(int td_id)
                 }
             }
             printf("Fini %d\n", td_id);
-            StartCalcUpdt[td_id] = 0;
+            StartCalcUpdt[td_id] = false;
 
 
         }

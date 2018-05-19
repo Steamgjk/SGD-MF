@@ -192,12 +192,13 @@ int main(int argc, const char * argv[])
         std::thread send_thread(rdma_sendTd, send_thread_id);
         send_thread.detach();
     }
-    printf("wait foe 10s\n");
+    printf("wait for 5s\n");
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     srand(1);
     //LoadTestRating();
     //printf("Load Complete\n");
+    printf("start work\n");
     partitionP(WORKER_NUM, Pblocks);
     partitionQ(WORKER_NUM, Qblocks);
     for (int i = 0; i < WORKER_NUM; i++)
@@ -260,12 +261,12 @@ int main(int argc, const char * argv[])
         bool ret = false;
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
-        /*
-                for (int i = 0; i < WORKER_NUM; i++)
-                {
-                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-                }
-        **/
+
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+        }
+
 
         for (int i = 0; i < WORKER_NUM; i++)
         {

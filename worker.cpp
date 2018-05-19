@@ -1035,6 +1035,8 @@ void rdma_recvTd(int recv_thread_id)
 {
     printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
+
+    printf("rdma_recvTd:rdma_server_init...\n");
     int*flag = (int*)(void*)to_recv_block_mem;
     size_t offset = recv_thread_id * BLOCK_MEM_SZ;
 

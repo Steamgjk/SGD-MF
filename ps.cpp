@@ -272,7 +272,7 @@ int main(int argc, const char * argv[])
         {
             canSend[i] = true;
         }
-
+        printf("canSend! flag ok\n");
         while (recvCount != WORKER_NUM)
         {
             //cout << "RecvCount\t" << recvCount << endl;
@@ -694,8 +694,8 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
         //
-        //printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         if (canSend[send_thread_id])
         {
             int pbid = worker_pidx[send_thread_id];

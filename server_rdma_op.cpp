@@ -323,7 +323,7 @@ int server_rdma_op::send_server_metadata_to_client1(void* buf_to_rwrite, size_t 
 	server_metadata_attr.length = server_buffer_mr->length;
 	server_metadata_attr.stag.local_stag = server_buffer_mr->lkey;
 	debug("before server_metadata_mr\n");
-	getchar();
+	//getchar();
 	server_metadata_mr = rdma_buffer_register(pd,
 	                     &server_metadata_attr,
 	                     sizeof(server_metadata_attr),

@@ -235,6 +235,11 @@ int main(int argc, const char * argv[])
 
     std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
+
+    while (1 == 1)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
     /*
         std::vector<thread> td_vec;
         for (int i = 0; i < WORKER_THREAD_NUM; i++)

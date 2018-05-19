@@ -126,7 +126,7 @@ int main()
 			long hash_id = user_id * M + movie_id;
 			OutPutTrain[row * DIM_SZ + col].insert(pair<long, double>(hash_id, rate));
 			test_cnt++;
-			if (test_cnt % 10000 == 0)
+			if (test_cnt % 100000 == 0)
 			{
 				printf("test_cnt=%d\n", test_cnt );
 			}

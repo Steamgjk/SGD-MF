@@ -600,7 +600,7 @@ void partitionP(int portion_num,  Block * Pblocks)
             Pblocks[i].height = last_height;
         }
         Pblocks[i].sta_idx = sta_idx;
-        printf("i-%d sta_idx-%d\n", i, sta_idx );
+        //printf("i-%d sta_idx-%d\n", i, sta_idx );
         Pblocks[i].ele_num = Pblocks[i].height * K;
         Pblocks[i].eles.resize(Pblocks[i].ele_num);
     }
@@ -693,6 +693,8 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
         //
+        printf("[%d]  canSend? %d\n", send_thread, canSend[send_thread_id] );
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         if (canSend[send_thread_id])
         {
             int pbid = worker_pidx[send_thread_id];

@@ -82,7 +82,7 @@ int main()
 	{
 		for (int j = 0; j < DIM_SZ; j++)
 		{
-			OutTrainF[i * DIM_SZ + j].clear();
+			OutPutTrain[i * DIM_SZ + j].clear();
 		}
 	}
 	int test_cnt = 0;

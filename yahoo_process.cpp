@@ -48,7 +48,7 @@ void writeFile(int idx)
 	{
 		long hash_id = iter->first;
 		double rate = iter->second;
-		ofs << hash_id << "\t" << endl;
+		ofs << hash_id << "\t" << rate << endl;
 		cnt++;
 		if (cnt % 10000 == 0)
 		{

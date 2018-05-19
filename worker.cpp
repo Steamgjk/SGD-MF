@@ -664,7 +664,6 @@ void submf()
         }
         **/
 
-    printf("come\n");
 
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)

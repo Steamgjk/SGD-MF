@@ -1,4 +1,4 @@
-all: ps worker
+all: ps worker rworker_en
 CC=g++
 TARGET = ps
 TARGET1 = worker

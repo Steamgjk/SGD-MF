@@ -719,7 +719,9 @@ void rdma_recvTd(int recv_thread_id)
     printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     char* buf = to_recv_block_mem + recv_thread_id * BLOCK_MEM_SZ * 2;
 
-    int ret = rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
+    server_rdma_op sro;
+
+    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
 
     while (1 == 1)
     {

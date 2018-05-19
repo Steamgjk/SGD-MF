@@ -517,7 +517,7 @@ int start_remote_write(size_t len, size_t offset)
 
 		if (ret == 12)
 		{
-			debug("ret = %d  cnt=%d *src =%d\n", ret, cnt, *src);
+			debug("ret = %d\n", ret);
 			sleep(1);
 		}
 

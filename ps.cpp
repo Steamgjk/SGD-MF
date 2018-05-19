@@ -674,7 +674,7 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-    printf("connect  ok\n");
+    printf("[%d] connect  ok\n", send_thread_id);
 
     size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
     char* buf = to_send_block_mem + offset;
@@ -684,6 +684,7 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
+    printf("[%d]client_send_metadata_to_server1  ok\n", send_thread_id);
     /*
     while (1 == 1)
     {

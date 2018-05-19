@@ -652,7 +652,7 @@ void submf()
     {
         StartCalcUpdt[ii] = 1;
     }
-    printf("all true\n");
+    printf("all true then p =%d q=%d\n", Pblock.block_id, Qblock.block_id);
     while (1 == 1)
     {
         canbreak = true;

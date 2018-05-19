@@ -281,9 +281,9 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblock.sta_idx;
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
-            printf("before submf\n");
+            //printf("before submf\n");
             submf();
-            printf("after submf\n");
+            //printf("after submf\n");
             iter_cnt++;
 
             /*
@@ -578,11 +578,11 @@ void submf()
 
     int Psz = Pblock.height * K;
     int Qsz = Qblock.height * K;
-    printf("copying ...\n");
+    //printf("copying ...\n");
     oldP = Pblock.eles;
-    printf("copy P fin ele=%ld Psz = %d Ph=%d K=%d\n", oldP.size(), Psz, Pblock.height, K);
+    //printf("copy P fin ele=%ld Psz = %d Ph=%d K=%d\n", oldP.size(), Psz, Pblock.height, K);
     oldQ = Qblock.eles;
-    printf("copy Q fin ele=%ld Qsz=%d Qh=%d  K=%d\n", oldQ.size(), Qsz, Qblock.height, K);
+    //printf("copy Q fin ele=%ld Qsz=%d Qh=%d  K=%d\n", oldQ.size(), Qsz, Qblock.height, K);
     //getchar();
     for (int i = 0; i < Psz; i++)
     {
@@ -604,7 +604,7 @@ void submf()
         }
 
     }
-    printf("enter submf22\n");
+    //printf("enter submf22\n");
     struct timeval beg, ed;
     long long mksp;
     gettimeofday(&beg, 0);
@@ -619,7 +619,7 @@ void submf()
 
     int row = Pblock.block_id;
     int col = Qblock.block_id;
-    printf("row=%d col=%d\n", row, col );
+    //printf("row=%d col=%d\n", row, col );
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {
         hash_for_row_threads[row][col][td].clear();
@@ -1017,7 +1017,7 @@ void rdma_sendTd(int send_thread_id)
             size_t total_len = struct_sz + data_sz;
             struct timeval st, et, tspan;
             ret = cro.start_remote_write(total_len, 0);
-            printf("writer one block\n");
+            //printf("writer one block\n");
 
             buf = to_send_block_mem + BLOCK_MEM_SZ;
             data_sz = sizeof(double) * Qblock.ele_num;
@@ -1026,7 +1026,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
 
             ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
-            printf("writer another block\n");
+            //printf("writer another block\n");
             canSend = false;
         }
     }

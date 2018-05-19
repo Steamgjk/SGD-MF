@@ -695,8 +695,8 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
         //
-        //printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         if (canSend[send_thread_id])
         {
             printf("[%d] canSend\n",  send_thread_id);

@@ -568,13 +568,13 @@ void submf()
     int Qsz = Qblock.height * K;
     printf("copying ...\n");
     oldP = Pblock.eles;
-    printf("copy P fin ele=%ld\n", oldP.size());
+    printf("copy P fin ele=%ld Psz = %d Ph=%d K=%d\n", oldP.size(), Psz, Pblock.height, K);
     oldQ = Qblock.eles;
-    printf("copy Q fin ele=%ld\n", oldQ.size());
-    getchar();
+    printf("copy Q fin ele=%ld Qsz=%d Qh=%d  K=%d\n", oldQ.size(), Qsz, Qblock.height, K);
+    //getchar();
     for (int i = 0; i < Psz; i++)
     {
-        printf("[%d]:%lf\n", i, oldP[i] );
+        //printf("[%d]:%lf\n", i, oldP[i] );
         if (oldP[i] > 100 || oldP[i] < -100)
         {
             printf("P Exception! [%d] %lf\n", i, oldP[i]);

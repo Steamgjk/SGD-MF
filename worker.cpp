@@ -474,7 +474,7 @@ void CalcUpdt(int td_id)
         //printf("td = %d entercalc\n", td_id );
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
-        if (StartCalcUpdt[td_id])
+        if (StartCalcUpdt[td_id] == true)
         {
             printf("enter CalcUpdt\n");
             int times_thresh = 1000;
@@ -547,6 +547,10 @@ void CalcUpdt(int td_id)
             StartCalcUpdt[td_id] = false;
 
 
+        }
+        else
+        {
+            printf("stat - false\n");
         }
     }
 
@@ -624,45 +628,6 @@ void submf()
     printf("Load time = %lld\n", mksp);
 
 
-    /*
-        {
-            //hash_ids.clear();
-            //rates.clear();
-            int pid = Pblock.block_id;
-            int qid = Qblock.block_id;
-            map<long, double>::iterator myiter = RMaps[pid][qid].begin();
-            long ridx = 0;
-            long cidx = 0;
-            for (int i = 0; i < WORKER_THREAD_NUM; i++)
-            {
-                hash_for_row_threads[i].clear();
-                hash_for_col_threads[i].clear();
-                rates_for_row_threads[i].clear();
-                rates_for_col_threads[i].clear();
-            }
-
-
-            //while (myiter != RMap.end())
-            while (myiter !=  RMaps[pid][qid].end())
-            {
-                //hash_ids.push_back(myiter->first);
-                //rates.push_back(myiter->second);
-                ridx = ((myiter->first) / M);
-                cidx = ((myiter->first) % M);
-                ridx = ridx % WORKER_THREAD_NUM;
-                cidx = cidx % WORKER_THREAD_NUM;
-
-                hash_for_row_threads[ridx].push_back(myiter->first);
-                rates_for_row_threads[ridx].push_back(myiter->second);
-                hash_for_col_threads[cidx].push_back(myiter->first);
-                rates_for_col_threads[cidx].push_back(myiter->second);
-
-                myiter++;
-            }
-
-
-        }
-        **/
 
 
     bool canbreak = true;

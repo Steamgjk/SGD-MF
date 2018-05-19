@@ -1031,7 +1031,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
             size_t total_len = struct_sz + data_sz;
             struct timeval st, et, tspan;
-            ret = start_remote_write(total_len, 0);
+            ret = cro.start_remote_write(total_len, 0);
             printf("writer one block\n");
 
             buf = to_send_block_mem + BLOCK_MEM_SZ;

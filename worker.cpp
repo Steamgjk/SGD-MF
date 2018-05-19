@@ -248,11 +248,12 @@ int main(int argc, const char * argv[])
         td_vec[i].detach();
         printf("%d  has detached\n", i );
     }
-
-    LoadData();
-    printf("Load Rating Success\n");
-    int iter_cnt = 0;
-    bool isstart = false;
+    /*
+        LoadData();
+        printf("Load Rating Success\n");
+        int iter_cnt = 0;
+        bool isstart = false;
+        **/
     /*
         while (1 == 1)
         {

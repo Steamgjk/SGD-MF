@@ -234,6 +234,14 @@ int main(int argc, const char * argv[])
     DIM_NUM = GROUP_NUM * WORKER_NUM;
     to_send_head = to_send_tail = recved_head = recved_tail = has_processed = 0;
 
+    to_recv_block_mem = (char*)malloc(MEM_SIZE);
+    to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
+
+    std::thread recv_thread(rdma_recvTd, thread_id);
+    recv_thread.detach();
+    std::thread send_thread(rdma_sendTd, thread_id);
+    send_thread.detach();
+
     LoadActionConfig(ACTION_NAME);
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
@@ -250,10 +258,13 @@ int main(int argc, const char * argv[])
     std::thread data_read_thread(readData, thread_id);
     data_read_thread.detach();
 
-    std::thread send_thread(sendTd, thread_id);
-    send_thread.detach();
-    std::thread recv_thread(recvTd, thread_id);
-    recv_thread.detach();
+    /*
+        std::thread recv_thread(recvTd, thread_id);
+        recv_thread.detach();
+        std::thread send_thread(sendTd, thread_id);
+        send_thread.detach();
+    **/
+
 
     partitionP(DIM_NUM, Pblocks);
     partitionQ(DIM_NUM, Qblocks);
@@ -1374,7 +1385,7 @@ void rdma_sendTd(int send_thread_id)
         return ret;
     }
 
-    ret = cro.client_send_metadata_to_server1(to_send_block_mem, MEM_SIZE);
+    ret = cro.client_send_metadata_to_server1(to_send_block_mem, BLOCK_MEM_SZ);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);

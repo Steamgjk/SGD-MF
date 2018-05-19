@@ -637,12 +637,14 @@ void submf()
     LoadRequiredData(row, col, f2);
     LoadRequiredData(row, col, f3);
     LoadRequiredData(row, col, f4);
+    /*
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {
         {
             printf("[%d][%d] %ld\n", row, col, hash_for_row_threads[row][col][td] );
         }
     }
+    **/
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);

@@ -187,7 +187,7 @@ void InitFlag();
 
 int thread_id = -1;
 struct timeval start, stop, diff;
-vector<bool> StartCalcUpdt;
+vector<int> StartCalcUpdt;
 map<long, double> RMap;
 map<long, double> RMaps[8][8];
 

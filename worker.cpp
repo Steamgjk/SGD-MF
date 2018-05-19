@@ -656,9 +656,9 @@ void submf()
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
 
-            if (StartCalcUpdt[ii] == 1)
+            if (StartCalcUpdt[ii] == true)
             {
-                //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
+                printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
                 canbreak = false;
             }
 

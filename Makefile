@@ -3,7 +3,7 @@ CC=g++
 TARGET = ps
 TARGET1 = worker
 LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm
-CFLAGS=-O2 -Wall -g -fpermissive -std=c++11
+CFLAGS=-Wall -g -fpermissive -std=c++11
 OBJS=ps.o server_rdma_op.o client_rdma_op.o rdma_common.o
 OBJS1=worker.o server_rdma_op.o client_rdma_op.o rdma_common.o
 

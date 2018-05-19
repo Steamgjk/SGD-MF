@@ -1067,6 +1067,7 @@ void rdma_recvTd(int recv_thread_id)
         size_t struct_sz = sizeof(Pblock);
 
         struct Block* pb = (struct Block*)(void*)to_recv_block_mem;
+        printf("pb->block_id = %d\n", pb->block_id );
         while (pb->block_id < 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -1087,7 +1088,8 @@ void rdma_recvTd(int recv_thread_id)
                 printf("P Exception!\n");
             }
         }
-
+        //reset flag
+        pb->block_id = -1;
 
         struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
         while (pb->block_id < 0)
@@ -1112,6 +1114,7 @@ void rdma_recvTd(int recv_thread_id)
             }
         }
 
+        qb->block_id = -1;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("recv two blocks time = %lld\n", mksp);

@@ -744,7 +744,7 @@ void rdma_recvTd(int recv_thread_id)
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)buf;
-
+        printf("ps: pb blockid =%d\n", pb->block_id);
         while (pb->block_id < 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -764,7 +764,7 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         printf("successful rece one Block data_ele=%d", pb->ele_num);
-
+        pb->block_id = -1;
 
         pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
 
@@ -786,6 +786,8 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         printf("successful rece another Block\n");
+
+        pb->block_id = -1;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

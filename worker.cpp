@@ -68,13 +68,17 @@ char* to_recv_block_mem;
 
 #define CAP 200
 #define WORKER_NUM 1
+#define WORKER_N_1 4
+#define QP_GROUP 2
+
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};
 
 char* local_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[CAP] = {5511, 5512, 5513, 5514};
 
-
+int send_round_robin_idx = 0;
+int recv_round_robin_idx = 0;
 #define ThreshIter 1000
 #define SEQ_LEN 5000
 #define WORKER_THREAD_NUM 30
@@ -216,14 +220,24 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
+    for (int i = 0; i < QP_GROUP; i++)
+    {
+        int th_id = thread_id + i * WORKER_N_1;
+        std::thread recv_thread(rdma_recvTd, th_id);
+        recv_thread.detach();
+    }
 
-    std::thread recv_thread(rdma_recvTd, thread_id);
-    recv_thread.detach();
 
     printf("wait for you for 3s\n");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    std::thread send_thread(rdma_sendTd, thread_id);
-    send_thread.detach();
+
+    for (int i = 0; i < QP_GROUP; i++)
+    {
+        int th_id = thread_id + i * WORKER_N_1;
+        std::thread send_thread(rdma_sendTd, th_id);
+        send_thread.detach();
+    }
+
 
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -309,6 +323,7 @@ int main(int argc, const char * argv[])
             }
             canSend = true;
             hasRecved = false;
+
 
         }
     }
@@ -959,7 +974,7 @@ void rdma_sendTd(int send_thread_id)
     printf("worker send_thread_id=%d\n", send_thread_id);
     printf("worker send waiting for 3s...\n");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    char* remote_ip = remote_ips[send_thread_id];
+    char* remote_ip = remote_ips[send_thread_id % WORKER_N_1];
     int remote_port = remote_ports[send_thread_id];
 
     struct sockaddr_in server_sockaddr;
@@ -1012,6 +1027,10 @@ void rdma_sendTd(int send_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        if (send_round_robin_idx != send_thread_id)
+        {
+            continue;
+        }
         if (canSend)
         {
             buf = to_send_block_mem;
@@ -1032,6 +1051,7 @@ void rdma_sendTd(int send_thread_id)
 
             ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             //printf("writer another block\n");
+            send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
         }
     }
@@ -1039,9 +1059,9 @@ void rdma_sendTd(int send_thread_id)
 }
 void rdma_recvTd(int recv_thread_id)
 {
-    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
+    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id % WORKER_N_1], local_ports[recv_thread_id]);
     server_rdma_op sro;
-    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
+    int ret = sro.rdma_server_init(local_ips[recv_thread_id % WORKER_N_1], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
 
     printf("rdma_recvTd:rdma_server_init...\n");
     int*flag = (int*)(void*)to_recv_block_mem;
@@ -1054,6 +1074,10 @@ void rdma_recvTd(int recv_thread_id)
     **/
     while (1 == 1)
     {
+        if (recv_round_robin_idx != recv_thread_id)
+        {
+            continue;
+        }
         //printf("recv loop\n");
         struct timeval st, et;
         gettimeofday(&st, 0);
@@ -1064,7 +1088,7 @@ void rdma_recvTd(int recv_thread_id)
         while (pb->block_id < 0)
         {
             //printf("waiting... block_id = %d\n", pb->block_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         //printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);
         Pblock.block_id = pb->block_id;
@@ -1113,7 +1137,7 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("recv two blocks time = %lld\n", mksp);
-
+        recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
         //printf("hasRecved=%d\n", hasRecved );
 

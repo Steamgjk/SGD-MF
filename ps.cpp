@@ -59,6 +59,9 @@ char* to_recv_block_mem;
 #define M 1000000
 #define K  100 //主题个数
 
+#define QP_GROUP 2
+int send_round_robin_idx = 0;
+int recv_round_robin_idx = 0;
 
 int WORKER_NUM = 4;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
@@ -164,6 +167,8 @@ long long time_span[300];
 
 int main(int argc, const char * argv[])
 {
+    send_round_robin_idx = 0;
+    recv_round_robin_idx = 0;
     for (int i = 0; i < CAP; i++)
     {
         local_ports[i] = 4411 + i;
@@ -181,22 +186,30 @@ int main(int argc, const char * argv[])
         WORKER_NUM = atoi(argv[1]) ;
     }
 
-    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+    for (int gp = 0; gp < QP_GROUP; gp++)
     {
-
-        std::thread recv_thread(rdma_recvTd, recv_thread_id);
-        recv_thread.detach();
+        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+        {
+            int thid = recv_thread_id + gp * WORKER_NUM;
+            std::thread recv_thread(rdma_recvTd, thid);
+            recv_thread.detach();
+        }
     }
+
 
 
     printf("wait for you for 3s\n");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-
-    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+    for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        std::thread send_thread(rdma_sendTd, send_thread_id);
-        send_thread.detach();
+        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+        {
+            int thid = send_thread_id + gp * WORKER_NUM;
+            std::thread send_thread(rdma_sendTd, thid);
+            send_thread.detach();
+        }
     }
+
     printf("wait for 5s\n");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
@@ -284,6 +297,7 @@ int main(int argc, const char * argv[])
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
+
         if (iter_t == 0)
         {
             gettimeofday(&beg, 0);
@@ -306,6 +320,9 @@ int main(int argc, const char * argv[])
 
             }
             //printf("iter_t=%d\n", iter_t );
+            send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
+            recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
+
             recvCount = 0;
         }
         iter_t++;
@@ -647,7 +664,7 @@ void rdma_sendTd(int send_thread_id)
     printf("ps  send_thread_id=%d\n", send_thread_id);
     //printf("ps send waiting for 3s...\n");
     //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    char* remote_ip = remote_ips[send_thread_id];
+    char* remote_ip = remote_ips[send_thread_id % WORKER_NUM];
     int remote_port = remote_ports[send_thread_id];
     struct sockaddr_in server_sockaddr;
     int ret, option;
@@ -680,7 +697,7 @@ void rdma_sendTd(int send_thread_id)
     }
     printf("[%d] connect  ok\n", send_thread_id);
 
-    size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
+    size_t offset = (send_thread_id % WORKER_NUM) * BLOCK_MEM_SZ * 2;
     char* buf = to_send_block_mem + offset;
     ret = cro.client_send_metadata_to_server1(buf, BLOCK_MEM_SZ * 2);
     if (ret)
@@ -699,7 +716,10 @@ void rdma_sendTd(int send_thread_id)
 
     while (1 == 1)
     {
-        //
+        if (send_round_robin_idx != send_thread_id / WORKER_NUM)
+        {
+            continue;
+        }
         //printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         while (canSend[send_thread_id] == false)
@@ -752,12 +772,12 @@ void rdma_sendTd(int send_thread_id)
 }
 void rdma_recvTd(int recv_thread_id)
 {
-    printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
+    printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d", recv_thread_id, local_ips[recv_thread_id % WORKER_NUM], local_ports[recv_thread_id]);
     char* buf = to_recv_block_mem + recv_thread_id * BLOCK_MEM_SZ * 2;
 
     server_rdma_op sro;
 
-    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
+    int ret = sro.rdma_server_init(local_ips[recv_thread_id % WORKER_NUM], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
     /*
     while (1 == 1)
     {
@@ -767,6 +787,10 @@ void rdma_recvTd(int recv_thread_id)
     **/
     while (1 == 1)
     {
+        if (recv_round_robin_idx != recv_thread_id / WORKER_NUM)
+        {
+            continue;
+        }
         //printf("recving ...\n");
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);

@@ -401,7 +401,7 @@ int main(int argc, const char * argv[])
 
         iter_cnt++;
 
-        printf("iterddd %d\n", iter_cnt );
+        //printf("iterddd %d\n", iter_cnt );
 
         if (iter_cnt == 2000)
         {
@@ -978,7 +978,7 @@ void SGD_MF()
         }
 
     }
-    printf("comere hhe\n");
+    //printf("comere hhe\n");
     for (int i = 0; i < Qblocks[q_block_idx].ele_num; i++)
     {
         if (oldQ[i] > 100 || oldQ[i] < -100)
@@ -1433,7 +1433,7 @@ void rdma_sendTd(int send_thread_id)
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
+            //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
 
             to_send_head = (to_send_head + 1) % QU_LEN;
         }
@@ -1503,7 +1503,7 @@ void rdma_recvTd(int recv_thread_id)
         pb->block_id = -1;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
+        //printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
         offset = (offset + BLOCK_MEM_SZ) % (MEM_SIZE);
         recved_head = (recved_head + 1) % QU_LEN;
 

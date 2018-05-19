@@ -224,7 +224,7 @@ int main(int argc, const char * argv[])
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {
-        StartCalcUpdt[i] = false;
+        StartCalcUpdt[i] = 0;
     }
     canSend = false;
     memset(&start, 0, sizeof(struct timeval));
@@ -474,7 +474,7 @@ void CalcUpdt(int td_id)
         //printf("td = %d entercalc\n", td_id );
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
-        if (StartCalcUpdt[td_id] == true)
+        if (StartCalcUpdt[td_id] == 1)
         {
             printf("enter CalcUpdt\n");
             int times_thresh = 1000;
@@ -544,7 +544,7 @@ void CalcUpdt(int td_id)
                 }
             }
             //printf("Fini %d\n", td_id);
-            StartCalcUpdt[td_id] = false;
+            StartCalcUpdt[td_id] = 0;
 
 
         }
@@ -631,7 +631,7 @@ void submf()
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {
-        StartCalcUpdt[ii] = true;
+        StartCalcUpdt[ii] = 1;
     }
     printf("all true\n");
     while (1 == 1)
@@ -640,7 +640,7 @@ void submf()
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
 
-            if (StartCalcUpdt[ii])
+            if (StartCalcUpdt[ii] == 1)
             {
                 //printf("ii=%d, %d \n", ii, StartCalcUpdt[ii] );
                 canbreak = false;

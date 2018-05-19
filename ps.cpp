@@ -708,7 +708,7 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(total_len, 0);
             if (ret == 0)
             {
-                printf("sendok onePblock\n");
+                printf("[Td:%d] send success pbid=%d isP=%d ret =%d\n", send_thread_id, pbid, Pblocks[pbid].isP, ret);
             }
             else
             {
@@ -725,7 +725,7 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             if (ret == 0 )
             {
-                printf("[Td:%d] send success qbid=%d ret =%d\n", send_thread_id, qbid, ret);
+                printf("[Td:%d] send success qbid=%d isP=%d ret =%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret);
             }
             canSend[send_thread_id] = false;
         }

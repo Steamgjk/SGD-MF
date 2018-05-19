@@ -1054,7 +1054,6 @@ void rdma_recvTd(int recv_thread_id)
 
     printf("rdma_recvTd:rdma_server_init...\n");
     int*flag = (int*)(void*)to_recv_block_mem;
-    size_t offset = recv_thread_id * BLOCK_MEM_SZ;
     /*
     while (1 == 1)
     {
@@ -1076,7 +1075,7 @@ void rdma_recvTd(int recv_thread_id)
             printf("waiting... block_id = %d\n", pb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        printf("get one id=%d  ele_num=%d\n", pb->block_id, pb->ele_num);
+        printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
         Pblock.sta_idx = pb->sta_idx;

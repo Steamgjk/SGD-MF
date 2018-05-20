@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
 
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int recv_thread_id = 1; recv_thread_id < 3; recv_thread_id++)
+        for (int recv_thread_id = 1; recv_thread_id < WORKER_NUM; recv_thread_id++)
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
@@ -203,7 +203,7 @@ int main(int argc, const char * argv[])
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int send_thread_id = 1; send_thread_id < 3; send_thread_id++)
+        for (int send_thread_id = 1; send_thread_id < WORKER_NUM; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
             std::thread send_thread(rdma_sendTd, thid);
@@ -344,13 +344,13 @@ void InitFlag()
 {
     size_t offset = 0;
     char* sta = to_recv_block_mem;
-    Block* bk = NULL;
+    int* bk = NULL;
     for (int i = 0; i < 8; i++)
     {
         offset = i * BLOCK_MEM_SZ;
         sta = to_recv_block_mem + offset;
-        bk = (Block*)(void*)sta;
-        bk->block_id = -1;
+        bk = (int*)(void*)sta;
+        bk = -1;
     }
 }
 void WriteLog(Block & Pb, Block & Qb, int iter_cnt)

@@ -1027,7 +1027,7 @@ void rdma_sendTd(int send_thread_id)
         char* real_sta_buf = to_send_block_mem + sizeof(int);
         if (canSend)
         {
-            /*
+
             buf = to_send_block_mem;
 
             p_data_sz = sizeof(double) * Pblock.ele_num;
@@ -1037,16 +1037,16 @@ void rdma_sendTd(int send_thread_id)
             total_len = p_total + q_total;
             real_total = total_len + sizeof(int) + sizeof(int);
             char* real_sta_buf = buf + sizeof(int);
+            /*
+                        memcpy(real_sta_buf, &(Pblock), struct_sz);
+                        memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
+                        memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
+                        memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
+                        memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
 
-            memcpy(real_sta_buf, &(Pblock), struct_sz);
-            memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
-            memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
-            memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
-            memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
-
-            ret = cro.start_remote_write(real_total, 0);
-            printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
-            **/
+                        ret = cro.start_remote_write(real_total, 0);
+                        printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
+                        **/
             *flag = total_len;
             printf("flag=%d\n", (*flag) );
             ret = cro.start_remote_write(sizeof(int), 0);

@@ -954,7 +954,7 @@ void rdma_sendTd(int send_thread_id)
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
             q_total = struct_sz + q_data_sz;
             total_len = p_total + q_total;
-            real_total = total_len + sizeof(int);
+            real_total = total_len + sizeof(int) + sizeof(int);
             char*real_sta_buf = buf + sizeof(int);
 
 
@@ -964,12 +964,12 @@ void rdma_sendTd(int send_thread_id)
 
             memcpy(real_sta_buf + p_total, &(Qblocks[qbid]), struct_sz);
             memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), q_data_sz);
-
+            memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
 
             ret = cro.start_remote_write(real_total, 0);
             //printf("doenot update flag\n");
             //getchar();
-            *flag = 1;
+            *flag = total_len;
             ret = cro.start_remote_write(sizeof(int), 0);
             printf("update flag\n");
             if (ret == 0 )
@@ -1004,7 +1004,14 @@ void rdma_recvTd(int recv_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+
         char* real_sta_buf = buf + sizeof(int);
+        int total_len = *flag;
+        int* tail_total_len_ptr = real_sta_buf + total_len;
+        while ((*tail_total_len_ptr) != total_len)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
 
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
@@ -1043,6 +1050,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         *flag = -1;
+        *tail_total_len_ptr = -2;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

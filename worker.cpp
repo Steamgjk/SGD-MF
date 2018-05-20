@@ -1013,13 +1013,7 @@ void rdma_sendTd(int send_thread_id)
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
         return ret;
     }
-    /*
-    while (1 == 1)
-    {
-        printf("send loop\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    **/
+
     char*buf = NULL;
     while (1 == 1)
     {
@@ -1028,10 +1022,7 @@ void rdma_sendTd(int send_thread_id)
             //printf("worker cannot send[%d]  %d\n", send_thread_id, canSend );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        if (send_round_robin_idx != send_thread_id / WORKER_N_1)
-        {
-            continue;
-        }
+
         int real_total = 0;
         size_t p_total = 0;
         size_t q_total = 0;
@@ -1041,9 +1032,13 @@ void rdma_sendTd(int send_thread_id)
         int total_len = 0;
         int check_sum = 0;
         struct timeval st, et, tspan;
+        int*flag = (int*)(void*) to_send_block_mem;
+        *flag = -1;
+        char* real_sta_buf = to_send_block_mem + sizeof(int);
         if (canSend)
         {
             buf = to_send_block_mem;
+
             p_data_sz = sizeof(double) * Pblock.ele_num;
             q_data_sz = sizeof(double) * Qblock.ele_num;
             p_total = struct_sz + p_data_sz;
@@ -1051,7 +1046,7 @@ void rdma_sendTd(int send_thread_id)
             total_len = p_total + q_total;
             real_total = total_len + sizeof(int) + sizeof(int);
             char* real_sta_buf = buf + sizeof(int);
-            memcpy(buf, &total_len, sizeof(int));
+
             memcpy(real_sta_buf, &(Pblock), struct_sz);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
             memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
@@ -1060,6 +1055,10 @@ void rdma_sendTd(int send_thread_id)
 
             ret = cro.start_remote_write(real_total, 0);
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
+
+            *flag = total_len;
+            ret = cro.start_remote_write(sizeof(int), 0);
+            printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
         }
@@ -1086,6 +1085,12 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         char* real_sta_buf = to_recv_block_mem + sizeof(int);
+        int total_len = (*total_len);
+        int* tail_total_len = (int*)(void*)(real_sta_buf + total_len);
+        while ((*tail_total_len) != total_len)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
         struct Block* pb = (struct Block*)(void*)real_sta_buf;
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
@@ -1123,6 +1128,7 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         *flag = -1;
+        *tail_total_len = -2;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);

@@ -279,12 +279,12 @@ int main(int argc, const char * argv[])
         bool ret = false;
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
-        /*
-                for (int i = 0; i < WORKER_NUM; i++)
-                {
-                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-                }
-        **/
+
+        for (int i = 0; i < WORKER_NUM; i++)
+        {
+            printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+        }
+
 
         for (int i = 0; i < WORKER_NUM; i++)
         {
@@ -738,8 +738,8 @@ void rdma_sendTd(int send_thread_id)
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
             //printf("[%d] canSend\n",  send_thread_id);
-            int pbid = worker_pidx[send_thread_id];
-            int qbid = worker_qidx[send_thread_id];
+            int pbid = worker_pidx[send_thread_id % WORKER_NUM];
+            int qbid = worker_qidx[send_thread_id % WORKER_NUM];
             size_t struct_sz = sizeof( Pblocks[pbid]);
             size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             size_t total_len = struct_sz + data_sz;

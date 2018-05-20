@@ -1004,7 +1004,7 @@ void rdma_recvTd(int recv_thread_id)
         int* flag = (int*)(void*)(buf);
         while ((*flag) <= 0 )
         {
-            printf("flag <=0\n");
+            printf("flag <=%d\n", (*flag));
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 

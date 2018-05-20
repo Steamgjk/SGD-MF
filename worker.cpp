@@ -1042,7 +1042,8 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(total_len, 0);
             printf("[%d]:writer one block\n", send_thread_id);
 
-            buf = to_send_block_mem + BLOCK_MEM_SZ;
+            //buf = to_send_block_mem + BLOCK_MEM_SZ;
+            buf = to_send_block_mem;
             data_sz = sizeof(double) * Qblock.ele_num;
             total_len = struct_sz + data_sz;
             memcpy(buf, &(Qblock), struct_sz);

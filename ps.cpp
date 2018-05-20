@@ -336,9 +336,9 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t == 1010)
+        if (iter_t == 330)
         {
-            for (int i = 0; i < 102; i++)
+            for (int i = 0; i < 33; i++)
             {
                 printf("%lld\n", time_span[i] );
             }

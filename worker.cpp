@@ -1086,8 +1086,8 @@ void rdma_recvTd(int recv_thread_id)
         //printf("pb->block_id = %d\n", pb->block_id );
         while (pb->block_id < 0)
         {
-            //printf("waiting... block_id = %d\n", pb->block_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            printf("[%d]waiting... block_id = %d\n", recv_thread_id, pb->block_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         //printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);
         Pblock.block_id = pb->block_id;
@@ -1114,7 +1114,7 @@ void rdma_recvTd(int recv_thread_id)
         while (qb->block_id < 0)
         {
             printf("[%d]:qb->block_id=%d\n", recv_thread_id, qb->block_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
         Qblock.block_id = qb->block_id;

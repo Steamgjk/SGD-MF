@@ -325,12 +325,6 @@ int main(int argc, const char * argv[])
             printf("canSend = true\n");
             hasRecved = false;
 
-            while (1 == 1)
-            {
-                printf("can?? worker cannot send %d\n", canSend );
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-            }
         }
     }
 

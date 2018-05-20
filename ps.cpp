@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
 
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+        for (int recv_thread_id = 2; recv_thread_id < 2; recv_thread_id++)
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
@@ -203,7 +203,7 @@ int main(int argc, const char * argv[])
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+        for (int send_thread_id = 2; send_thread_id < 2; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
             std::thread send_thread(rdma_sendTd, thid);
@@ -278,7 +278,7 @@ int main(int argc, const char * argv[])
     {
         srand(time(0));
         bool ret = false;
-        random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
+        //random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
 
@@ -794,13 +794,7 @@ void rdma_recvTd(int recv_thread_id)
     server_rdma_op sro;
 
     int ret = sro.rdma_server_init(local_ips[recv_thread_id % WORKER_NUM], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
-    /*
-    while (1 == 1)
-    {
-        printf("before enter rdma_recvTd\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    **/
+
     while (1 == 1)
     {
         if (recv_round_robin_idx != recv_thread_id / WORKER_NUM)

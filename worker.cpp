@@ -520,7 +520,7 @@ void CalcUpdt(int td_id)
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             if (rtsz == 0 || ctsz == 0)
             {
-                printf("p %d q %d td=%d\n", p_block_idx, q_block_idx, td_id );
+                //printf("p %d q %d td=%d empty\n", p_block_idx, q_block_idx, td_id );
                 //exit(0);
                 StartCalcUpdt[td_id] = false;
                 continue;
@@ -536,8 +536,8 @@ void CalcUpdt(int td_id)
                 double error = rates_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
-                    printf("[%d] continue i=%ld j=%ld  ph=%d  qh=%d \n", td_id, i, j , Pblock.height, Qblock.height);
-                    getchar();
+                    //printf("[%d] continue i=%ld j=%ld  ph=%d  qh=%d \n", td_id, i, j , Pblock.height, Qblock.height);
+                    //getchar();
                     continue;
                 }
                 for (int k = 0; k < K; ++k)
@@ -560,7 +560,7 @@ void CalcUpdt(int td_id)
                 j = real_hash_idx % M - col_sta_idx;
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
-                    printf("[%d] continue l11 \n", td_id);
+                    //printf("[%d] continue l11 \n", td_id);
                     continue;
                 }
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];

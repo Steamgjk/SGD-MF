@@ -1631,11 +1631,11 @@ void rdma_sendTd(int send_thread_id)
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
 
                 total_len = struct_sz + data_sz;
-                real_total = total_len + sizeof(int);
+                real_total = total_len + sizeof(int) + sizeof(int);
 
                 memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
-
+                memcpy(real_sta + total_len, &total_len, sizeof(int));
                 ret = cro.start_remote_write(real_total, offset);
 
             }
@@ -1688,6 +1688,12 @@ void rdma_recvTd(int recv_thread_id)
         {
             //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        int total_len = *flag;
+        int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
+        while ((*tail_total_len_ptr) != total_len)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
 
         struct Block * pb = (struct Block*)(void*)real_sta;
         gettimeofday(&st, 0);
@@ -1728,6 +1734,7 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         *flag = -1;
+        *tail_total_len_ptr = -2;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 

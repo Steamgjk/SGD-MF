@@ -740,6 +740,7 @@ void rdma_sendTd(int send_thread_id)
             //printf("[%d] canSend\n",  send_thread_id);
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
+            printf("pbid=%d  qbid=%d sid=%d\n", pbid, qbid, send_thread_id % WORKER_NUM );
             size_t struct_sz = sizeof( Pblocks[pbid]);
             size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             size_t total_len = struct_sz + data_sz;

@@ -219,6 +219,7 @@ void SGD_MF();
 double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 void LoadData(int pre_read);
 //void LoadData();
+void LoadData2();
 void CalcUpdt(int td_id);
 
 
@@ -256,8 +257,9 @@ int main(int argc, const char * argv[])
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
-    LoadData(CACHE_NUM);
-    //LoadData();
+    //LoadData(CACHE_NUM);
+    LoadData2();
+    printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
     {

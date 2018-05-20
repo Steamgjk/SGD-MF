@@ -1506,7 +1506,7 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&st, 0);
         size_t data_sz = sizeof(double) * (pb->ele_num);
         double* data_eles  = (double*) (void*)(buf + struct_sz);
-
+        printf("recv  blockid=%d  ele=%d isP=%d\n", pb->block_id, pb->ele_num, pb->isP );
         if (block_p_or_q == 0)
         {
             //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);

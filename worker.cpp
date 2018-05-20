@@ -1024,7 +1024,7 @@ void rdma_sendTd(int send_thread_id)
     {
         while (canSend == false)
         {
-            printf("worker cannot send[%d]  %d\n", send_thread_id, canSend );
+            //printf("worker cannot send[%d]  %d\n", send_thread_id, canSend );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         if (send_round_robin_idx != send_thread_id / WORKER_N_1)
@@ -1090,7 +1090,7 @@ void rdma_recvTd(int recv_thread_id)
         //printf("pb->block_id = %d\n", pb->block_id );
         while (pb->block_id < 0)
         {
-            printf("[%d]waiting... block_id = %d\n", recv_thread_id, pb->block_id );
+            //printf("[%d]waiting... block_id = %d\n", recv_thread_id, pb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         //printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);

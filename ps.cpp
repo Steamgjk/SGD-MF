@@ -198,8 +198,8 @@ int main(int argc, const char * argv[])
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
-            std::thread recv_thread(recvTd, thid);
-            //std::thread recv_thread(rdma_recvTd, thid);
+            //std::thread recv_thread(recvTd, thid);
+            std::thread recv_thread(rdma_recvTd, thid);
             recv_thread.detach();
         }
     }
@@ -213,8 +213,8 @@ int main(int argc, const char * argv[])
         for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
-            std::thread send_thread(sendTd, thid);
-            //std::thread send_thread(rdma_sendTd, thid);
+            //std::thread send_thread(sendTd, thid);
+            std::thread send_thread(rdma_sendTd, thid);
             send_thread.detach();
         }
     }

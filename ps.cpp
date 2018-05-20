@@ -735,17 +735,14 @@ void rdma_sendTd(int send_thread_id)
             printf("[%d]:Me:send_round_robin_idx=%d  s=%d\n", send_thread_id, send_round_robin_idx,  send_thread_id / WORKER_NUM);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
         size_t real_total = 0;
         size_t p_total = 0;
         size_t q_total = 0;
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
-            printf("[%d] canSend\n",  send_thread_id);
-            //getchar();
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
-            printf("pbid=%d  qbid=%d sid=%d\n", pbid, qbid, send_thread_id % WORKER_NUM );
+            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             size_t struct_sz = sizeof( Pblocks[pbid]);
             size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + data_sz;

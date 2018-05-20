@@ -288,7 +288,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
-            printf("has Received\n");
+            //printf("has Received\n");
             if (!isstart)
             {
                 isstart = true;
@@ -323,7 +323,7 @@ int main(int argc, const char * argv[])
                 //exit(0);
             }
             canSend = true;
-            printf("canSend = true\n");
+            //printf("canSend = true\n");
             hasRecved = false;
 
         }
@@ -1054,11 +1054,11 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
 
             ret = cro.start_remote_write(real_total, 0);
-            printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
+            //printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
 
             *flag = total_len;
             ret = cro.start_remote_write(sizeof(int), 0);
-            printf("[%d]:send flag\n", send_thread_id);
+            //printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
         }

@@ -972,9 +972,9 @@ void rdma_sendTd(int send_thread_id)
             *flag = total_len;
             ret = cro.start_remote_write(sizeof(int), 0);
             //printf("update flag\n");
-            if (ret == 0 )
+            //if (ret == 0 )
             {
-                printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
+                //printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
 
             canSend[send_thread_id % WORKER_NUM] = false;
@@ -1047,7 +1047,7 @@ void rdma_recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+        //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         *flag = -1;
         *tail_total_len_ptr = -2;

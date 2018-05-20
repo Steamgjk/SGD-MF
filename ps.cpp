@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
 
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+        for (int recv_thread_id = 0; recv_thread_id < 1; recv_thread_id++)
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
@@ -204,7 +204,7 @@ int main(int argc, const char * argv[])
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+        for (int send_thread_id = 0; send_thread_id < 1; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
             //std::thread send_thread(sendTd, thid);

@@ -1052,6 +1052,7 @@ void rdma_sendTd(int send_thread_id)
             p_total = struct_sz + p_data_sz;
             q_total = struct_sz + q_data_sz;
             total_len = p_total + q_total;
+            real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
             memcpy(buf, &check_sum, sizeof(int));
             memcpy(buf + sizeof(int), &total_len, sizeof(int));
 

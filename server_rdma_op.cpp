@@ -468,7 +468,7 @@ int server_rdma_op::rdma_server_init(char* local_ip, int local_port, void* regis
 //////////////////////////////////////////////
 	server_sockaddr.sin_addr.s_addr = INADDR_ANY;
 	server_sockaddr.sin_port = htons(local_port); /* use default port */
-	printf("local_ip=%s  local_port = %d\n", local_ip, local_port );
+	debug("local_ip=%s  local_port = %d\n", local_ip, local_port );
 	ret = start_rdma_server(&server_sockaddr);
 	if (ret)
 	{

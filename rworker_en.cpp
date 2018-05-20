@@ -1486,13 +1486,13 @@ void rdma_recvTd(int recv_thread_id)
         char* real_sta = buf + sizeof(int);
         while ((*total_len_ptr) <= 0)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         total_len = *total_len_ptr;
         int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         /*
         struct Block * pb = (struct Block*)(void*)buf;

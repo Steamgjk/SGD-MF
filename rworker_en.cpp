@@ -1643,14 +1643,14 @@ void rdma_sendTd(int send_thread_id)
             {
                 data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
                 total_len = struct_sz + data_sz;
-                real_total = total_len + sizeof(int);
+                real_total = total_len + sizeof(int) + sizeof(int);
                 memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
-
+                memcpy(real_sta + total_len, &total_len, sizeof(int));
                 ret = cro.start_remote_write(real_total, offset);
 
             }
-            *flag = 1;
+            *flag = total_len;
             ret = cro.start_remote_write(sizeof(int), offset);
 
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;

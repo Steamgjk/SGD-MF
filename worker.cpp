@@ -1085,7 +1085,7 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         char* real_sta_buf = to_recv_block_mem + sizeof(int);
-        int total_len = (*total_len);
+        int total_len = (*flag);
         int* tail_total_len = (int*)(void*)(real_sta_buf + total_len);
         while ((*tail_total_len) != total_len)
         {

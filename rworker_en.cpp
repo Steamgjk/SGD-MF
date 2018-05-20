@@ -46,20 +46,20 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
-/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-**/
+
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -82,16 +82,16 @@ int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
 int process_tail[WORKER_TD];
 
-
+/*
 //Jumbo
 double yita = 0.002;
 double theta = 0.05;
+**/
 
-/*
 //Movie-Len
 double yita = 0.003;
 double theta = 0.01;
-**/
+
 
 vector<bool> StartCalcUpdt;
 
@@ -238,19 +238,19 @@ int main(int argc, const char * argv[])
     int*flag = (int*)(void*) to_recv_block_mem;
     *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
-    /*
-        std::thread recv_thread(rdma_recvTd, thread_id);
-        recv_thread.detach();
-        std::thread send_thread(rdma_sendTd, thread_id);
-        send_thread.detach();
-        **/
 
-
-    std::thread recv_thread(recvTd, thread_id);
+    std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
-    std::thread send_thread(sendTd, thread_id);
+    std::thread send_thread(rdma_sendTd, thread_id);
     send_thread.detach();
 
+
+    /*
+        std::thread recv_thread(recvTd, thread_id);
+        recv_thread.detach();
+        std::thread send_thread(sendTd, thread_id);
+        send_thread.detach();
+    **/
 
     LoadActionConfig(ACTION_NAME);
     char state_name[100];

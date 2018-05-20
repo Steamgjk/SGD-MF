@@ -622,11 +622,12 @@ void submf()
 
     }
     //printf("enter submf22\n");
+    /*
     struct timeval beg, ed;
     long long mksp;
     gettimeofday(&beg, 0);
 
-    /*
+
         int r1 = Pblock.block_id * 2;
         int c1 = Qblock.block_id * 2;
         int f1 = r1 * 8 + c1;
@@ -656,11 +657,11 @@ void submf()
             printf("[%d][%d] %ld\n", row, col, hash_for_row_threads[row][col][td] );
         }
     }
-    **/
+
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
-
+    **/
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {
@@ -686,10 +687,11 @@ void submf()
         }
     }
 
-
-    gettimeofday(&ed, 0);
-    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Calc  time = %lld\n", mksp);
+    /*
+        gettimeofday(&ed, 0);
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf("Calc  time = %lld\n", mksp);
+        **/
 
 }
 
@@ -1090,7 +1092,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
+        //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
 
         while ((*total_len_ptr) <= 0)

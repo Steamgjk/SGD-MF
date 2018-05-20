@@ -272,9 +272,6 @@ int main(int argc, const char * argv[])
     data_read_thread.detach();
 
 
-
-
-
     partitionP(DIM_NUM, Pblocks);
     partitionQ(DIM_NUM, Qblocks);
 
@@ -337,6 +334,7 @@ int main(int argc, const char * argv[])
                 {
                     printf("%lld\n", time_span[i]);
                 }
+                exit(0);
             }
         }
         for (int i = 0; i < GROUP_NUM; i++)
@@ -442,7 +440,7 @@ void CalcUpdt(int td_id)
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             if (rtsz == 0 || ctsz == 0)
             {
-                printf("empty p %d q %d\n", p_block_idx, q_block_idx );
+                //printf("empty p %d q %d\n", p_block_idx, q_block_idx );
                 StartCalcUpdt[td_id] = false;
                 continue;
                 //exit(0);

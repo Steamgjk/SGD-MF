@@ -214,7 +214,7 @@ int main(int argc, const char * argv[])
         {
             int thid = send_thread_id + gp * WORKER_NUM;
             std::thread send_thread(sendTd, thid);
-            std::thread send_thread(rdma_sendTd, thid);
+            //std::thread send_thread(rdma_sendTd, thid);
             send_thread.detach();
         }
     }

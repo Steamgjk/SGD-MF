@@ -1102,7 +1102,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        int check_sum = *check_sum;
+        int check_sum = *check_sum_ptr;
         int*total_len_ptr = (int*)(void*)(to_recv_block_mem + sizeof(int));
         while ((*total_len_ptr) <= 0)
         {

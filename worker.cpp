@@ -33,8 +33,8 @@
 #include "client_rdma_op.h"
 #include "server_rdma_op.h"
 using namespace std;
-#define GROUP_NUM 2
-#define DIM_NUM 8
+#define GROUP_NUM 1
+#define DIM_NUM 4
 
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*2)
@@ -51,20 +51,21 @@ char* to_recv_block_mem;
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
 
-/*
+
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-**/
 
 
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -164,13 +165,15 @@ bool canSend = false;
 bool hasRecved = false;
 int block_seq[SEQ_LEN];
 
-/*
+
 double yita = 0.003;
 double theta = 0.01;
-**/
+
 /* Jumbo **/
+/*
 double yita = 0.002;
 double theta = 0.05;
+**/
 
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
@@ -262,8 +265,8 @@ int main(int argc, const char * argv[])
     int iter_cnt = 0;
     bool isstart = false;
 
-    //LoadData();
-    //printf("Load Rating Success\n");
+    LoadData();
+    printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");
@@ -631,28 +634,29 @@ void submf()
     long long mksp;
     gettimeofday(&beg, 0);
 
+    /*
+        int r1 = Pblock.block_id * 2;
+        int c1 = Qblock.block_id * 2;
+        int f1 = r1 * 8 + c1;
+        int f2 = r1 * 8 + c1 + 1;
+        int f3 = (r1 + 1) * 8 + c1;
+        int f4 = (r1 + 1) * 8 + c1 + 1;
 
-    int r1 = Pblock.block_id * 2;
-    int c1 = Qblock.block_id * 2;
-    int f1 = r1 * 8 + c1;
-    int f2 = r1 * 8 + c1 + 1;
-    int f3 = (r1 + 1) * 8 + c1;
-    int f4 = (r1 + 1) * 8 + c1 + 1;
-
-    int row = Pblock.block_id;
-    int col = Qblock.block_id;
-    //printf("row=%d col=%d\n", row, col );
-    for (int td = 0; td < WORKER_THREAD_NUM; td++)
-    {
-        hash_for_row_threads[row][col][td].clear();
-        rates_for_row_threads[row][col][td].clear();
-        hash_for_col_threads[row][col][td].clear();
-        rates_for_col_threads[row][col][td].clear();
-    }
-    LoadRequiredData(row, col, f1);
-    LoadRequiredData(row, col, f2);
-    LoadRequiredData(row, col, f3);
-    LoadRequiredData(row, col, f4);
+        int row = Pblock.block_id;
+        int col = Qblock.block_id;
+        //printf("row=%d col=%d\n", row, col );
+        for (int td = 0; td < WORKER_THREAD_NUM; td++)
+        {
+            hash_for_row_threads[row][col][td].clear();
+            rates_for_row_threads[row][col][td].clear();
+            hash_for_col_threads[row][col][td].clear();
+            rates_for_col_threads[row][col][td].clear();
+        }
+        LoadRequiredData(row, col, f1);
+        LoadRequiredData(row, col, f2);
+        LoadRequiredData(row, col, f3);
+        LoadRequiredData(row, col, f4);
+        **/
     /*
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {

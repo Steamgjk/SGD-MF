@@ -1045,11 +1045,12 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
             memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
 
+            printf("head =%d\n", buf );
             ret = cro.start_remote_write(real_total, 0);
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
 
-            printf("flag=%d\n", (*flag) );
-            ret = cro.start_remote_write(sizeof(int), 0);
+            //printf("flag=%d\n", (*flag) );
+            //ret = cro.start_remote_write(sizeof(int), 0);
             printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
 

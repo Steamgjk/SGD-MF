@@ -1155,7 +1155,7 @@ void rdma_recvTd(int recv_thread_id)
             Qblock.eles[i] = data_eles[i];
         }
 
-        *check_sum = -1;
+        *check_sum_ptr = -1;
         *total_len_ptr = -2;
         *tail_check_sum_ptr = -3;
         gettimeofday(&et, 0);

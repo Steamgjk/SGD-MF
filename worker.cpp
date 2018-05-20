@@ -1019,7 +1019,6 @@ void rdma_sendTd(int send_thread_id)
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     **/
-    size_t offset = send_thread_id * BLOCK_MEM_SZ * 2;
     char*buf = NULL;
     while (1 == 1)
     {
@@ -1041,7 +1040,7 @@ void rdma_sendTd(int send_thread_id)
             size_t total_len = struct_sz + data_sz;
             struct timeval st, et, tspan;
             ret = cro.start_remote_write(total_len, 0);
-            //printf("writer one block\n");
+            printf("[%d]:writer one block\n", send_thread_id);
 
             buf = to_send_block_mem + BLOCK_MEM_SZ;
             data_sz = sizeof(double) * Qblock.ele_num;
@@ -1050,7 +1049,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
 
             ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
-            //printf("writer another block\n");
+            printf("[%d]:writer another block\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
         }
@@ -1107,6 +1106,7 @@ void rdma_recvTd(int recv_thread_id)
                 printf("P Exception!\n");
             }
         }
+        printf("[%d]:recv one block\n", recv_thread_id);
         //reset flag
         pb->block_id = -1;
 
@@ -1136,7 +1136,7 @@ void rdma_recvTd(int recv_thread_id)
         qb->block_id = -1;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("recv two blocks time = %lld\n", mksp);
+        printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
         //printf("hasRecved=%d\n", hasRecved );

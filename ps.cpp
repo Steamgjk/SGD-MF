@@ -1005,7 +1005,7 @@ void rdma_recvTd(int recv_thread_id)
         while ((*flag) <= 0 )
         {
             printf("flag <=0\n");
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
         char* real_sta_buf = buf + sizeof(int);

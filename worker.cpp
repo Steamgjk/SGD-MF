@@ -1029,7 +1029,7 @@ void rdma_sendTd(int send_thread_id)
         {
 
             buf = to_send_block_mem;
-
+            printf("flagp=%p bufp=%p val=%d %d\n", flag, buf, (*flag), (*buf) );
             p_data_sz = sizeof(double) * Pblock.ele_num;
             q_data_sz = sizeof(double) * Qblock.ele_num;
             p_total = struct_sz + p_data_sz;
@@ -1039,6 +1039,7 @@ void rdma_sendTd(int send_thread_id)
             char* real_sta_buf = buf + sizeof(int);
 
             *flag = total_len;
+            printf("2  flagp=%p bufp=%p val=%d %d\n", flag, buf, (*flag), (*buf) );
             memcpy(real_sta_buf, &(Pblock), struct_sz);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
             memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);

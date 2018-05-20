@@ -236,6 +236,7 @@ int main(int argc, const char * argv[])
         int th_id = thread_id + i * WORKER_N_1;
         std::thread send_thread(rdma_sendTd, th_id);
         send_thread.detach();
+        getchar();
     }
 
 

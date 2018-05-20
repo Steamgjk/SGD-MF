@@ -192,8 +192,8 @@ int main(int argc, const char * argv[])
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
-            std::thread recv_thread(recvTd, thid);
-            //std::thread recv_thread(rdma_recvTd, thid);
+            //std::thread recv_thread(recvTd, thid);
+            std::thread recv_thread(rdma_recvTd, thid);
             recv_thread.detach();
         }
     }
@@ -207,8 +207,8 @@ int main(int argc, const char * argv[])
         for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
-            std::thread send_thread(sendTd, thid);
-            //std::thread send_thread(rdma_sendTd, thid);
+            //std::thread send_thread(sendTd, thid);
+            std::thread send_thread(rdma_sendTd, thid);
             send_thread.detach();
         }
     }
@@ -776,7 +776,7 @@ void rdma_sendTd1(int send_thread_id)
             ret = cro.start_remote_write(real_total, 0);
             if (ret == 0 )
             {
-                printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
+                //printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
 
             canSend[send_thread_id % WORKER_NUM] = false;

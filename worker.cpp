@@ -1061,7 +1061,7 @@ void rdma_sendTd(int send_thread_id)
 }
 void rdma_recvTd(int recv_thread_id)
 {
-    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id % WORKER_N_1], local_ports[recv_thread_id]);
+    printf("rdma_recv thread_id = %d\n local_ip-11=%s  local_port-11=%d\n", recv_thread_id, local_ips[recv_thread_id % WORKER_N_1], local_ports[recv_thread_id]);
     server_rdma_op sro;
     int ret = sro.rdma_server_init(local_ips[recv_thread_id % WORKER_N_1], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
 

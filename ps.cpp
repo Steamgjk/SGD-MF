@@ -827,7 +827,7 @@ void rdma_recvTd(int recv_thread_id)
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        //printf("successful reve one Block id=%d data_ele=%d\n", pb->block_id, pb->ele_num);
+        printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
         pb->block_id = -1;
 
         size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
@@ -851,13 +851,14 @@ void rdma_recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        //printf("successful rece another Block\n");
+        printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         pb->block_id = -1;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         //printf("recv success time = %lld\n", mksp );
+
         recvCount++;
     }
 }

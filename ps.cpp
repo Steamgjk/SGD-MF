@@ -948,7 +948,7 @@ void rdma_sendTd(int send_thread_id)
 
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
-            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + p_data_sz;
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
@@ -971,7 +971,7 @@ void rdma_sendTd(int send_thread_id)
             //getchar();
             *flag = total_len;
             ret = cro.start_remote_write(sizeof(int), 0);
-            printf("update flag\n");
+            //printf("update flag\n");
             if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);

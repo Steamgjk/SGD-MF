@@ -33,7 +33,7 @@
 #include "client_rdma_op.h"
 #include "server_rdma_op.h"
 using namespace std;
-#define GROUP_NUM 1
+#define GROUP_NUM 2
 #define DIM_NUM 8
 
 #define BLOCK_MEM_SZ (250000000)

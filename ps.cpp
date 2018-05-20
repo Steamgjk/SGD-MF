@@ -59,7 +59,7 @@ char* to_recv_block_mem;
 #define M 1000000
 #define K  100 //主题个数
 
-#define QP_GROUP 1
+#define QP_GROUP 2
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
 

@@ -479,7 +479,7 @@ int client_rdma_op::start_remote_write(size_t len, size_t offset)
 	rdma_write_sge.addr = (uint64_t)client_src_mr->addr;
 	//rdma_write_sge.length = client_src_mr->length;
 	rdma_write_sge.length = len;
-	printf("len is changed to %d\n", len );
+	debug("len is changed to %d\n", len );
 	rdma_write_sge.lkey = client_src_mr->lkey;
 
 	// Create work request to send to local CA.

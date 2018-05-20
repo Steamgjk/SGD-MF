@@ -1053,7 +1053,9 @@ void rdma_sendTd(int send_thread_id)
             //printf("head =%d  %d\n", *((int*)(void*)buf), (*tmp) );
             ret = cro.start_remote_write(real_total, 0);
             //printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
-
+            int ran = (rand() % 100) * 10;
+            printf("ran=%d\n", ran );
+            std::this_thread::sleep_for(std::chrono::milliseconds(ran));
             printf("flag=%d\n", (*flag) );
             //ret = cro.start_remote_write(sizeof(int), 0);
             //printf("[%d]:send flag\n", send_thread_id);

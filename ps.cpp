@@ -750,7 +750,7 @@ void rdma_sendTd(int send_thread_id)
             //printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
             //printf("start send...\n");
-            //ret = cro.start_remote_write(total_len, 0);
+            ret = cro.start_remote_write(total_len, 0);
             if (ret == 0)
             {
                 printf("[Td:%d] send success pbid=%d isP=%d ret =%d\n", send_thread_id, pbid, Pblocks[pbid].isP, ret);
@@ -766,8 +766,7 @@ void rdma_sendTd(int send_thread_id)
 
             memcpy(buf, &(Qblocks[qbid]), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblocks[qbid].eles[0]), data_sz);
-            //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
-            ret = cro.start_remote_write(0, real_total);
+            ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret);

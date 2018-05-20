@@ -1007,7 +1007,7 @@ void rdma_recvTd(int recv_thread_id)
 
         char* real_sta_buf = buf + sizeof(int);
         int total_len = *flag;
-        int* tail_total_len_ptr = real_sta_buf + total_len;
+        int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));

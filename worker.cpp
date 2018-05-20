@@ -1037,19 +1037,21 @@ void rdma_sendTd(int send_thread_id)
             size_t data_sz = sizeof(double) * Pblock.ele_num;
             memcpy(buf, &(Pblock), struct_sz);
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
-            size_t total_len = struct_sz + data_sz;
+            size_t p_total = struct_sz + data_sz;
             struct timeval st, et, tspan;
-            ret = cro.start_remote_write(total_len, 0);
-            printf("[%d]:writer one block\n", send_thread_id);
+            //ret = cro.start_remote_write(total_len, 0);
+            //printf("[%d]:writer one block\n", send_thread_id);
 
             //buf = to_send_block_mem + BLOCK_MEM_SZ;
-            buf = to_send_block_mem;
+            buf = to_send_block_mem + p_total;
             data_sz = sizeof(double) * Qblock.ele_num;
-            total_len = struct_sz + data_sz;
+            size_t q_total = struct_sz + data_sz;
+            size_t total_len = p_total + q_total;
             memcpy(buf, &(Qblock), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
 
-            ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
+            //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
+            ret = cro.start_remote_write(0, total_len);
             printf("[%d]:writer another block\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
@@ -1110,8 +1112,9 @@ void rdma_recvTd(int recv_thread_id)
         printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
         //reset flag
         pb->block_id = -1;
-
-        struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
+        size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
+        //struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
+        struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + p_total);
         while (qb->block_id < 0)
         {
             printf("[%d]:qb->block_id=%d\n", recv_thread_id, qb->block_id );
@@ -1126,7 +1129,8 @@ void rdma_recvTd(int recv_thread_id)
         Qblock.eles.resize(qb->ele_num);
         //printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
         printf("[%d]get qblock id=%d  ele_num=%d  isP=%d qb=%p\n", recv_thread_id,  qb->block_id, qb->ele_num, qb->isP, qb);
-        data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
+        //data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
+        data_eles = (double*)(void*)(to_recv_block_mem + p_total + struct_sz);
         for (int i = 0; i < Qblock.ele_num; i++)
         {
             Qblock.eles[i] = data_eles[i];

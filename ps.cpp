@@ -967,6 +967,8 @@ void rdma_sendTd(int send_thread_id)
 
 
             ret = cro.start_remote_write(real_total, 0);
+            printf("doenot update flag\n");
+            getchar();
             *flag = 1;
             ret = cro.start_remote_write(sizeof(int), 0);
             if (ret == 0 )

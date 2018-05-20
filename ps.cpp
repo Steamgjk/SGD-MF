@@ -735,45 +735,47 @@ void rdma_sendTd(int send_thread_id)
             printf("[%d]:Me:send_round_robin_idx=%d  s=%d\n", send_thread_id, send_round_robin_idx,  send_thread_id / WORKER_NUM);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        size_t real_total = 0;
+        int real_total = 0;
         size_t p_total = 0;
         size_t q_total = 0;
+        size_t struct_sz = sizeof( Block);
+        size_t p_data_sz = 0;
+        size_t q_data_sz = 0;
+        int total_len = 0;
+        int check_sum = 0;
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
+            p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
+            p_total = struct_sz + p_data_sz;
+            q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
+            q_total = struct_sz + q_data_sz;
+            total_len = p_total + q_total;
+            real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
+            check_sum = rand();
+            memcpy(buf, &check_sum, sizeof(int));
+            memcpy(buf + sizeof(int), &total_len, sizeof(int));
+            char*real_sta_buf = buf + 2 * sizeof(int);
+
             printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
-            size_t struct_sz = sizeof( Pblocks[pbid]);
-            size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
-            p_total = struct_sz + data_sz;
             //printf("[%d] canSend check 1\n",  send_thread_id);
-            memcpy(buf, &(Pblocks[pbid]), struct_sz);
+            memcpy(real_sta_buf, &(Pblocks[pbid]), struct_sz);
             //printf("[%d] canSend check 2\n",  send_thread_id);
-            memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
-            //printf("start send...\n");
-            //ret = cro.start_remote_write(total_len, 0);
-            if (ret == 0)
-            {
-                printf("[Td:%d] send success pbid=%d isP=%d ret =%d\n", send_thread_id, pbid, Pblocks[pbid].isP, ret);
-            }
-            else
-            {
-                printf("fail ret=%d\n", ret );
-            }
+            memcpy(real_sta_buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), p_data_sz );
 
-            struct_sz = sizeof( Qblocks[qbid]);
-            data_sz = sizeof(double) * Qblocks[qbid].eles.size();
-            q_total = struct_sz + data_sz;
 
-            memcpy(buf + p_total, &(Qblocks[qbid]), struct_sz);
-            memcpy(buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), data_sz);
-            real_total = p_total + q_total;
+            memcpy(real_sta_buf + p_total, &(Qblocks[qbid]), struct_sz);
+            memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), q_data_sz);
+
+            memcpy(real_sta_buf + total_len, &check_sum, sizeof(int));
             //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             ret = cro.start_remote_write(real_total, 0);
             if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
+
             canSend[send_thread_id % WORKER_NUM] = false;
         }
 
@@ -805,9 +807,27 @@ void rdma_recvTd(int recv_thread_id)
             continue;
         }
         printf("recving ...[%d]\n", recv_thread_id);
+        int* check_sum_ptr = (int*)(void*)buf;
+        while ( (*check_sum_ptr) < 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        int check_sum = *check_sum_ptr;
+        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        while ((*total_len_ptr) <= 0 )
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        int total_len = *total_len_ptr;
+        int *tail_check_sum_ptr = (int*)(void*)(buf + sizeof(int) + sizeof(int) + total_len);
+        while (check_sum != (*tail_check_sum_ptr))
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
-        struct Block * pb = (struct Block*)(void*)buf;
+        struct Block * pb = (struct Block*)(void*)(real_sta_buf);
         //printf("ps: pb blockid =%d\n", pb->block_id);
         while (pb->block_id < 0)
         {
@@ -821,27 +841,21 @@ void rdma_recvTd(int recv_thread_id)
         Pblocks[block_idx].eles.resize(pb->ele_num);
         Pblocks[block_idx].isP = pb->isP;
         size_t struct_sz = sizeof(Block);
-        double*data_eles = (double*)(void*) (buf + struct_sz);
+        double*data_eles = (double*)(void*) (real_sta_buf + struct_sz);
         for (int i = 0; i < pb->ele_num; i++)
         {
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
         printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
-        pb->block_id = -1;
 
         size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
 
         //pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
-        pb = (struct Block*)(void*)(buf + p_total);
+        pb = (struct Block*)(void*)(real_sta_buf + p_total);
         while (pb->block_id < 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        while (pb->ele_num < 100)
-        {
-            printf("ele_num=%d\n", pb->ele_num );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
         block_idx = pb->block_id ;
@@ -858,7 +872,9 @@ void rdma_recvTd(int recv_thread_id)
 
         printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
-        pb->block_id = -1;
+        *check_sum = -1;
+        *total_len = -2;
+        *tail_check_sum_ptr = -3;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

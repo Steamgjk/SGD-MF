@@ -1032,29 +1032,41 @@ void rdma_sendTd(int send_thread_id)
         {
             continue;
         }
+        int real_total = 0;
+        size_t p_total = 0;
+        size_t q_total = 0;
+        size_t struct_sz = sizeof( Block);
+        size_t p_data_sz = 0;
+        size_t q_data_sz = 0;
+        int total_len = 0;
+        int check_sum = 0;
+        struct timeval st, et, tspan;
         if (canSend)
         {
-            buf = to_send_block_mem;
-            size_t struct_sz = sizeof(Block);
-            size_t data_sz = sizeof(double) * Pblock.ele_num;
-            memcpy(buf, &(Pblock), struct_sz);
-            memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
-            size_t p_total = struct_sz + data_sz;
-            struct timeval st, et, tspan;
-            //ret = cro.start_remote_write(total_len, 0);
-            //printf("[%d]:writer one block\n", send_thread_id);
 
-            //buf = to_send_block_mem + BLOCK_MEM_SZ;
-            buf = to_send_block_mem + p_total;
-            data_sz = sizeof(double) * Qblock.ele_num;
-            size_t q_total = struct_sz + data_sz;
-            size_t total_len = p_total + q_total;
-            memcpy(buf, &(Qblock), struct_sz);
-            memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
+            buf = to_send_block_mem;
+            check_sum = rand();
+
+            p_data_sz = sizeof(double) * Pblock.ele_num;
+            q_data_sz = sizeof(double) * Qblock.ele_num;
+            p_total = struct_sz + p_data_sz;
+            q_total = struct_sz + q_data_sz;
+            total_len = p_total + q_total;
+            memcpy(buf, &check_sum, sizeof(int));
+            memcpy(buf + sizeof(int), &total_len, sizeof(int));
+
+            char* real_sta_buf = buf + sizeof(int) + sizeof(int);
+
+
+            memcpy(real_sta_buf, &(Pblock), struct_sz);
+            memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
+            memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
+            memcpy(real_sta_buf + p_total struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
+            memcpy(real_sta_buf + total_len, &check_sum, sizeof(int));
 
             //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
-            ret = cro.start_remote_write(total_len, 0);
-            printf("[%d]:writer another block success total_len=%ld\n", send_thread_id, total_len);
+            ret = cro.start_remote_write(real_total, 0);
+            printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
         }
@@ -1082,19 +1094,30 @@ void rdma_recvTd(int recv_thread_id)
         {
             continue;
         }
-        //printf("recv loop\n");
+
         struct timeval st, et;
         gettimeofday(&st, 0);
+        int* check_sum_ptr = (int*)(void*)to_recv_block_mem;
+        while ((*check_sum_ptr) < 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        int check_sum = *check_sum;
+        int*total_len_ptr = (int*)(void*)(to_recv_block_mem + sizeof(int));
+        while ((*total_len_ptr) <= 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        char* real_sta_buf = to_recv_block_mem + sizeof(int) + sizeof(int);
+        int* tail_check_sum_ptr = real_sta_buf + total_len;
+        while ((*tail_check_sum_ptr) != check_sum)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
         size_t struct_sz = sizeof(Pblock);
 
         struct Block* pb = (struct Block*)(void*)to_recv_block_mem;
-        //printf("pb->block_id = %d\n", pb->block_id );
-        while (pb->block_id < 0)
-        {
-            //printf("[%d]waiting... block_id = %d\n", recv_thread_id, pb->block_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-        //printf("get one id=%d  ele_num=%d  isP=%d\n", pb->block_id, pb->ele_num, pb->isP);
+
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
         Pblock.sta_idx = pb->sta_idx;
@@ -1102,7 +1125,7 @@ void rdma_recvTd(int recv_thread_id)
         Pblock.ele_num = pb->ele_num;
         Pblock.eles.resize(pb->ele_num);
 
-        double* data_eles = (double*)(void*) (to_recv_block_mem + struct_sz);
+        double* data_eles = (double*)(void*) (real_sta_buf + struct_sz);
         for (int i = 0; i < Pblock.ele_num; i++)
         {
             Pblock.eles[i] = data_eles[i];
@@ -1112,16 +1135,10 @@ void rdma_recvTd(int recv_thread_id)
             }
         }
         printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
-        //reset flag
-        pb->block_id = -1;
+
         size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
         //struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
-        struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + p_total);
-        while (qb->block_id < 0)
-        {
-            printf("[%d]:qb->block_id=%d\n", recv_thread_id, qb->block_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
+        struct Block* qb = (struct Block*)(void*)(real_sta_buf + p_total);
 
         Qblock.block_id = qb->block_id;
         Qblock.data_age = qb->data_age;
@@ -1136,13 +1153,11 @@ void rdma_recvTd(int recv_thread_id)
         for (int i = 0; i < Qblock.ele_num; i++)
         {
             Qblock.eles[i] = data_eles[i];
-            if (Qblock.eles[i] > 100 || Qblock.eles[i] < -100 )
-            {
-                printf("Q Exception!\n");
-            }
         }
 
-        qb->block_id = -1;
+        *check_sum = -1;
+        *total_len_ptr = -2;
+        *tail_check_sum_ptr = -3;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);

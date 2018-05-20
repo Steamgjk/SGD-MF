@@ -1058,7 +1058,7 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("recv success time = %lld\n", mksp );
-
+        getchar();
         recvCount++;
     }
 }

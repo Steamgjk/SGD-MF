@@ -873,7 +873,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         *check_sum = -1;
-        *total_len = -2;
+        *total_len_ptr = -2;
         *tail_check_sum_ptr = -3;
 
         gettimeofday(&et, 0);

@@ -40,25 +40,25 @@ using namespace std;
 
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
-
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-
+**/
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
+
 #define QP_GROUP 1
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
@@ -1004,8 +1004,8 @@ void rdma_recvTd(int recv_thread_id)
         int* flag = (int*)(void*)(buf);
         while ((*flag) <= 0 )
         {
-            printf("flag =%d\n", (*flag));
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("flag =%d\n", (*flag));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         printf("ok out flag=%d\n", (*flag) );
         char* real_sta_buf = buf + sizeof(int);

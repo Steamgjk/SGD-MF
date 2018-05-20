@@ -225,12 +225,12 @@ int main(int argc, const char * argv[])
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
             //Pblocks[i].eles[j] = drand48() * 0.6;
-            Pblocks[i].eles[j] = drand48() * 0.6;
+            Pblocks[i].eles[j] = drand48() * 0.3;
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
             //Qblocks[i].eles[j] = drand48() * 0.6;
-            Qblocks[i].eles[j] = drand48() * 0.6;
+            Qblocks[i].eles[j] = drand48() * 0.3;
         }
     }
 
@@ -281,18 +281,18 @@ int main(int argc, const char * argv[])
         //random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
-
-        for (int i = 0; i < WORKER_NUM; i++)
-        {
-            printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
-        }
-
+        /*
+                for (int i = 0; i < WORKER_NUM; i++)
+                {
+                    printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
+                }
+        **/
 
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
         }
-        printf("canSend! flag ok\n");
+        //printf("canSend! flag ok\n");
         while (recvCount != WORKER_NUM)
         {
             //cout << "RecvCount\t" << recvCount << endl;
@@ -318,7 +318,7 @@ int main(int argc, const char * argv[])
                 **/
 
                 time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-                printf("%d\t%lld\n", iter_t, time_span[iter_t / 10] );
+                printf("time= %d\t%lld\n", iter_t, time_span[iter_t / 10] );
 
             }
             //printf("iter_t=%d\n", iter_t );
@@ -748,7 +748,7 @@ void rdma_sendTd1(int send_thread_id)
 
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
-            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + p_data_sz;
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
@@ -802,7 +802,7 @@ void rdma_recvTd1(int recv_thread_id)
 
             continue;
         }
-        printf("recving ...[%d]\n", recv_thread_id);
+        //printf("recving ...[%d]\n", recv_thread_id);
         int* total_len_ptr = (int*)(void*)(buf);
         while ((*total_len_ptr) <= 0 )
         {
@@ -841,7 +841,7 @@ void rdma_recvTd1(int recv_thread_id)
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+        //printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
 
@@ -859,14 +859,14 @@ void rdma_recvTd1(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+        //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         *total_len_ptr = -2;
         *tail_total_len_ptr = -3;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("recv success time = %lld\n", mksp );
+        printf("recv success time = %lld\n", mksp );
 
         recvCount++;
     }
@@ -998,7 +998,7 @@ void rdma_recvTd(int recv_thread_id)
     while (1 == 1)
     {
 
-        printf("recving ...[%d]\n", recv_thread_id);
+        //printf("recving ...[%d]\n", recv_thread_id);
         int* flag = (int*)(void*)(buf);
         while ((*flag) <= 0 )
         {
@@ -1029,7 +1029,7 @@ void rdma_recvTd(int recv_thread_id)
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+        //printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
 

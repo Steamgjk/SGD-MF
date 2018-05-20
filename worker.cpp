@@ -1054,7 +1054,7 @@ void rdma_sendTd(int send_thread_id)
 
             //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             ret = cro.start_remote_write(total_len, 0);
-            printf("[%d]:writer another block success\n", send_thread_id);
+            printf("[%d]:writer another block success total_len=%ld\n", send_thread_id, total_len);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;
         }

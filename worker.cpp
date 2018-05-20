@@ -1024,7 +1024,8 @@ void rdma_sendTd(int send_thread_id)
     {
         while (canSend == false)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            printf("worker cannot send[%d]\n", send_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         if (send_round_robin_idx != send_thread_id / WORKER_N_1)
         {

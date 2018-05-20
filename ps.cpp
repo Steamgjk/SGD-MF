@@ -1045,7 +1045,7 @@ void rdma_recvTd(int recv_thread_id)
             //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
-        printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
+        //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
 
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         while ((*total_len_ptr) <= 0)
@@ -1060,7 +1060,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        printf("[%d]ok check total_len=%d\n", recv_thread_id, total_len );
+        //printf("[%d]ok check total_len=%d\n", recv_thread_id, total_len );
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);

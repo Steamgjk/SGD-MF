@@ -1144,7 +1144,7 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         *total_len_ptr = -2;
-        *tail_check_sum_ptr = -3;
+        *tail_total_len_ptr = -3;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);

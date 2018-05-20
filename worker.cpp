@@ -1013,8 +1013,6 @@ void rdma_sendTd(int send_thread_id)
     char*buf = NULL;
     while (1 == 1)
     {
-
-
         int real_total = 0;
         size_t p_total = 0;
         size_t q_total = 0;
@@ -1029,6 +1027,7 @@ void rdma_sendTd(int send_thread_id)
         char* real_sta_buf = to_send_block_mem + sizeof(int);
         if (canSend)
         {
+            /*
             buf = to_send_block_mem;
 
             p_data_sz = sizeof(double) * Pblock.ele_num;
@@ -1052,6 +1051,14 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(sizeof(int), 0);
             printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
+            **/
+            for (int i = 0; i < MEM_SIZE; i++)
+            {
+                to_send_block_mem[i] = 'a';
+            }
+            ret = cro.start_remote_write(MEM_SIZE, 0);
+            printf("all a\n");
+            getchar();
             canSend = false;
         }
     }

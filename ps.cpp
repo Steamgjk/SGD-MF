@@ -51,6 +51,7 @@ using namespace std;
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
+char* to_send_mem_arr[10];
 char* to_recv_mem_arr[10];
 
 #define FILE_NAME "./data/TrainingMap-"
@@ -174,13 +175,14 @@ int main(int argc, const char * argv[])
         local_ports[i] = 44411 + i;
         remote_ports[i] = 55511 + i;
     }
-    to_send_block_mem = (void*)malloc(MEM_SIZE);
+    //to_send_block_mem = (void*)malloc(MEM_SIZE);
     //to_recv_block_mem = (void*)malloc(MEM_SIZE);
     for (int i = 0 ; i < WORKER_NUM; i++)
     {
         to_recv_mem_arr[i] = (void*)malloc(BLOCK_MEM_SZ * 2);
+        to_send_mem_arr[i] = (void*)malloc(BLOCK_MEM_SZ * 2);
     }
-    printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
+    //printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
     InitFlag();
 
 
@@ -927,8 +929,9 @@ void rdma_sendTd(int send_thread_id)
     }
     printf("[%d] connect  ok\n", send_thread_id);
 
-    size_t offset = (send_thread_id) * BLOCK_MEM_SZ * 2;
-    char* buf = to_send_block_mem + offset;
+    //size_t offset = (send_thread_id) * BLOCK_MEM_SZ * 2;
+    //char* buf = to_send_block_mem + offset;
+    char* buf = to_send_mem_arr[send_thread_id];
     ret = cro.client_send_metadata_to_server1(buf, BLOCK_MEM_SZ * 2);
     if (ret)
     {

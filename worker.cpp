@@ -223,6 +223,7 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < QP_GROUP; i++)
     {
         int th_id = thread_id + i * WORKER_N_1;
+        printf("recv th_id=%d\n", th_id );
         std::thread recv_thread(rdma_recvTd, th_id);
         recv_thread.detach();
     }

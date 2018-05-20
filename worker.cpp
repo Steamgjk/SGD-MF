@@ -1040,7 +1040,7 @@ void rdma_sendTd(int send_thread_id)
 
             *flag = total_len;
             memcpy(flag, &total_len, sizeof(int));
-            printf("2  flagp=%p bufp=%p val=%d %d  [%d]\n", flag, buf, (*flag), (*buf), total_len );
+            printf("2  flagp=%p bufp=%p val=%d %d  [%d]\n", flag, buf, (*flag), *((int*)(void*)buf), total_len );
             memcpy(real_sta_buf, &(Pblock), struct_sz);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
             memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
@@ -1048,7 +1048,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
 
             int* tmp = (int*)(void*)buf;
-            printf("head =%d  %d\n", (*buf), (*tmp) );
+            printf("head =%d  %d\n", *((int*)(void*)buf), (*tmp) );
             ret = cro.start_remote_write(real_total, 0);
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
 

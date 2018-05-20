@@ -1695,7 +1695,7 @@ void rdma_recvTd(int recv_thread_id)
         int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {
-            printf("total ka\n");
+            //printf("total ka\n");
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 

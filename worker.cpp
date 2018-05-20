@@ -1064,9 +1064,10 @@ void rdma_sendTd(int send_thread_id)
             canSend = false;
             while (canSend == false)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                //printf("resend one\n");
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                //printf("resend one\n");
+
             }
 
         }
@@ -1148,7 +1149,7 @@ void rdma_recvTd(int recv_thread_id)
         time_stp++;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
+        //printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
 

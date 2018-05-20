@@ -1103,12 +1103,14 @@ void rdma_recvTd(int recv_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int check_sum = *check_sum_ptr;
+        printf("[%d]recv check_sum =%d\n", recv_thread_id, check_sum );
         int*total_len_ptr = (int*)(void*)(to_recv_block_mem + sizeof(int));
         while ((*total_len_ptr) <= 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *total_len_ptr;
+        printf("[%d]recv total_len =%d\n", recv_thread_id, total_len );
         char* real_sta_buf = to_recv_block_mem + sizeof(int) + sizeof(int);
         int* tail_check_sum_ptr = (int*)(void*)(real_sta_buf + total_len);
         while ((*tail_check_sum_ptr) != check_sum)
@@ -1117,7 +1119,7 @@ void rdma_recvTd(int recv_thread_id)
         }
         size_t struct_sz = sizeof(Pblock);
 
-        struct Block* pb = (struct Block*)(void*)to_recv_block_mem;
+        struct Block* pb = (struct Block*)(void*)real_sta_buf;
 
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;

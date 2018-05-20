@@ -754,6 +754,7 @@ void rdma_sendTd(int send_thread_id)
             total_len = p_total + q_total;
             real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
             check_sum = rand();
+            printf("[%d]check_sum=%d\n", send_thread_id, check_sum );
             memcpy(buf, &check_sum, sizeof(int));
             memcpy(buf + sizeof(int), &total_len, sizeof(int));
             char*real_sta_buf = buf + 2 * sizeof(int);
@@ -819,12 +820,13 @@ void rdma_recvTd(int recv_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *total_len_ptr;
-        int *tail_check_sum_ptr = (int*)(void*)(buf + sizeof(int) + sizeof(int) + total_len);
+        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
+        int *tail_check_sum_ptr = (int*)(void*)(real_sta_buf + total_len);
         while (check_sum != (*tail_check_sum_ptr))
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
+
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);

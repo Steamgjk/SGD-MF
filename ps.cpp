@@ -959,7 +959,7 @@ void rdma_sendTd(int send_thread_id)
             real_total = total_len + sizeof(int) + sizeof(int);
             char*real_sta_buf = buf + sizeof(int);
 
-
+            *flag = total_len;
             memcpy(real_sta_buf, &(Pblocks[pbid]), struct_sz);
             //printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), p_data_sz );
@@ -971,8 +971,8 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(real_total, 0);
             //printf("doenot update flag\n");
             //getchar();
-            *flag = total_len;
-            ret = cro.start_remote_write(sizeof(int), 0);
+
+            //ret = cro.start_remote_write(sizeof(int), 0);
             //printf("update flag\n");
             //if (ret == 0 )
             {

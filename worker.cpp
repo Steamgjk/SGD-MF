@@ -1057,11 +1057,13 @@ void rdma_sendTd(int send_thread_id)
             //printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
 
-
-
-            //printf("all a\n");
-            //getchar();
             canSend = false;
+            while (canSend == false)
+            {
+                ret = cro.start_remote_write(real_total, 0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                printf("[%d]resend...\n", send_thread_id );
+            }
         }
     }
 
@@ -1074,19 +1076,22 @@ void rdma_recvTd(int recv_thread_id)
 
     printf("rdma_recvTd:rdma_server_init...\n");
     int*flag = (int*)(void*)to_recv_block_mem;
-
+    char*buf = to_recv_block_mem;
     size_t struct_sz = sizeof(Block);
+    int time_stp = 1;
     while (1 == 1)
     {
         struct timeval st, et;
         gettimeofday(&st, 0);
-        while ((*flag) <= 0)
+        while ((*flag) < time_stp)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
+        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        int total_len = *total_len_ptr;
 
-        char* real_sta_buf = to_recv_block_mem + sizeof(int);
-        int total_len = (*flag);
+        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
         int* tail_total_len = (int*)(void*)(real_sta_buf + total_len);
         while ((*tail_total_len) != total_len)
         {
@@ -1129,13 +1134,15 @@ void rdma_recvTd(int recv_thread_id)
         }
 
         *flag = -1;
+        *total_len_ptr = -3;
         *tail_total_len = -2;
+        time_stp++;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
-        //printf("hasRecved=%d\n", hasRecved );
+
 
     }
 }

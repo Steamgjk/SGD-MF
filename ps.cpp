@@ -940,7 +940,7 @@ void rdma_sendTd(int send_thread_id)
     }
     printf("[%d]client_send_metadata_to_server1  ok\n", send_thread_id);
 
-
+    int timestp = 0;
     while (1 == 1)
     {
 
@@ -962,7 +962,7 @@ void rdma_sendTd(int send_thread_id)
 
         if (canSend[send_thread_id] == true)
         {
-
+            timestp++;
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
             //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
@@ -971,10 +971,10 @@ void rdma_sendTd(int send_thread_id)
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
             q_total = struct_sz + q_data_sz;
             total_len = p_total + q_total;
-            real_total = total_len + sizeof(int) + sizeof(int);
-            char*real_sta_buf = buf + sizeof(int);
-
-            *flag = total_len;
+            real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
+            char*real_sta_buf = buf + sizeof(int) + sizeof(int);
+            *flag = timestp;
+            memcpy(buf + sizeof(int), &total_len, sizeof(int));
             memcpy(real_sta_buf, &(Pblocks[pbid]), struct_sz);
             //printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), p_data_sz );
@@ -994,7 +994,13 @@ void rdma_sendTd(int send_thread_id)
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
 
-            canSend[send_thread_id % WORKER_NUM] = false;
+            canSend[send_thread_id] = false;
+            while ( canSend[send_thread_id] == false)
+            {
+                ret = cro.start_remote_write(real_total, 0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                printf("[%d]resend...\n", send_thread_id );
+            }
         }
 
     }
@@ -1012,19 +1018,24 @@ void rdma_recvTd(int recv_thread_id)
 
     int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
     size_t struct_sz = sizeof(Block);
+    int timestp = 1;
     while (1 == 1)
     {
 
         //printf("recving ...[%d]\n", recv_thread_id);
         int* flag = (int*)(void*)(buf);
-        while ((*flag) <= 0 )
+        while ((*flag) < timestp )
         {
             //printf("flag =%d\n", (*flag));
             //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
+
         printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
-        char* real_sta_buf = buf + sizeof(int);
-        int total_len = *flag;
+
+        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        int total_len = *total_len_ptr;
+        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
+
         int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {
@@ -1068,7 +1079,9 @@ void rdma_recvTd(int recv_thread_id)
         printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         *flag = -1;
+        *total_len_ptr = -3;
         *tail_total_len_ptr = -2;
+        timestp++;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

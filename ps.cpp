@@ -745,6 +745,7 @@ void rdma_sendTd(int send_thread_id)
         int check_sum = 0;
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
+            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
@@ -752,24 +753,22 @@ void rdma_sendTd(int send_thread_id)
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
             q_total = struct_sz + q_data_sz;
             total_len = p_total + q_total;
-            real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
-            check_sum = rand();
-            printf("[%d]check_sum=%d\n", send_thread_id, check_sum );
-            memcpy(buf, &check_sum, sizeof(int));
-            memcpy(buf + sizeof(int), &total_len, sizeof(int));
-            char*real_sta_buf = buf + 2 * sizeof(int);
+            real_total = total_len + sizeof(int) + sizeof(int);
+            char*real_sta_buf = buf + sizeof(int);
 
-            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
-            //printf("[%d] canSend check 1\n",  send_thread_id);
+            //check_sum = rand();
+            //printf("[%d]check_sum=%d\n", send_thread_id, check_sum );
+            //memcpy(buf, &check_sum, sizeof(int));
+            memcpy(buf, &total_len, sizeof(int));
+
             memcpy(real_sta_buf, &(Pblocks[pbid]), struct_sz);
             //printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), p_data_sz );
 
-
             memcpy(real_sta_buf + p_total, &(Qblocks[qbid]), struct_sz);
             memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), q_data_sz);
 
-            memcpy(real_sta_buf + total_len, &check_sum, sizeof(int));
+            memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
             //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
             ret = cro.start_remote_write(real_total, 0);
             if (ret == 0 )
@@ -808,21 +807,15 @@ void rdma_recvTd(int recv_thread_id)
             continue;
         }
         printf("recving ...[%d]\n", recv_thread_id);
-        int* check_sum_ptr = (int*)(void*)buf;
-        while ( (*check_sum_ptr) < 0)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        int check_sum = *check_sum_ptr;
-        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        int* total_len_ptr = (int*)(void*)(buf);
         while ((*total_len_ptr) <= 0 )
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *total_len_ptr;
-        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
-        int *tail_check_sum_ptr = (int*)(void*)(real_sta_buf + total_len);
-        while (check_sum != (*tail_check_sum_ptr))
+        char* real_sta_buf = buf + sizeof(int);
+        int *tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
+        while (total_len != (*tail_total_len_ptr))
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -874,9 +867,8 @@ void rdma_recvTd(int recv_thread_id)
 
         printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
-        *check_sum_ptr = -1;
         *total_len_ptr = -2;
-        *tail_check_sum_ptr = -3;
+        *tail_total_len_ptr = -3;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

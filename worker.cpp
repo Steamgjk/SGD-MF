@@ -1011,6 +1011,7 @@ void rdma_sendTd(int send_thread_id)
     }
 
     char*buf = NULL;
+    int time_stp = 0;
     while (1 == 1)
     {
         int real_total = 0;
@@ -1027,7 +1028,7 @@ void rdma_sendTd(int send_thread_id)
         char* real_sta_buf = to_send_block_mem + sizeof(int);
         if (canSend)
         {
-
+            time_stp++;
             buf = to_send_block_mem;
             //printf("flagp=%p bufp=%p val=%d %d\n", flag, buf, (*flag), (*buf) );
             p_data_sz = sizeof(double) * Pblock.ele_num;
@@ -1035,11 +1036,12 @@ void rdma_sendTd(int send_thread_id)
             p_total = struct_sz + p_data_sz;
             q_total = struct_sz + q_data_sz;
             total_len = p_total + q_total;
-            real_total = total_len + sizeof(int) + sizeof(int);
-            char* real_sta_buf = buf + sizeof(int);
+            real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
+            char* real_sta_buf = buf + sizeof(int) + sizeof(int);
 
             //*flag = total_len;
-            memcpy(flag, &total_len, sizeof(int));
+            memcpy(buf, &time_stp, sizeof(int));
+            memcpy(buf + sizeof(int), &total_len, sizeof(int));
             //printf("2  flagp=%p bufp=%p val=%d %d  [%d]\n", flag, buf, (*flag), *((int*)(void*)buf), total_len );
             memcpy(real_sta_buf, &(Pblock), struct_sz);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
@@ -1089,8 +1091,12 @@ void rdma_recvTd(int recv_thread_id)
         }
         printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
-        int total_len = *total_len_ptr;
 
+        while ((*total_len_ptr) <= 0)
+        {
+
+        }
+        int total_len = *total_len_ptr;
         char* real_sta_buf = buf + sizeof(int) + sizeof(int);
         int* tail_total_len = (int*)(void*)(real_sta_buf + total_len);
         while ((*tail_total_len) != total_len)

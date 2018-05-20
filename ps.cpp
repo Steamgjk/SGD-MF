@@ -351,11 +351,19 @@ void InitFlag()
     size_t offset = 0;
     char* sta = to_recv_block_mem;
     int* bk = NULL;
+    /*
     for (int i = 0; i < 8; i++)
     {
+
         offset = i * BLOCK_MEM_SZ;
         sta = to_recv_block_mem + offset;
         bk = (int*)(void*)sta;
+        *bk = -1;
+    }
+    **/
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        bk = (int*)(void*)to_recv_mem_arr[i];
         *bk = -1;
     }
 }

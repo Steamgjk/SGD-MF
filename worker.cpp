@@ -497,23 +497,13 @@ void CalcUpdt(int td_id)
 
     while (1 == 1)
     {
-        //printf("td = %d entercalc\n", td_id );
 
-        while (StartCalcUpdt[td_id] == false)
-        {
-            //printf("stat - false %d  %d  \n", td_id, StartCalcUpdt[td_id]);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-        }
         int p_block_idx = Pblock.block_id;
         int q_block_idx = Qblock.block_id;
-        //printf("[%d] p_block_idx=%d q_block_idx=%d\n", td_id, p_block_idx, q_block_idx );
-        //printf("2-[%d] p_block_idx=%d q_block_idx=%d\n", td_id, Pblock.block_id, Qblock.block_id );
-        //getchar();
         if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 1000;
+            int times_thresh = 200;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;

@@ -207,8 +207,8 @@ int main(int argc, const char * argv[])
 
     for (int i = 0; i < CAP; i++)
     {
-        local_ports[i] = 5511 + i;
-        remote_ports[i] = 4411 + i;
+        local_ports[i] = 55511 + i;
+        remote_ports[i] = 44411 + i;
     }
     int thresh_log = 2000;
     thread_id = atoi(argv[1]);

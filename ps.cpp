@@ -171,8 +171,8 @@ int main(int argc, const char * argv[])
     recv_round_robin_idx = 0;
     for (int i = 0; i < CAP; i++)
     {
-        local_ports[i] = 4411 + i;
-        remote_ports[i] = 5511 + i;
+        local_ports[i] = 44411 + i;
+        remote_ports[i] = 55511 + i;
     }
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);

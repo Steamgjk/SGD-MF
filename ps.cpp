@@ -694,7 +694,7 @@ void rdma_sendTd(int send_thread_id)
     ret = cro.client_connect_to_server();
     if (ret)
     {
-        rdma_error("Failed to setup client connection  %d  %s %d , ret = %d \n", ret, send_thread_id, remote_ip, remote_port);
+        rdma_error("Failed to setup client connection  , ret = %d  %d   %s %d \n", ret, send_thread_id, remote_ip, remote_port);
         return ret;
     }
     printf("[%d] connect  ok\n", send_thread_id);

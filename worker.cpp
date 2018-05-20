@@ -1046,17 +1046,15 @@ void rdma_sendTd(int send_thread_id)
 
             ret = cro.start_remote_write(real_total, 0);
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
-
+            **/
             *flag = total_len;
+            printf("flag=%d\n", (*flag) );
             ret = cro.start_remote_write(sizeof(int), 0);
             printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
-            **/
-            for (int i = 0; i < MEM_SIZE; i++)
-            {
-                to_send_block_mem[i] = 'a';
-            }
-            ret = cro.start_remote_write(sizeof(int), 0);
+
+
+
             printf("all a\n");
             getchar();
             canSend = false;

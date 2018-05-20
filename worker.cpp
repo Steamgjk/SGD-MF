@@ -223,7 +223,7 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < QP_GROUP; i++)
     {
         int th_id = thread_id + i * WORKER_N_1;
-        std::thread recv_thread(rdma_recvTd, th_id);
+        std::thread recv_thread(th_id, th_id);
         recv_thread.detach();
     }
 
@@ -234,7 +234,7 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < QP_GROUP; i++)
     {
         int th_id = thread_id + i * WORKER_N_1;
-        std::thread send_thread(rdma_sendTd, th_id);
+        std::thread send_thread(th_id, th_id);
         send_thread.detach();
     }
 
@@ -971,8 +971,7 @@ void recvTd(int recv_thread_id)
 
 void rdma_sendTd(int send_thread_id)
 {
-    printf("worker send_thread_id=%d\n", send_thread_id);
-    printf("worker send waiting for 3s...\n");
+    printf("[%d] worker send waiting for 3s...\n", send_thread_id);
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     char* remote_ip = remote_ips[send_thread_id % WORKER_N_1];
     int remote_port = remote_ports[send_thread_id];

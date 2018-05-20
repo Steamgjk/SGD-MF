@@ -745,9 +745,10 @@ void rdma_sendTd(int send_thread_id)
         int check_sum = 0;
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
-            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
+            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + p_data_sz;
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();

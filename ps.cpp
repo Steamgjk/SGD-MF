@@ -807,7 +807,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             continue;
         }
-        //printf("recving ...\n");
+        printf("recving ...[%d]\n", recv_thread_id);
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)buf;

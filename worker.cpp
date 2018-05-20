@@ -1148,7 +1148,7 @@ void rdma_recvTd(int recv_thread_id)
         time_stp++;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
+        printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
 

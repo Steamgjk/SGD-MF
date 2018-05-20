@@ -314,7 +314,7 @@ int main(int argc, const char * argv[])
         }
         if (recvCount == WORKER_NUM)
         {
-            if (iter_t % 1 == 0)
+            if (iter_t % 10 == 0)
             {
                 gettimeofday(&ed, 0);
                 /*
@@ -336,9 +336,9 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t == 330)
+        if (iter_t == 1020)
         {
-            for (int i = 0; i < 33; i++)
+            for (int i = 0; i < 101; i++)
             {
                 printf("%lld\n", time_span[i] );
             }
@@ -892,7 +892,7 @@ void rdma_recvTd(int recv_thread_id)
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("recv success time = %lld\n", mksp );
+        printf("recv success time = %lld\n", mksp );
         //getchar();
         recvCount++;
     }

@@ -1058,7 +1058,7 @@ void rdma_recvTd(int recv_thread_id)
             Pblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        //printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+        printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
 

@@ -1033,6 +1033,10 @@ void rdma_recvTd(int recv_thread_id)
         printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
 
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        while ((*total_len_ptr) <= 0)
+        {
+
+        }
         int total_len = *total_len_ptr;
         char* real_sta_buf = buf + sizeof(int) + sizeof(int);
 

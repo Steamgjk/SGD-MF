@@ -322,6 +322,7 @@ int main(int argc, const char * argv[])
                 //exit(0);
             }
             canSend = true;
+            printf("canSend = true\n");
             hasRecved = false;
 
 

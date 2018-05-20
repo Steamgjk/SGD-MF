@@ -735,7 +735,7 @@ void rdma_sendTd(int send_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
-
+        size_t  real_total = 0;
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
             printf("[%d] canSend\n",  send_thread_id);
@@ -746,12 +746,13 @@ void rdma_sendTd(int send_thread_id)
             size_t struct_sz = sizeof( Pblocks[pbid]);
             size_t data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             size_t total_len = struct_sz + data_sz;
+            real_total += total_len;
             //printf("[%d] canSend check 1\n",  send_thread_id);
             memcpy(buf, &(Pblocks[pbid]), struct_sz);
             //printf("[%d] canSend check 2\n",  send_thread_id);
             memcpy(buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), data_sz);
             //printf("start send...\n");
-            ret = cro.start_remote_write(total_len, 0);
+            //ret = cro.start_remote_write(total_len, 0);
             if (ret == 0)
             {
                 printf("[Td:%d] send success pbid=%d isP=%d ret =%d\n", send_thread_id, pbid, Pblocks[pbid].isP, ret);
@@ -767,8 +768,9 @@ void rdma_sendTd(int send_thread_id)
 
             memcpy(buf + BLOCK_MEM_SZ, &(Qblocks[qbid]), struct_sz);
             memcpy(buf + BLOCK_MEM_SZ + struct_sz , (char*) & (Qblocks[qbid].eles[0]), data_sz);
-
-            ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
+            real_total += total_len;
+            //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
+            ret = cro.start_remote_write(0, real_total);
             if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret);

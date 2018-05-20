@@ -327,9 +327,9 @@ int main(int argc, const char * argv[])
                 printf("hehere %d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
-            if (iter_cnt == 1200)
+            if (iter_cnt == 1010)
             {
-                for (int i = 0; i < 120; i++)
+                for (int i = 0; i < 101; i++)
                 {
                     printf("%lld\n", time_span[i]);
                 }
@@ -1353,7 +1353,7 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 
 
-void rdma_sendTd(int send_thread_id)
+void rdma_sendTd1(int send_thread_id)
 {
     printf("worker send_thread_id=%d\n", send_thread_id);
     printf("worker send waiting for 3s...\n");
@@ -1465,7 +1465,7 @@ void rdma_sendTd(int send_thread_id)
     }
 
 }
-void rdma_recvTd(int recv_thread_id)
+void rdma_recvTd1(int recv_thread_id)
 {
     printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
     server_rdma_op sro;
@@ -1548,6 +1548,189 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         //printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
+        offset = (offset + BLOCK_MEM_SZ) % (MEM_SIZE);
+        recved_head = (recved_head + 1) % QU_LEN;
+
+    }
+
+}
+
+
+
+
+void rdma_sendTd(int send_thread_id)
+{
+    printf("worker send_thread_id=%d\n", send_thread_id);
+    printf("worker send waiting for 3s...\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    int right_idx = (send_thread_id + 1) % WORKER_NUM;
+    char* remote_ip = local_ips[right_idx];
+    int remote_port = local_ports[right_idx];
+
+    struct sockaddr_in server_sockaddr;
+    int ret, option;
+    bzero(&server_sockaddr, sizeof server_sockaddr);
+    server_sockaddr.sin_family = AF_INET;
+    server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+    get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
+    server_sockaddr.sin_port = htons(remote_port);
+
+    client_rdma_op cro;
+    ret = cro.client_prepare_connection(&server_sockaddr);
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+    ret = cro.client_pre_post_recv_buffer();
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+    ret = cro.client_connect_to_server();
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+
+    ret = cro.client_send_metadata_to_server1(to_send_block_mem, BLOCK_MEM_SZ);
+    if (ret)
+    {
+        rdma_error("Failed to setup client connection , ret = %d \n", ret);
+        return ret;
+    }
+
+    char*buf = NULL;
+    size_t offset = 0;
+    size_t flag_offset = sizeof(int);
+    struct timeval st, et, tspan;
+    while (1 == 1)
+    {
+        if (to_send_head < to_send_tail)
+        {
+
+            int block_idx = to_send[to_send_head];
+            int block_p_or_q = actions[to_send_head];
+            //0 is to right trans Q, 1 is up, trans p
+            size_t struct_sz = sizeof(Block);
+            size_t data_sz = 0;
+            buf = to_send_block_mem;
+            int*flag = (int*)(void*)buf;
+            *flag = -1;
+
+            int real_total = 0;
+            int total_len = 0;
+            char*real_sta = buf + flag_offset;
+
+            if (block_p_or_q == 0)
+            {
+                //send q
+                data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
+
+                total_len = struct_sz + data_sz;
+                real_total = total_len + sizeof(int);
+
+                memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
+                memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
+
+                ret = cro.start_remote_write(real_total, offset);
+
+            }
+            else
+            {
+                data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
+                total_len = struct_sz + data_sz;
+                real_total = total_len + sizeof(int);
+                memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
+                memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
+
+                ret = cro.start_remote_write(real_total, offset);
+
+            }
+            *flag = 1;
+            ret = cro.start_remote_write(sizeof(int), offset);
+
+            offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
+            gettimeofday(&et, 0);
+            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+
+            to_send_head = (to_send_head + 1) % QU_LEN;
+        }
+    }
+
+}
+void rdma_recvTd(int recv_thread_id)
+{
+    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
+    server_rdma_op sro;
+    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
+
+    printf("rdma_recvTd:rdma_server_init...\n");
+    size_t struct_sz = sizeof(Block);
+    size_t offset = 0;
+    int total_len = -1;
+
+    while (1 == 1)
+    {
+
+        int block_idx = has_recved[recved_head];
+        int block_p_or_q = actions[recved_head];
+
+        //0 is to right trans/recv Q, 1 is up, trans p
+        struct timeval st, et, tspan;
+        char* buf = to_recv_block_mem + offset;
+        int* flag = (int*)(void*)buf;
+        char* real_sta = buf + sizeof(int);
+        while ( (*flag) <= 0)
+        {
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        struct Block * pb = (struct Block*)(void*)real_sta;
+        gettimeofday(&st, 0);
+        size_t data_sz = sizeof(double) * (pb->ele_num);
+        //double* data_eles  = (double*) (void*)(buf + struct_sz);
+        double* data_eles  = (double*) (void*)(real_sta + struct_sz);
+        //printf("recv  blockid=%d  ele=%d isP=%d\n", pb->block_id, pb->ele_num, pb->isP );
+        if (block_p_or_q == 0)
+        {
+            //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+            // recv q
+            Qblocks[block_idx].block_id = pb->block_id;
+            Qblocks[block_idx].sta_idx = pb->sta_idx;
+            Qblocks[block_idx].height = pb->height;
+            Qblocks[block_idx].ele_num = pb->ele_num;
+            Qblocks[block_idx].eles.clear();
+            Qblocks[block_idx].eles.resize(pb->ele_num);
+            //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+            Qblocks[block_idx].isP = pb->isP;
+            for (int i = 0; i < pb->ele_num; i++)
+            {
+                Qblocks[block_idx].eles[i] = data_eles[i];
+            }
+            //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
+        }
+        else
+        {
+            Pblocks[block_idx].block_id = pb->block_id;
+            Pblocks[block_idx].sta_idx = pb->sta_idx;
+            Pblocks[block_idx].height = pb->height;
+            Pblocks[block_idx].ele_num = pb->ele_num;
+            Pblocks[block_idx].eles.resize(pb->ele_num);
+            Pblocks[block_idx].isP = pb->isP;
+            for (int i = 0; i < pb->ele_num; i++)
+            {
+                Pblocks[block_idx].eles[i] = data_eles[i];
+            }
+        }
+
+        *flag = -1;
+        gettimeofday(&et, 0);
+        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+
         offset = (offset + BLOCK_MEM_SZ) % (MEM_SIZE);
         recved_head = (recved_head + 1) % QU_LEN;
 

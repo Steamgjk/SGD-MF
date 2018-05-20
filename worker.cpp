@@ -74,7 +74,7 @@ char* to_recv_block_mem;
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};
 
-char* local_ips[CAP] = {"12.12.10.19", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
+char* local_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.19", "12.12.10.17"};
 int local_ports[CAP] = {5511, 5512, 5513, 5514};
 
 int send_round_robin_idx = 0;

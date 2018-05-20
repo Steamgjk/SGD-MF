@@ -1060,7 +1060,7 @@ void rdma_sendTd(int send_thread_id)
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
 
             canSend = false;
-            while (canSend = = false)
+            while (canSend == false)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 ret = cro.start_remote_write(real_total, 0);

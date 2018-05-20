@@ -1061,7 +1061,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf, &(Pblock), struct_sz);
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
             memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
-            memcpy(real_sta_buf + p_total struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
+            memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
             memcpy(real_sta_buf + total_len, &check_sum, sizeof(int));
 
             //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);

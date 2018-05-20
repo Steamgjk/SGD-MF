@@ -1688,12 +1688,14 @@ void rdma_recvTd(int recv_thread_id)
         char* real_sta = buf + sizeof(int);
         while ( (*flag) <= 0)
         {
+            printf("flag ka\n");
             //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *flag;
         int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {
+            printf("total ka\n");
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 

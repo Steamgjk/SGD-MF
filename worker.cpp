@@ -267,8 +267,8 @@ int main(int argc, const char * argv[])
     int iter_cnt = 0;
     bool isstart = false;
 
-    LoadData();
-    printf("Load Rating Success\n");
+    //LoadData();
+    //printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");
@@ -626,29 +626,29 @@ void submf()
     long long mksp;
     gettimeofday(&beg, 0);
 
-    /*
-        int r1 = Pblock.block_id * 2;
-        int c1 = Qblock.block_id * 2;
-        int f1 = r1 * 8 + c1;
-        int f2 = r1 * 8 + c1 + 1;
-        int f3 = (r1 + 1) * 8 + c1;
-        int f4 = (r1 + 1) * 8 + c1 + 1;
 
-        int row = Pblock.block_id;
-        int col = Qblock.block_id;
-        //printf("row=%d col=%d\n", row, col );
-        for (int td = 0; td < WORKER_THREAD_NUM; td++)
-        {
-            hash_for_row_threads[row][col][td].clear();
-            rates_for_row_threads[row][col][td].clear();
-            hash_for_col_threads[row][col][td].clear();
-            rates_for_col_threads[row][col][td].clear();
-        }
-        LoadRequiredData(row, col, f1);
-        LoadRequiredData(row, col, f2);
-        LoadRequiredData(row, col, f3);
-        LoadRequiredData(row, col, f4);
-        **/
+    int r1 = Pblock.block_id * 2;
+    int c1 = Qblock.block_id * 2;
+    int f1 = r1 * 8 + c1;
+    int f2 = r1 * 8 + c1 + 1;
+    int f3 = (r1 + 1) * 8 + c1;
+    int f4 = (r1 + 1) * 8 + c1 + 1;
+
+    int row = Pblock.block_id;
+    int col = Qblock.block_id;
+    //printf("row=%d col=%d\n", row, col );
+    for (int td = 0; td < WORKER_THREAD_NUM; td++)
+    {
+        hash_for_row_threads[row][col][td].clear();
+        rates_for_row_threads[row][col][td].clear();
+        hash_for_col_threads[row][col][td].clear();
+        rates_for_col_threads[row][col][td].clear();
+    }
+    LoadRequiredData(row, col, f1);
+    LoadRequiredData(row, col, f2);
+    LoadRequiredData(row, col, f3);
+    LoadRequiredData(row, col, f4);
+
     /*
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {

@@ -51,7 +51,7 @@ using namespace std;
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
-
+char* to_recv_mem_arr[10];
 
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
@@ -175,7 +175,11 @@ int main(int argc, const char * argv[])
         remote_ports[i] = 55511 + i;
     }
     to_send_block_mem = (void*)malloc(MEM_SIZE);
-    to_recv_block_mem = (void*)malloc(MEM_SIZE);
+    //to_recv_block_mem = (void*)malloc(MEM_SIZE);
+    for (int i = 0 ; i < WORKER_NUM; i++)
+    {
+        to_recv_mem_arr[i] = (void*)malloc(BLOCK_MEM_SZ * 2);
+    }
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
     InitFlag();
 
@@ -991,8 +995,8 @@ void rdma_sendTd(int send_thread_id)
 void rdma_recvTd(int recv_thread_id)
 {
     printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
-    char* buf = to_recv_block_mem + (recv_thread_id) * BLOCK_MEM_SZ * 2;
-
+    //char* buf = to_recv_block_mem + (recv_thread_id) * BLOCK_MEM_SZ * 2;
+    char* buf = to_recv_mem_arr[recv_thread_id];
     server_rdma_op sro;
 
     int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
@@ -1007,7 +1011,7 @@ void rdma_recvTd(int recv_thread_id)
             //printf("flag =%d\n", (*flag));
             //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        printf("ok out flag=%d\n", (*flag) );
+        printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
         char* real_sta_buf = buf + sizeof(int);
         int total_len = *flag;
         int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
@@ -1015,7 +1019,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-
+        printf("[%d]ok check \n", recv_thread_id );
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);

@@ -1106,7 +1106,7 @@ void rdma_recvTd(int recv_thread_id)
                 printf("P Exception!\n");
             }
         }
-        printf("[%d]:recv one block\n", recv_thread_id);
+        printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
         //reset flag
         pb->block_id = -1;
 
@@ -1124,7 +1124,7 @@ void rdma_recvTd(int recv_thread_id)
         Qblock.ele_num = qb-> ele_num;
         Qblock.eles.resize(qb->ele_num);
         //printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
-        printf("[%d]get qblock id=%d  ele_num=%d  isP=%d\n", recv_thread_id,  qb->block_id, qb->ele_num, qb->isP);
+        printf("[%d]get qblock id=%d  ele_num=%d  isP=%d qb=%p\n", recv_thread_id,  qb->block_id, qb->ele_num, qb->isP, qb);
         data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
         for (int i = 0; i < Qblock.ele_num; i++)
         {

@@ -1063,7 +1063,7 @@ void rdma_sendTd(int send_thread_id)
             while (canSend == false)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                printf("resend one\n");
+                //printf("resend one\n");
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
             }
 
@@ -1120,7 +1120,7 @@ void rdma_recvTd(int recv_thread_id)
                 printf("P Exception!\n");
             }
         }
-        printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
+        //printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
 
         size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
 
@@ -1132,7 +1132,7 @@ void rdma_recvTd(int recv_thread_id)
         Qblock.height = qb->height;
         Qblock.ele_num = qb-> ele_num;
         Qblock.eles.resize(qb->ele_num);
-        printf("[%d]get qblock id=%d  ele_num=%d  isP=%d qb=%p\n", recv_thread_id,  qb->block_id, qb->ele_num, qb->isP, qb);
+        //printf("[%d]get qblock id=%d  ele_num=%d  isP=%d qb=%p\n", recv_thread_id,  qb->block_id, qb->ele_num, qb->isP, qb);
         //data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
         data_eles = (double*)(void*)(real_sta_buf + p_total + struct_sz);
         for (int i = 0; i < Qblock.ele_num; i++)
@@ -1146,7 +1146,7 @@ void rdma_recvTd(int recv_thread_id)
         time_stp++;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
+        //printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
 

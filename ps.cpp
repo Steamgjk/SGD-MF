@@ -805,6 +805,7 @@ void rdma_recvTd(int recv_thread_id)
     {
         if (recv_round_robin_idx != recv_thread_id / WORKER_NUM)
         {
+
             continue;
         }
         printf("recving ...[%d]\n", recv_thread_id);
@@ -812,7 +813,7 @@ void rdma_recvTd(int recv_thread_id)
         while ((*total_len_ptr) <= 0 )
         {
             printf("[%d] total_len=%d\n", recv_thread_id, (*total_len_ptr) );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *total_len_ptr;
         char* real_sta_buf = buf + sizeof(int);

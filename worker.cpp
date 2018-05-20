@@ -1060,6 +1060,7 @@ void rdma_sendTd(int send_thread_id)
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
 
             canSend = false;
+            /*
             int time_thresh = 0;
             while (canSend == false)
             {
@@ -1077,6 +1078,7 @@ void rdma_sendTd(int send_thread_id)
 
                 //printf("[%d]resend...\n", send_thread_id );
             }
+            **/
         }
     }
 

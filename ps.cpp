@@ -995,23 +995,25 @@ void rdma_sendTd(int send_thread_id)
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
 
-            int time_thresh = 0;
-            while (canSend[send_thread_id] == false)
-            {
+            /*
+                        int time_thresh = 0;
+                        while (canSend[send_thread_id] == false)
+                        {
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                if (canSend[send_thread_id] == true || time_thresh == 3)
-                {
-                    break;
-                }
-                else
-                {
-                    ret = cro.start_remote_write(real_total, 0);
-                    time_thresh++;
-                }
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                            if (canSend[send_thread_id] == true || time_thresh == 3)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                ret = cro.start_remote_write(real_total, 0);
+                                time_thresh++;
+                            }
 
-                //printf("[%d]resend...\n", send_thread_id );
-            }
+                            //printf("[%d]resend...\n", send_thread_id );
+                        }
+                        **/
         }
 
     }

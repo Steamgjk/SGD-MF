@@ -737,6 +737,7 @@ void rdma_sendTd(int send_thread_id)
         printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
         size_t real_total = 0;
         size_t p_total = 0;
+        size_t q_total = 0;
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
             printf("[%d] canSend\n",  send_thread_id);

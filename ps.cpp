@@ -350,7 +350,7 @@ void InitFlag()
         offset = i * BLOCK_MEM_SZ;
         sta = to_recv_block_mem + offset;
         bk = (int*)(void*)sta;
-        bk = -1;
+        *bk = -1;
     }
 }
 void WriteLog(Block & Pb, Block & Qb, int iter_cnt)

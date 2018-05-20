@@ -334,9 +334,9 @@ int main(int argc, const char * argv[])
 void InitFlag()
 {
     int* pb = (int*)(void*)(to_recv_block_mem);
-    pb = -1;
+    *pb = -1;
     pb = (int*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
-    pb->block_id = -1;
+    *pb = -1;
 }
 void LoadRmatrix(int file_no, map<long, double>& myMap)
 {

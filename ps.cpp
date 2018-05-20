@@ -772,7 +772,7 @@ void rdma_sendTd(int send_thread_id)
             ret = cro.start_remote_write(real_total, 0);
             if (ret == 0 )
             {
-                printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, total_len, Qblocks[qbid].height);
+                printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
             canSend[send_thread_id % WORKER_NUM] = false;
         }

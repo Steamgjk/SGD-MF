@@ -235,7 +235,7 @@ int main(int argc, const char * argv[])
     to_send_head = to_send_tail = recved_head = recved_tail = has_processed = 0;
 
     to_recv_block_mem = (char*)malloc(MEM_SIZE);
-    int*flag = (int*)(void*) to_send_block_mem;
+    int*flag = (int*)(void*) to_recv_block_mem;
     *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
 

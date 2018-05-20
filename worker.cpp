@@ -1013,11 +1013,7 @@ void rdma_sendTd(int send_thread_id)
     char*buf = NULL;
     while (1 == 1)
     {
-        while (canSend == false)
-        {
-            //printf("worker cannot send[%d]  %d\n", send_thread_id, canSend );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
+
 
         int real_total = 0;
         size_t p_total = 0;

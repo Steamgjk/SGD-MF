@@ -811,7 +811,8 @@ void rdma_recvTd(int recv_thread_id)
         int* total_len_ptr = (int*)(void*)(buf);
         while ((*total_len_ptr) <= 0 )
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            printf("[%d] total_len=%d\n", recv_thread_id, (*total_len_ptr) );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         int total_len = *total_len_ptr;
         char* real_sta_buf = buf + sizeof(int);

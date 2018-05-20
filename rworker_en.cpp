@@ -238,10 +238,16 @@ int main(int argc, const char * argv[])
     int*flag = (int*)(void*) to_recv_block_mem;
     *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
+    /*
+        std::thread recv_thread(rdma_recvTd, thread_id);
+        recv_thread.detach();
+        std::thread send_thread(rdma_sendTd, thread_id);
+        send_thread.detach();
+    **/
 
-    std::thread recv_thread(rdma_recvTd, thread_id);
+    std::thread recv_thread(recvTd, thread_id);
     recv_thread.detach();
-    std::thread send_thread(rdma_sendTd, thread_id);
+    std::thread send_thread(sendTd, thread_id);
     send_thread.detach();
 
     LoadActionConfig(ACTION_NAME);
@@ -260,12 +266,8 @@ int main(int argc, const char * argv[])
     std::thread data_read_thread(readData, thread_id);
     data_read_thread.detach();
 
-    /*
-        std::thread recv_thread(recvTd, thread_id);
-        recv_thread.detach();
-        std::thread send_thread(sendTd, thread_id);
-        send_thread.detach();
-    **/
+
+
 
 
     partitionP(DIM_NUM, Pblocks);

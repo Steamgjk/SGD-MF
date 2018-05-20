@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
 
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int recv_thread_id = 1; recv_thread_id < 2; recv_thread_id++)
+        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             std::thread recv_thread(rdma_recvTd, thid);
@@ -202,7 +202,7 @@ int main(int argc, const char * argv[])
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
-        for (int send_thread_id = 1; send_thread_id < 2; send_thread_id++)
+        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
             std::thread send_thread(rdma_sendTd, thid);
@@ -778,12 +778,7 @@ void rdma_recvTd(int recv_thread_id)
     char* buf = to_recv_block_mem + (recv_thread_id % WORKER_NUM) * BLOCK_MEM_SZ * 2;
 
     server_rdma_op sro;
-    if (recv_thread_id == 5)
-    {
-        printf("5...getchar\n");
-        //getchar();
-    }
-    printf("free pass 5\n");
+
     int ret = sro.rdma_server_init(local_ips[recv_thread_id % WORKER_NUM], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
     /*
     while (1 == 1)

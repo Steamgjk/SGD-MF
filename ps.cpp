@@ -812,7 +812,7 @@ void rdma_recvTd(int recv_thread_id)
         int* total_len_ptr = (int*)(void*)(buf);
         while ((*total_len_ptr) <= 0 )
         {
-            printf("[%d] total_len=%d\n", recv_thread_id, (*total_len_ptr) );
+            //printf("[%d] total_len=%d\n", recv_thread_id, (*total_len_ptr) );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *total_len_ptr;
@@ -826,11 +826,6 @@ void rdma_recvTd(int recv_thread_id)
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);
-        //printf("ps: pb blockid =%d\n", pb->block_id);
-        while (pb->block_id < 0)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
         int block_idx = pb->block_id ;
         Pblocks[block_idx].block_id = pb->block_id;
         Pblocks[block_idx].sta_idx = pb->sta_idx;
@@ -851,11 +846,6 @@ void rdma_recvTd(int recv_thread_id)
 
         //pb = (struct Block*)(void*)(buf + BLOCK_MEM_SZ);
         pb = (struct Block*)(void*)(real_sta_buf + p_total);
-        while (pb->block_id < 0)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-
         block_idx = pb->block_id ;
         Qblocks[block_idx].block_id = pb->block_id;
         Qblocks[block_idx].sta_idx = pb->sta_idx;

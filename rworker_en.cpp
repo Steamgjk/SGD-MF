@@ -235,6 +235,8 @@ int main(int argc, const char * argv[])
     to_send_head = to_send_tail = recved_head = recved_tail = has_processed = 0;
 
     to_recv_block_mem = (char*)malloc(MEM_SIZE);
+    int*flag = (int*)(void*) to_send_block_mem;
+    *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
 
     std::thread recv_thread(rdma_recvTd, thread_id);
@@ -1407,28 +1409,47 @@ void rdma_sendTd(int send_thread_id)
             size_t struct_sz = sizeof(Block);
             size_t data_sz = 0;
             char*buf = to_send_block_mem;
+            int real_total = 0;
+            int total_len = 0;
+            char*real_sta = buf + sizeof(int);
             if (block_p_or_q == 0)
             {
                 //send q
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
                 //printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
-                size_t total_len = struct_sz + data_sz;
-                memcpy(buf, &(Qblocks[block_idx]), struct_sz);
+                total_len = struct_sz + data_sz;
+                real_total = sizeof(int) + total_len + sizeof(int);
+                memcpy(buf, &total_len, sizeof(int));
+                memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
+                memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
+                memcpy(real_sta + total_len, &total_len, sizeof(int));
+                ret = cro.start_remote_write(real_total, offset);
+                //memcpy(buf, &(Qblocks[block_idx]), struct_sz);
                 //printf("before memcpy2\n");
-                memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
-                ret = cro.start_remote_write(total_len, offset);
+                //memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
+                //ret = cro.start_remote_write(total_len, offset);
                 //printf("writer one Pblock\n");
             }
             else
             {
+                data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
+                total_len = struct_sz + data_sz;
+                real_total = sizeof(int) + total_len + sizeof(int);
+                memcpy(buf, &total_len, sizeof(int));
+                memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
+                memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
+                memcpy(real_sta + total_len, &total_len, sizeof(int));
+                ret = cro.start_remote_write(real_total, offset);
+                /*
                 //send p
                 data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
 
-                size_t total_len = struct_sz + data_sz;
+                total_len = struct_sz + data_sz;
                 memcpy(buf, &(Pblocks[block_idx]), struct_sz);
                 memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
                 ret = cro.start_remote_write(total_len, offset);
                 //printf("writer one Qblock\n");
+                **/
             }
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);
@@ -1450,22 +1471,38 @@ void rdma_recvTd(int recv_thread_id)
     printf("rdma_recvTd:rdma_server_init...\n");
     size_t struct_sz = sizeof(Block);
     size_t offset = 0;
+    int total_len = -1;
 
     while (1 == 1)
     {
 
         int block_idx = has_recved[recved_head];
         int block_p_or_q = actions[recved_head];
-        //printf("recved_head=%d block_idx=%d  block_p_or_q=%d\n", recved_head, block_idx, block_p_or_q );
+
         //0 is to right trans/recv Q, 1 is up, trans p
         struct timeval st, et, tspan;
         char* buf = to_recv_block_mem + offset;
-        struct Block* pb = (struct Block*)(void*)buf;
+        int* total_len_ptr = (int*)(void*)buf;
+        char* real_sta = buf + sizeof(int);
+        while ((*total_len_ptr) <= 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        total_len = *total_len_ptr;
+        int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
+        while ((*tail_total_len_ptr) != total_len)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        /*
+        struct Block * pb = (struct Block*)(void*)buf;
         while (pb->block_id < 0)
         {
             //printf("waiting... block_id = %d\n", pb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        **/
+        struct Block * pb = (struct Block*)(void*)real_sta;
         gettimeofday(&st, 0);
         size_t data_sz = sizeof(double) * (pb->ele_num);
         double* data_eles  = (double*) (void*)(buf + struct_sz);
@@ -1501,7 +1538,9 @@ void rdma_recvTd(int recv_thread_id)
                 Pblocks[block_idx].eles[i] = data_eles[i];
             }
         }
-        pb->block_id = -1;
+        //pb->block_id = -1;
+        *total_len_ptr = -1;
+        *tail_total_len_ptr = -2;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         //printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );

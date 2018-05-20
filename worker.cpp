@@ -742,7 +742,7 @@ int wait4connection(char*local_ip, int local_port)
 }
 
 
-void sendTd1(int send_thread_id)
+void sendTd(int send_thread_id)
 {
     printf("send_thread_id=%d\n", send_thread_id);
     char* remote_ip = remote_ips[send_thread_id];
@@ -858,7 +858,7 @@ void sendTd1(int send_thread_id)
 
 }
 
-void recvTd1(int recv_thread_id)
+void recvTd(int recv_thread_id)
 {
     printf("recv_thread_id=%d\n", recv_thread_id);
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );

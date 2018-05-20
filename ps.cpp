@@ -718,7 +718,7 @@ void rdma_sendTd(int send_thread_id)
     {
 
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        while (canSend[send_thread_id] == false)
+        while (canSend[send_thread_id % WORKER_NUM] == false)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -735,7 +735,7 @@ void rdma_sendTd(int send_thread_id)
         }
         printf("[%d]  canSend? %d\n", send_thread_id, canSend[send_thread_id] );
 
-        if (canSend[send_thread_id] == true)
+        if (canSend[send_thread_id % WORKER_NUM] == true)
         {
             //printf("[%d] canSend\n",  send_thread_id);
             int pbid = worker_pidx[send_thread_id];
@@ -770,7 +770,7 @@ void rdma_sendTd(int send_thread_id)
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret);
             }
-            canSend[send_thread_id] = false;
+            canSend[send_thread_id % WORKER_NUM] = false;
         }
 
     }

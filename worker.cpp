@@ -325,7 +325,12 @@ int main(int argc, const char * argv[])
             printf("canSend = true\n");
             hasRecved = false;
 
+            while (1 == 1)
+            {
+                printf("can?? worker cannot send %d\n", canSend );
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
+            }
         }
     }
 
@@ -1025,7 +1030,7 @@ void rdma_sendTd(int send_thread_id)
     {
         while (canSend == false)
         {
-            printf("worker cannot send[%d]\n", send_thread_id );
+            printf("worker cannot send[%d]  %d\n", send_thread_id, canSend );
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         if (send_round_robin_idx != send_thread_id / WORKER_N_1)

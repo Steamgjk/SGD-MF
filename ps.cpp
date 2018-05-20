@@ -277,6 +277,7 @@ int main(int argc, const char * argv[])
     {
         srand(time(0));
         bool ret = false;
+        random_shuffle(worker_pidx, worker_pidx + WORKER_NUM); //迭代器
         random_shuffle(worker_qidx, worker_qidx + WORKER_NUM); //迭代器
 
 

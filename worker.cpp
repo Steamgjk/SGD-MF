@@ -1058,7 +1058,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
 
             //ret = cro.start_remote_write(total_len, BLOCK_MEM_SZ);
-            ret = cro.start_remote_write(0, total_len);
+            ret = cro.start_remote_write(total_len, 0);
             printf("[%d]:writer another block\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend = false;

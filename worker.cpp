@@ -1056,7 +1056,7 @@ void rdma_sendTd(int send_thread_id)
             {
                 to_send_block_mem[i] = 'a';
             }
-            ret = cro.start_remote_write(MEM_SIZE, 0);
+            ret = cro.start_remote_write(sizeof(int), 0);
             printf("all a\n");
             getchar();
             canSend = false;

@@ -1051,35 +1051,26 @@ void rdma_sendTd(int send_thread_id)
 
             //int* tmp = (int*)(void*)buf;
             //printf("head =%d  %d\n", *((int*)(void*)buf), (*tmp) );
-            ret = cro.start_remote_write(real_total, 0);
+            int tt = real_total;
+            int uni = 4096;
+            while (tt - uni > 0)
+            {
+                ret = cro.start_remote_write(uni, tt - uni);
+                tt -= uni;
+            }
+            if (tt > 0)
+            {
+                ret = cro.start_remote_write(tt, 0);
+            }
+            //ret = cro.start_remote_write(real_total, 0);
             //printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
-            int ran = (rand() % 100) * 10;
-            printf("ran=%d\n", ran );
-            std::this_thread::sleep_for(std::chrono::milliseconds(ran));
-            printf("flag=%d\n", (*flag) );
+
             //ret = cro.start_remote_write(sizeof(int), 0);
             //printf("[%d]:send flag\n", send_thread_id);
             send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
 
             canSend = false;
 
-            int time_thresh = 0;
-            while (canSend == false)
-            {
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                if (canSend == true || time_thresh == 3)
-                {
-                    break;
-                }
-                else
-                {
-                    ret = cro.start_remote_write(real_total, 0);
-                    time_thresh++;
-                }
-
-                //printf("[%d]resend...\n", send_thread_id );
-            }
 
         }
     }

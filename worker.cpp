@@ -736,7 +736,7 @@ int wait4connection(char*local_ip, int local_port)
 }
 
 
-void sendTd(int send_thread_id)
+void sendTd1(int send_thread_id)
 {
     printf("send_thread_id=%d\n", send_thread_id);
     char* remote_ip = remote_ips[send_thread_id];
@@ -852,7 +852,7 @@ void sendTd(int send_thread_id)
 
 }
 
-void recvTd(int recv_thread_id)
+void recvTd1(int recv_thread_id)
 {
     printf("recv_thread_id=%d\n", recv_thread_id);
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
@@ -1074,40 +1074,19 @@ void rdma_recvTd(int recv_thread_id)
 
     printf("rdma_recvTd:rdma_server_init...\n");
     int*flag = (int*)(void*)to_recv_block_mem;
-    /*
-    while (1 == 1)
-    {
-        printf("recv loop\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    **/
+
     size_t struct_sz = sizeof(Block);
     while (1 == 1)
     {
-        if (recv_round_robin_idx != recv_thread_id / WORKER_N_1)
-        {
-            continue;
-        }
-
         struct timeval st, et;
         gettimeofday(&st, 0);
-
-        int*total_len_ptr = (int*)(void*)(to_recv_block_mem);
-        while ((*total_len_ptr) <= 0)
+        while ((*flag) <= 0)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        int total_len = *total_len_ptr;
-        printf("[%d]recv total_len =%d\n", recv_thread_id, total_len );
+
         char* real_sta_buf = to_recv_block_mem + sizeof(int);
-        int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
-        while ((*tail_total_len_ptr) != total_len)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-
         struct Block* pb = (struct Block*)(void*)real_sta_buf;
-
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
         Pblock.sta_idx = pb->sta_idx;
@@ -1143,8 +1122,7 @@ void rdma_recvTd(int recv_thread_id)
             Qblock.eles[i] = data_eles[i];
         }
 
-        *total_len_ptr = -2;
-        *tail_total_len_ptr = -3;
+        *flag = -1;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);

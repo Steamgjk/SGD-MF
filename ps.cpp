@@ -988,12 +988,14 @@ void rdma_sendTd(int send_thread_id)
             //printf("doenot update flag\n");
             //getchar();
 
+
             //ret = cro.start_remote_write(sizeof(int), 0);
             //printf("update flag\n");
             //if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
+            canSend[send_thread_id] = false;
 
             /*
                         int time_thresh = 0;

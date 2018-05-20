@@ -838,6 +838,11 @@ void rdma_recvTd(int recv_thread_id)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        while (pb->ele_num < 100)
+        {
+            printf("ele_num=%d\n", pb->ele_num );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
 
         block_idx = pb->block_id ;
         Qblocks[block_idx].block_id = pb->block_id;

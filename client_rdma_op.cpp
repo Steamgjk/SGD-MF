@@ -117,7 +117,7 @@ int client_rdma_op::client_prepare_connection(struct sockaddr_in *s_addr)
 		rdma_error("Failed to alloc pd, errno: %d \n", -errno);
 		return -errno;
 	}
-	printf("pd allocated at %p \n", pd);
+	debug("pd allocated at %p \n", pd);
 	/* Now we need a completion channel, were the I/O completion
 	 * notifications are sent. Remember, this is different from connection
 	 * management (CM) event notifications.
@@ -131,7 +131,7 @@ int client_rdma_op::client_prepare_connection(struct sockaddr_in *s_addr)
 		           -errno);
 		return -errno;
 	}
-	printf("completion event channel created at : %p \n", io_completion_channel);
+	debug("completion event channel created at : %p \n", io_completion_channel);
 	/* Now we create a completion queue (CQ) where actual I/O
 	 * completion metadata is placed. The metadata is packed into a structure
 	 * called struct ibv_wc (wc = work completion). ibv_wc has detailed
@@ -210,7 +210,7 @@ int client_rdma_op::client_pre_post_recv_buffer()
 		rdma_error("Failed to pre-post the receive buffer, errno: %d \n", ret);
 		return ret;
 	}
-	printf("Receive buffer pre-posting is successful \n");
+	debug("Receive buffer pre-posting is successful \n");
 	return 0;
 }
 

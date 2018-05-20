@@ -866,7 +866,7 @@ void recvTd(int recv_thread_id)
     printf("[Td:%d] worker get connection\n", recv_thread_id);
     while (1 == 1)
     {
-        printf("recv loop\n");
+        //printf("recv loop\n");
         struct timeval st, et;
 
         gettimeofday(&st, 0);
@@ -877,9 +877,9 @@ void recvTd(int recv_thread_id)
         int ret = 0;
         while (cur_len < expected_len)
         {
-            printf("recving..\n");
+            //printf("recving..\n");
             ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
-            printf("check 1.5\n");
+            //printf("check 1.5\n");
             if (ret < 0)
             {
                 printf("Mimatch!\n");
@@ -899,7 +899,7 @@ void recvTd(int recv_thread_id)
         ret = 0;
         while (cur_len < data_sz)
         {
-            printf("recving 2\n");
+            //printf("recving 2\n");
             ret = recv(connfd, sockBuf + cur_len, data_sz - cur_len, 0);
             if (ret < 0)
             {
@@ -907,7 +907,7 @@ void recvTd(int recv_thread_id)
             }
             cur_len += ret;
         }
-        printf("check 5\n");
+        //printf("check 5\n");
         double* data_eles = (double*)(void*)sockBuf;
         for (int i = 0; i < Pblock.ele_num; i++)
         {
@@ -939,7 +939,7 @@ void recvTd(int recv_thread_id)
         Qblock.height = qb->height;
         Qblock.ele_num = qb-> ele_num;
         Qblock.eles.resize(qb->ele_num);
-        printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
+        //printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
         free(sockBuf);
 
         data_sz = sizeof(double) * (Qblock.ele_num);
@@ -969,7 +969,7 @@ void recvTd(int recv_thread_id)
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("recv two blocks time = %lld\n", mksp);
+        //printf("recv two blocks time = %lld\n", mksp);
 
         hasRecved = true;
     }

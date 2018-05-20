@@ -428,7 +428,7 @@ void sendTd(int send_thread_id)
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                printf("[Td:%d] send success pbid =%d ret=%d\n", send_thread_id, pbid, ret );
+                //printf("[Td:%d] send success pbid =%d ret=%d\n", send_thread_id, pbid, ret );
             }
             free(buf);
 
@@ -455,7 +455,7 @@ void recvTd(int recv_thread_id)
     int connfd = wait4connection(local_ips[recv_thread_id], local_ports[recv_thread_id] );
     while (1 == 1)
     {
-        printf("recving ...\n");
+        //printf("recving ...\n");
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);
         size_t expected_len = sizeof(Block);
@@ -512,14 +512,14 @@ void recvTd(int recv_thread_id)
         free(sockBuf);
         free(dataBuf);
 
-        printf("successful rece one Block data_sz = %ld block_sz=%ld\n", data_sz, expected_len);
+        //printf("successful rece one Block data_sz = %ld block_sz=%ld\n", data_sz, expected_len);
         expected_len = sizeof(Block);
         sockBuf = (char*)malloc(expected_len);
         cur_len = 0;
         ret = 0;
         while (cur_len < expected_len)
         {
-            printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
+            //printf("[Td:%d] cur_len = %ld expected_len-cur_len = %ld\n", recv_thread_id, cur_len, expected_len - cur_len );
             ret = recv(connfd, sockBuf + cur_len, expected_len - cur_len, 0);
             if (ret <=  0)
             {
@@ -559,12 +559,12 @@ void recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        printf("successful rece another Block\n");
+        //printf("successful rece another Block\n");
         free(sockBuf);
         free(dataBuf);
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("recv success time = %lld\n", mksp );
+        //printf("recv success time = %lld\n", mksp );
         recvCount++;
     }
 }

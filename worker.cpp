@@ -1064,7 +1064,7 @@ void rdma_sendTd(int send_thread_id)
             {
                 ret = cro.start_remote_write(real_total, 0);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                printf("[%d]resend...\n", send_thread_id );
+                //printf("[%d]resend...\n", send_thread_id );
             }
         }
     }

@@ -807,6 +807,11 @@ void rdma_recvTd(int recv_thread_id)
         while ((*total_len_ptr) <= 0 )
         {
             //printf("[%d] total_len=%d\n", recv_thread_id, (*total_len_ptr) );
+            if (recv_thread_id == 2)
+            {
+                printf("tot2=%d\n", (*total_len_ptr) );
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *total_len_ptr;

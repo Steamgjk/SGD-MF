@@ -976,7 +976,7 @@ void rdma_sendTd(int send_thread_id)
             //printf("update flag\n");
             //if (ret == 0 )
             {
-                //printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
+                printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
 
             canSend[send_thread_id % WORKER_NUM] = false;
@@ -1049,14 +1049,14 @@ void rdma_recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+        printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         *flag = -1;
         *tail_total_len_ptr = -2;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("recv success time = %lld\n", mksp );
+        printf("recv success time = %lld\n", mksp );
 
         recvCount++;
     }

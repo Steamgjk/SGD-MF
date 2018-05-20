@@ -1099,7 +1099,7 @@ void rdma_recvTd(int recv_thread_id)
                 printf("P Exception!\n");
             }
         }
-        //printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
+        printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
 
         size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
 

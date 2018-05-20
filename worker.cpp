@@ -1113,6 +1113,7 @@ void rdma_recvTd(int recv_thread_id)
         struct Block* qb = (struct Block*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
         while (qb->block_id < 0)
         {
+            printf("[%d]:qb->block_id=%d\n", recv_thread_id, qb->block_id );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 

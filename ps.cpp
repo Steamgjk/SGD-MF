@@ -737,7 +737,8 @@ void rdma_sendTd(int send_thread_id)
 
         if (canSend[send_thread_id % WORKER_NUM] == true)
         {
-            //printf("[%d] canSend\n",  send_thread_id);
+            printf("[%d] canSend\n",  send_thread_id);
+            getchar();
             int pbid = worker_pidx[send_thread_id % WORKER_NUM];
             int qbid = worker_qidx[send_thread_id % WORKER_NUM];
             printf("pbid=%d  qbid=%d sid=%d\n", pbid, qbid, send_thread_id % WORKER_NUM );

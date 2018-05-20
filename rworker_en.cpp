@@ -73,8 +73,8 @@ std::vector<double> oldQ ;
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-int GROUP_NUM = 1;
-int DIM_NUM = 4;
+int GROUP_NUM = 2;
+int DIM_NUM = 8;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -278,11 +278,11 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].eles[j] = drand48() * 0.6;
-            Qblocks[i].eles[j] = drand48() * 0.6;
+            //Pblocks[i].eles[j] = drand48() * 0.6;
+            //Qblocks[i].eles[j] = drand48() * 0.6;
             //0.3
-            //Pblocks[i].eles[j] = drand48() * 0.3;
-            //Qblocks[i].eles[j] = drand48() * 0.3;
+            Pblocks[i].eles[j] = drand48() * 0.3;
+            Qblocks[i].eles[j] = drand48() * 0.3;
         }
     }
 

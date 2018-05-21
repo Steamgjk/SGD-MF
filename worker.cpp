@@ -683,7 +683,7 @@ void submf()
         hash_for_col_threads[row][col][td].clear();
         rates_for_col_threads[row][col][td].clear();
     }
-    int f1 = r1 * 4 + c1;
+    int f1 = row * 4 + col;
     LoadRequiredData(row, col, f1);
 
     gettimeofday(&ed, 0);

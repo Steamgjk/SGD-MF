@@ -350,7 +350,7 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t % 100 == 0)
+        if (iter_t % 50 == 0)
         {
             for (int i = 0; i < iter_t / 10; i++)
             {

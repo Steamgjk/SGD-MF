@@ -217,7 +217,7 @@ std::vector<long> hash_for_row_threads[10][10][WORKER_THREAD_NUM];
 std::vector<double> rates_for_row_threads[10][10][WORKER_THREAD_NUM];
 std::vector<long> hash_for_col_threads[10][10][WORKER_THREAD_NUM];
 std::vector<double> rates_for_col_threads[10][10][WORKER_THREAD_NUM];
-
+int iter_cnt = 0;
 int main(int argc, const char * argv[])
 {
 
@@ -280,7 +280,7 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     **/
 
-    int iter_cnt = 0;
+    iter_cnt = 0;
     bool isstart = false;
 
     //LoadData();
@@ -310,7 +310,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
-            printf("has Received\n");
+            printf("has Received itercnt=%d\n", iter_cnt);
             if (!isstart)
             {
                 isstart = true;
@@ -323,9 +323,9 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblock.sta_idx;
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
-            printf("before submf\n");
+            //printf("before submf\n");
             submf();
-            printf("after submf\n");
+            //printf("after submf\n");
             iter_cnt++;
 
             /*

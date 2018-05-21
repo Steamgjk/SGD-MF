@@ -208,7 +208,7 @@ int main(int argc, const char * argv[])
         }
         rmse /= cnt;
         rmse = sqrt(rmse);
-        //int i = 0;
+        int i = 0;
         printf("i=%d rmse=%lf pcnt=%d  ncnt=%d\n", i, rmse, pcnt, ncnt );
         ofs << rmse << endl;
 

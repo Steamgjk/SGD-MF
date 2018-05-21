@@ -570,7 +570,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 1000;
+            int times_thresh = 5000;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;
@@ -607,7 +607,7 @@ void CalcUpdt(int td_id)
                 {
                     Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
 
-                    Qblock.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+
 
                     if (Pblock.eles[i * K + k] + 1 == Pblock.eles[i * K + k] - 1)
                     {
@@ -633,7 +633,6 @@ void CalcUpdt(int td_id)
                 }
                 for (int k = 0; k < K; ++k)
                 {
-                    Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
 
                     Qblock.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
                     if (Qblock.eles[j * K + k] + 1 == Qblock.eles[j * K + k] - 1)
@@ -656,7 +655,6 @@ void CalcUpdt(int td_id)
 }
 void submf()
 {
-    double error = 0;
     int minN = Pblock.height;
     int minM = Qblock.height;
 

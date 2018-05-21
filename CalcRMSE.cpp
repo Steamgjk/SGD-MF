@@ -143,6 +143,8 @@ int main(int argc, const char * argv[])
 
         rmse = 0;
         int cnt = 0;
+        int pcnt = 0;
+        int ncnt = 0;
         //for (int i = 0; i < 64 ; i++)
         {
             //sprintf(fn, "%s%d", TEST_NAME, i);
@@ -158,6 +160,9 @@ int main(int argc, const char * argv[])
             long hash_idx = 0;
             double ra = 0;
             hash_idx = -1;
+
+            pcnt = 0;
+            ncnt = 0;
             while (!ifs.eof())
             {
                 ifs >> hash_idx >> ra;
@@ -175,16 +180,25 @@ int main(int argc, const char * argv[])
 
                     rmse += (sum - ra ) * (sum - ra);
                     //printf("sum=%lf ra=%lf rmse=%lf\n", sum, ra, rmse );
+                    if (sum > ra)
+                    {
+                        pcnt++;
+                    }
+                    else
+                    {
+                        ncnt++;
+                    }
                     cnt++;
                 }
 
             }
+
             ifs.close();
 
         }
         rmse /= cnt;
         rmse = sqrt(rmse);
-        printf("i=%d rmse=%lf\n", i, rmse );
+        printf("i=%d rmse=%lf pcnt=%d  ncnt=%d\n", i, rmse, pcnt, ncnt );
         ofs << rmse << endl;
 
 

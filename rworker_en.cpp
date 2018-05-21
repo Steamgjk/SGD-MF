@@ -350,7 +350,7 @@ int main(int argc, const char * argv[])
             }
             if (iter_cnt % 100 == 0)
             {
-                for (int i = 0; i < iter_cnt / 100; i++)
+                for (int i = 0; i < iter_cnt / 10; i++)
                 {
                     printf("%lld\n", time_span[i]);
                 }

@@ -52,6 +52,7 @@ double Q[K][M];
 
 
 
+
 using namespace std;
 
 //long hashs[1000000];

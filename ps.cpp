@@ -246,13 +246,15 @@ int main(int argc, const char * argv[])
         {
             //Pblocks[i].eles[j] = drand48() * 0.6;
             //Pblocks[i].eles[j] = drand48() * 0.3;
-            Pblocks[i].eles[j] = drand48() * 1.6;
+            //Pblocks[i].eles[j] = drand48() * 1.6;
+            Pblocks[i].eles[j] = drand48() * 0.2;
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
             //Qblocks[i].eles[j] = drand48() * 0.6;
             //Qblocks[i].eles[j] = drand48() * 0.3;
-            Qblocks[i].eles[j] = drand48() * 1.6;
+            //Qblocks[i].eles[j] = drand48() * 1.6;
+            Qblocks[i].eles[j] = drand48() * 0.2;
         }
     }
 

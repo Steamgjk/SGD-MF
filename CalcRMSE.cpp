@@ -22,13 +22,14 @@
 #include <sys/time.h>
 #include <map>
 
+/*
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
 //#define TEST_NAME "./test_out.txt"
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
-
+**/
 /*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
@@ -36,6 +37,13 @@
 #define M 1000000
 #define K  100 //主题个数
 **/
+
+#define FILE_NAME "./yahoo-output/train-"
+#define TEST_NAME "./yahoo-output/test"
+#define N 1000990
+#define M 624961
+#define K  100 //主题个数
+
 int ITER_NUM  = 2000;
 int PORTION_NUM = 4;
 double P[N][K];
@@ -134,7 +142,7 @@ int main(int argc, const char * argv[])
 
         rmse = 0;
         int cnt = 0;
-        for (int i = 0; i < 64 ; i++)
+        //for (int i = 0; i < 64 ; i++)
         {
             sprintf(fn, "%s%d", TEST_NAME, i);
             ifs.open(fn, ios::in | ios::out);

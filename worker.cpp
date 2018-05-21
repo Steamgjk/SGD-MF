@@ -603,6 +603,14 @@ void CalcUpdt(int td_id)
                 {
                     error -= oldP[i * K + k] * oldQ[j * K + k];
                 }
+                if (error >= 300 )
+                {
+                    error = 300;
+                }
+                if (error <= -300)
+                {
+                    error = -300;
+                }
                 for (int k = 0; k < K; ++k)
                 {
                     Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);

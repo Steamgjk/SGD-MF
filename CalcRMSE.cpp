@@ -196,6 +196,7 @@ int main(int argc, const char * argv[])
                     }
 
                     rmse += (sum - ra ) * (sum - ra);
+                    cnt++;
                     //printf("sum=%lf ra=%lf rmse=%lf\n", sum, ra, rmse );
 
                 }

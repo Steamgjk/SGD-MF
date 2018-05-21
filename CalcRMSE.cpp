@@ -145,7 +145,8 @@ int main(int argc, const char * argv[])
         int cnt = 0;
         //for (int i = 0; i < 64 ; i++)
         {
-            sprintf(fn, "%s%d", TEST_NAME, i);
+            //sprintf(fn, "%s%d", TEST_NAME, i);
+            sprintf(fn, "%s", TEST_NAME);
             ifs.open(fn, ios::in | ios::out);
             if (!ifs.is_open())
             {

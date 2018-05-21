@@ -345,7 +345,7 @@ int main(int argc, const char * argv[])
                 //exit(0);
             }
             canSend = true;
-            //printf("canSend = true\n");
+            printf("canSend = true\n");
             hasRecved = false;
 
         }
@@ -879,7 +879,7 @@ void sendTd(int send_thread_id)
         //printf("canSend=%d\n", canSend );
         if (canSend)
         {
-            //printf("Td:%d cansend\n", thread_id );
+            printf("Td:%d cansend\n", thread_id );
             size_t struct_sz = sizeof(Block);
             size_t data_sz = sizeof(double) * Pblock.ele_num;
             char* buf = (char*)malloc(struct_sz + data_sz);

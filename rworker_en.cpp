@@ -902,6 +902,8 @@ void LoadData4()
         while (!ifs.eof())
         {
             ifs >> hash_id >> rate;
+            //min-max scaling
+            rate = rate / 100;
             if (hash_id >= 0)
             {
                 ridx = ((hash_id) / M) % WORKER_THREAD_NUM;

@@ -247,14 +247,14 @@ int main(int argc, const char * argv[])
             //Pblocks[i].eles[j] = drand48() * 0.6;
             //Pblocks[i].eles[j] = drand48() * 0.3;
             //Pblocks[i].eles[j] = drand48() * 1.6;
-            Pblocks[i].eles[j] = drand48() * 0.15;
+            Pblocks[i].eles[j] = drand48() * 0.2;
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
             //Qblocks[i].eles[j] = drand48() * 0.6;
             //Qblocks[i].eles[j] = drand48() * 0.3;
             //Qblocks[i].eles[j] = drand48() * 1.6;
-            Qblocks[i].eles[j] = drand48() * 0.15;
+            Qblocks[i].eles[j] = drand48() * 0.2;
         }
     }
 
@@ -330,7 +330,7 @@ int main(int argc, const char * argv[])
         }
         if (recvCount == WORKER_NUM)
         {
-            if (iter_t % 10 == 0)
+            if (iter_t % 100 == 0 || (iter_t % 10 == 0 && iter_t < 100) )
             {
                 gettimeofday(&ed, 0);
 

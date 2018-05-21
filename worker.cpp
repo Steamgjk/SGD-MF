@@ -59,13 +59,34 @@ char* to_recv_block_mem;
 #define K  40 //主题个数
 **/
 
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
+#define FILE_NAME "./yahoo-output/train-"
+#define TEST_NAME "./yahoo-output/test"
+#define N 1000990
+#define M 624961
+#define K  100 //主题个数
 
+
+/**Movie-Len**/
+/*
+double yita = 0.003;
+double theta = 0.01;
+**/
+
+/* Jumbo **/
+/*
+double yita = 0.002;
+double theta = 0.05;
+**/
+/**Yahoo!Music**/
+double yita = 0.001;
+double theta = 1;
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -166,15 +187,6 @@ bool hasRecved = false;
 int block_seq[SEQ_LEN];
 
 
-double yita = 0.003;
-double theta = 0.01;
-
-/* Jumbo **/
-/*
-double yita = 0.002;
-double theta = 0.05;
-**/
-
 int wait4connection(char*local_ip, int local_port);
 void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
@@ -228,8 +240,8 @@ int main(int argc, const char * argv[])
     {
         int th_id = thread_id + i * WORKER_N_1;
         printf("recv th_id=%d\n", th_id );
-        std::thread recv_thread(rdma_recvTd, th_id);
-        //std::thread recv_thread(recvTd, thread_id);
+        //std::thread recv_thread(rdma_recvTd, th_id);
+        std::thread recv_thread(recvTd, thread_id);
         recv_thread.detach();
     }
 
@@ -241,8 +253,8 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < QP_GROUP; i++)
     {
         int th_id = thread_id + i * WORKER_N_1;
-        std::thread send_thread(rdma_sendTd, th_id);
-        //std::thread send_thread(sendTd, thread_id);
+        //std::thread send_thread(rdma_sendTd, th_id);
+        std::thread send_thread(sendTd, thread_id);
         send_thread.detach();
     }
 
@@ -430,15 +442,13 @@ void LoadData()
     }
 }
 
+
 void LoadRequiredData(int row, int col, int data_idx)
 {
     char fn[100];
     long hash_id;
     double rate;
     long cnt = 0;
-
-
-
     sprintf(fn, "%s%d", FILE_NAME, data_idx);
     printf("fn=%s  :[%d][%d]\n", fn, row, col );
     ifstream ifs(fn);
@@ -624,34 +634,34 @@ void submf()
 
     }
     //printf("enter submf22\n");
-    /*
+
     struct timeval beg, ed;
     long long mksp;
     gettimeofday(&beg, 0);
+    /*
 
+            int r1 = Pblock.block_id * 2;
+            int c1 = Qblock.block_id * 2;
+            int f1 = r1 * 8 + c1;
+            int f2 = r1 * 8 + c1 + 1;
+            int f3 = (r1 + 1) * 8 + c1;
+            int f4 = (r1 + 1) * 8 + c1 + 1;
 
-        int r1 = Pblock.block_id * 2;
-        int c1 = Qblock.block_id * 2;
-        int f1 = r1 * 8 + c1;
-        int f2 = r1 * 8 + c1 + 1;
-        int f3 = (r1 + 1) * 8 + c1;
-        int f4 = (r1 + 1) * 8 + c1 + 1;
-
-        int row = Pblock.block_id;
-        int col = Qblock.block_id;
-        //printf("row=%d col=%d\n", row, col );
-        for (int td = 0; td < WORKER_THREAD_NUM; td++)
-        {
-            hash_for_row_threads[row][col][td].clear();
-            rates_for_row_threads[row][col][td].clear();
-            hash_for_col_threads[row][col][td].clear();
-            rates_for_col_threads[row][col][td].clear();
-        }
-        LoadRequiredData(row, col, f1);
-        LoadRequiredData(row, col, f2);
-        LoadRequiredData(row, col, f3);
-        LoadRequiredData(row, col, f4);
-    **/
+            int row = Pblock.block_id;
+            int col = Qblock.block_id;
+            //printf("row=%d col=%d\n", row, col );
+            for (int td = 0; td < WORKER_THREAD_NUM; td++)
+            {
+                hash_for_row_threads[row][col][td].clear();
+                rates_for_row_threads[row][col][td].clear();
+                hash_for_col_threads[row][col][td].clear();
+                rates_for_col_threads[row][col][td].clear();
+            }
+            LoadRequiredData(row, col, f1);
+            LoadRequiredData(row, col, f2);
+            LoadRequiredData(row, col, f3);
+            LoadRequiredData(row, col, f4);
+        **/
     /*
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {
@@ -659,11 +669,28 @@ void submf()
             printf("[%d][%d] %ld\n", row, col, hash_for_row_threads[row][col][td] );
         }
     }
+    **/
+
+
+
+    int row = Pblock.block_id;
+    int col = Qblock.block_id;
+    //printf("row=%d col=%d\n", row, col );
+    for (int td = 0; td < WORKER_THREAD_NUM; td++)
+    {
+        hash_for_row_threads[row][col][td].clear();
+        rates_for_row_threads[row][col][td].clear();
+        hash_for_col_threads[row][col][td].clear();
+        rates_for_col_threads[row][col][td].clear();
+    }
+    int f1 = r1 * 4 + c1;
+    LoadRequiredData(row, col, f1);
 
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);
-    **/
+
+
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
     {

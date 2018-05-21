@@ -47,6 +47,22 @@ using namespace std;
 #define M 65133
 #define K  40 //主题个数
 **/
+
+/*Jumbo **/
+/*
+#define FILE_NAME "./data/TrainingMap-"
+#define TEST_NAME "./data/TestMap-"
+#define N 1000000
+#define M 1000000
+#define K  100 //主题个数
+**/
+/**Yahoo!Music **/
+#define FILE_NAME "./yahoo-output/train-"
+#define TEST_NAME "./yahoo-output/test"
+#define N 1000990
+#define M 624961
+#define K  100 //主题个数
+
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
@@ -54,13 +70,8 @@ char* to_recv_block_mem;
 char* to_send_mem_arr[10];
 char* to_recv_mem_arr[10];
 
-#define FILE_NAME "./data/TrainingMap-"
-#define TEST_NAME "./data/TestMap-"
-#define N 1000000
-#define M 1000000
-#define K  100 //主题个数
 
-#define QP_GROUP 2
+#define QP_GROUP 1
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
 
@@ -74,6 +85,7 @@ double P[N][K];
 double Q[K][M];
 bool worker_debug = false;
 bool main_debug = false;
+
 
 struct Block
 {
@@ -198,8 +210,8 @@ int main(int argc, const char * argv[])
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
-            //std::thread recv_thread(recvTd, thid);
-            std::thread recv_thread(rdma_recvTd, thid);
+            std::thread recv_thread(recvTd, thid);
+            //std::thread recv_thread(rdma_recvTd, thid);
             recv_thread.detach();
         }
     }
@@ -213,8 +225,8 @@ int main(int argc, const char * argv[])
         for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
-            //std::thread send_thread(sendTd, thid);
-            std::thread send_thread(rdma_sendTd, thid);
+            std::thread send_thread(sendTd, thid);
+            //std::thread send_thread(rdma_sendTd, thid);
             send_thread.detach();
         }
     }
@@ -223,7 +235,7 @@ int main(int argc, const char * argv[])
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     srand(1);
-    //LoadTestRating();
+    LoadTestRating();
     //printf("Load Complete\n");
     printf("start work\n");
     partitionP(WORKER_NUM, Pblocks);
@@ -314,16 +326,14 @@ int main(int argc, const char * argv[])
         }
         if (recvCount == WORKER_NUM)
         {
-            if (iter_t % 10 == 0)
+            if (iter_t % 1 == 0)
             {
                 gettimeofday(&ed, 0);
-                /*
-                                for (int bid = 0; bid < WORKER_NUM; bid++)
-                                {
 
-                                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
-                                }
-                **/
+                for (int bid = 0; bid < WORKER_NUM; bid++)
+                {
+                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
+                }
 
                 time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
                 printf("time= %d\t%lld\n", iter_t, time_span[iter_t / 10] );

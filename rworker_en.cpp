@@ -282,8 +282,8 @@ int main(int argc, const char * argv[])
     }
 
 
-    //std::thread data_read_thread(readData, thread_id);
-    //data_read_thread.detach();
+    std::thread data_read_thread(readData, thread_id);
+    data_read_thread.detach();
 
 
     partitionP(DIM_NUM, Pblocks);
@@ -339,7 +339,7 @@ int main(int argc, const char * argv[])
         }
         else
         {
-            if (iter_cnt % 10 == 0)
+            if (iter_cnt % 50 == 0)
             {
                 gettimeofday(&et, 0);
 
@@ -348,7 +348,7 @@ int main(int argc, const char * argv[])
                 printf("hehere %d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
-            if (iter_cnt == 1010)
+            if (iter_cnt == 2010)
             {
                 for (int i = 0; i < 101; i++)
                 {
@@ -389,9 +389,9 @@ int main(int argc, const char * argv[])
             SGD_MF();
             printf("after SGD\n");
 
-            if (iter_cnt % 10 == 0)
+            if (iter_cnt % 50 == 0)
             {
-                //WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
+                WriteLog(Pblocks[p_block_idx], Qblocks[q_block_idx], iter_cnt);
             }
 
             //patch
@@ -1371,7 +1371,7 @@ void recvTd(int recv_thread_id)
 
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-            //printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
+            printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
 
             recved_head = (recved_head + 1) % QU_LEN;
         }

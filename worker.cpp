@@ -281,8 +281,8 @@ int main(int argc, const char * argv[])
     int iter_cnt = 0;
     bool isstart = false;
 
-    LoadData();
-    printf("Load Rating Success\n");
+    //LoadData();
+    //printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");

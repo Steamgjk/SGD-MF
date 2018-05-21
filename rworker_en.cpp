@@ -288,7 +288,7 @@ int main(int argc, const char * argv[])
 
     partitionP(DIM_NUM, Pblocks);
     partitionQ(DIM_NUM, Qblocks);
-
+    printf("Partition ok\n");
     for (int i = 0; i < DIM_NUM; i++)
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
@@ -303,7 +303,7 @@ int main(int argc, const char * argv[])
             Qblocks[i].eles[j] = drand48() * 0.2;
         }
     }
-
+    printf("Inital Value ok\n");
 
     std::vector<thread> td_vec;
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -382,9 +382,9 @@ int main(int argc, const char * argv[])
 
             p_block_idx = p_to_process[i];
             q_block_idx = q_to_process[i];
-
+            printf("before SGD\n");
             SGD_MF();
-
+            printf("after SGD\n");
 
             if (iter_cnt % 10 == 0)
             {
@@ -1061,7 +1061,7 @@ void SGD_MF()
         }
 
     }
-    //printf("comere hhe\n");
+    printf("comere hhe\n");
     for (int i = 0; i < Qblocks[q_block_idx].ele_num; i++)
     {
         if (oldQ[i] > 100 || oldQ[i] < -100)
@@ -1082,7 +1082,6 @@ void SGD_MF()
             StartCalcUpdt[ii] = true;
         }
 
-        //printf("check 5 2 %ld\n", hash_for_row_threads[5][2][0].size() );
 
 
         bool canbreak = true;
@@ -1395,7 +1394,7 @@ void partitionP(int portion_num,  Block * Pblocks)
             Pblocks[i].height = last_height;
         }
         Pblocks[i].sta_idx = sta_idx;
-        printf("i-%d sta_idx-%d\n", i, sta_idx );
+        //printf("i-%d sta_idx-%d\n", i, sta_idx );
         Pblocks[i].ele_num = Pblocks[i].height * K;
         Pblocks[i].eles.resize(Pblocks[i].ele_num);
     }

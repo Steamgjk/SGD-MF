@@ -85,7 +85,7 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 /**Yahoo!Music**/
-double yita = 0.001;
+double yita = 0.01;
 double theta = 1;
 
 #define CAP 200

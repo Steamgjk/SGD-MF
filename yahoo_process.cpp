@@ -87,7 +87,7 @@ int main()
 		}
 	}
 	int test_cnt = 0;
-	/*
+
 
 	while (!ifstest.eof())
 	{
@@ -106,7 +106,7 @@ int main()
 	}
 	printf("test fini\n");
 	exit(0);
-	**/
+
 	test_cnt = 0;
 	while (!ifs.eof())
 	{

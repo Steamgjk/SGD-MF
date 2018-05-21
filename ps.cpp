@@ -60,7 +60,7 @@ char* to_recv_mem_arr[10];
 #define M 1000000
 #define K  100 //主题个数
 
-#define QP_GROUP 1
+#define QP_GROUP 2
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
 
@@ -733,8 +733,13 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
 
+        if (send_thread_id / WORKER_NUM != send_round_robin_idx)
+        {
+            continue;
+        }
+        int mapped_thread_id = send_thread_id % WORKER_NUM;
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        while (canSend[send_thread_id] == false)
+        while (canSend[mapped_thread_id] == false)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -749,11 +754,11 @@ void rdma_sendTd(int send_thread_id)
         size_t q_data_sz = 0;
         int total_len = 0;
 
-        if (canSend[send_thread_id] == true)
+        if (canSend[mapped_thread_id] == true)
         {
             timestp++;
-            int pbid = worker_pidx[send_thread_id % WORKER_NUM];
-            int qbid = worker_qidx[send_thread_id % WORKER_NUM];
+            int pbid = worker_pidx[mapped_thread_id];
+            int qbid = worker_qidx[mapped_thread_id];
             //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + p_data_sz;
@@ -783,6 +788,7 @@ void rdma_sendTd(int send_thread_id)
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
+            send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend[send_thread_id] = false;
 
             /*

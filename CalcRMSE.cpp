@@ -83,7 +83,7 @@ int main(int argc, const char * argv[])
 
     char filename[100];
     //int i = atoi(argv[3]);
-    for (int i = stat; i < ITER_NUM; i += 10)
+    //for (int i = stat; i < ITER_NUM; i += 10)
     {
 
         printf("i=%d\n", i );
@@ -141,22 +141,22 @@ int main(int argc, const char * argv[])
 
         }
 
-        /*
+
         for (int i = 0; i < N; i++)
         {
             for (int j = 0; j < K; j++)
             {
-                P[i][j] = drand48() * 1.6;
+                P[i][j] = drand48() * 0.1;
             }
         }
         for (int i = 0; i < K; i++)
         {
             for (int j = 0; j < M; j++)
             {
-                Q[i][j] = drand48() * 1.6;
+                Q[i][j] = drand48() * 0.1;
             }
         }
-        **/
+
 
         rmse = 0;
         int cnt = 0;
@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
                     long row_idx = hash_idx / M;
                     long col_idx = hash_idx % M;
                     double sum = 0;
-
+                    ra = ra / 100;
                     for (int k = 0; k < K; k++)
                     {
                         sum += P[row_idx][k] * Q[k][col_idx];

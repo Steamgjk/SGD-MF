@@ -483,6 +483,8 @@ void LoadData4()
         {
             hash_id = -1;
             ifs >> hash_id >> rate;
+            //scale
+            rate = rate / 100;
             if (hash_id >= 0)
             {
                 ridx = ((hash_id) / M) % WORKER_THREAD_NUM;

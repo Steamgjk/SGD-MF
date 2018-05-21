@@ -88,60 +88,60 @@ int main(int argc, const char * argv[])
     {
 
         printf("i=%d\n", i );
-
-        int row_idx = 0;
-        int col_idx = 0;
-        for (int j = 0 ; j < PORTION_NUM; j++)
-        {
-            sprintf(filename, "./Rtrack/Pblock-%d-%d", i, j);
-            ifs.open(filename, ios::in | ios::out);
-            if (!ifs.is_open())
-            {
-                printf("fail to open %s\n", filename);
-                getchar();
-            }
-            else
-            {
-                printf("open %s\n", filename );
-            }
-            //getchar();
-            while (!ifs.eof())
-            {
-                for (int kk = 0; kk < K; kk++)
+        /*
+                int row_idx = 0;
+                int col_idx = 0;
+                for (int j = 0 ; j < PORTION_NUM; j++)
                 {
-                    ifs >> P[row_idx][kk];
+                    sprintf(filename, "./Rtrack/Pblock-%d-%d", i, j);
+                    ifs.open(filename, ios::in | ios::out);
+                    if (!ifs.is_open())
+                    {
+                        printf("fail to open %s\n", filename);
+                        getchar();
+                    }
+                    else
+                    {
+                        printf("open %s\n", filename );
+                    }
+                    //getchar();
+                    while (!ifs.eof())
+                    {
+                        for (int kk = 0; kk < K; kk++)
+                        {
+                            ifs >> P[row_idx][kk];
+                        }
+                        row_idx++;
+                        //if (row_idx % 1000 == 0)
+                        // printf("row_idx=%d\n", row_idx);
+                    }
+                    ifs.close();
+                    //printf("%s read\n", filename );
+                    //getchar();
+                    sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
+                    //ifstream ifs1(filename, ios::in | ios::out);
+                    ifs.open(filename, ios::in | ios::out);
+                    if (!ifs.is_open())
+                    {
+                        printf("fail to open %s\n", filename);
+                        getchar();
+                    }
+                    double temp;
+                    while (!ifs.eof())
+                    {
+
+                        for (int kk = 0; kk < K; kk++)
+                        {
+                            ifs >> Q[kk][col_idx];
+                        }
+
+                        col_idx++;
+                    }
+                    ifs.close();
+                    //printf("%s read\n", filename );
+
                 }
-                row_idx++;
-                //if (row_idx % 1000 == 0)
-                // printf("row_idx=%d\n", row_idx);
-            }
-            ifs.close();
-            //printf("%s read\n", filename );
-            //getchar();
-            sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
-            //ifstream ifs1(filename, ios::in | ios::out);
-            ifs.open(filename, ios::in | ios::out);
-            if (!ifs.is_open())
-            {
-                printf("fail to open %s\n", filename);
-                getchar();
-            }
-            double temp;
-            while (!ifs.eof())
-            {
-
-                for (int kk = 0; kk < K; kk++)
-                {
-                    ifs >> Q[kk][col_idx];
-                }
-
-                col_idx++;
-            }
-            ifs.close();
-            //printf("%s read\n", filename );
-
-        }
-
+        **/
 
         for (int i = 0; i < N; i++)
         {

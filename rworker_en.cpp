@@ -53,12 +53,33 @@ std::vector<double> oldQ ;
 #define M 1000000
 #define K  100 //主题个数
 **/
-
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
+**/
+
+/*
+//Jumbo
+double yita = 0.002;
+double theta = 0.05;
+**/
+/*
+//Movie-Len
+double yita = 0.003;
+double theta = 0.01;
+**/
+/**Yahoo!Music**/
+double yita = 0.001;
+double theta = 0.05;
+
+#define FILE_NAME "./yahoo-output/train-"
+#define TEST_NAME "./yahoo-output/test"
+#define N 1000990
+#define M 624961
+#define K  100 //主题个数
 
 
 #define CAP 30
@@ -82,15 +103,7 @@ int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
 int process_tail[WORKER_TD];
 
-/*
-//Jumbo
-double yita = 0.002;
-double theta = 0.05;
-**/
 
-//Movie-Len
-double yita = 0.003;
-double theta = 0.01;
 
 
 vector<bool> StartCalcUpdt;
@@ -220,6 +233,7 @@ double CalcRMSE(map<long, double>& RTestMap, Block& minP, Block& minQ);
 void LoadData(int pre_read);
 //void LoadData();
 void LoadData2();
+void LoadData4();
 void CalcUpdt(int td_id);
 
 
@@ -240,26 +254,26 @@ int main(int argc, const char * argv[])
     *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
 
-
-    std::thread recv_thread(rdma_recvTd, thread_id);
-    recv_thread.detach();
-    std::thread send_thread(rdma_sendTd, thread_id);
-    send_thread.detach();
-
-
     /*
-        std::thread recv_thread(recvTd, thread_id);
+        std::thread recv_thread(rdma_recvTd, thread_id);
         recv_thread.detach();
-        std::thread send_thread(sendTd, thread_id);
+        std::thread send_thread(rdma_sendTd, thread_id);
         send_thread.detach();
     **/
+
+    std::thread recv_thread(recvTd, thread_id);
+    recv_thread.detach();
+    std::thread send_thread(sendTd, thread_id);
+    send_thread.detach();
+
 
     LoadActionConfig(ACTION_NAME);
     char state_name[100];
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     //LoadData(CACHE_NUM);
-    LoadData2();
+    //LoadData2();
+    LoadData4();
     printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -268,8 +282,8 @@ int main(int argc, const char * argv[])
     }
 
 
-    std::thread data_read_thread(readData, thread_id);
-    data_read_thread.detach();
+    //std::thread data_read_thread(readData, thread_id);
+    //data_read_thread.detach();
 
 
     partitionP(DIM_NUM, Pblocks);
@@ -279,11 +293,14 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].eles[j] = drand48() * 0.6;
-            Qblocks[i].eles[j] = drand48() * 0.6;
+            //Pblocks[i].eles[j] = drand48() * 0.6;
+            //Qblocks[i].eles[j] = drand48() * 0.6;
             //0.3
             //Pblocks[i].eles[j] = drand48() * 0.3;
             //Qblocks[i].eles[j] = drand48() * 0.3;
+
+            Pblocks[i].eles[j] = drand48() * 0.2;
+            Qblocks[i].eles[j] = drand48() * 0.2;
         }
     }
 
@@ -431,7 +448,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 200;
+            int times_thresh = 5000;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -816,6 +833,61 @@ void LoadData2()
         //for 4 worker
         row /= 2;
         col /= 2;
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        printf("fn=%s  :[%d][%d]\n", fn, row, col );
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail to open %s\n", fn );
+            exit(-1);
+        }
+        cnt = 0;
+        long ridx, cidx;
+        hash_id = -1;
+        while (!ifs.eof())
+        {
+            ifs >> hash_id >> rate;
+            if (hash_id >= 0)
+            {
+                ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+
+                hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                rates_for_row_threads[row][col][ridx].push_back(rate);
+                hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                rates_for_col_threads[row][col][cidx].push_back(rate);
+            }
+
+        }
+    }
+}
+
+
+void LoadData4()
+{
+    char fn[100];
+    long hash_id;
+    double rate;
+    long cnt = 0;
+    for (int row = 0; row < WORKER_NUM; row++)
+    {
+        for (int col = 0; col < WORKER_NUM; col++)
+        {
+            for (int td = 0; td < WORKER_THREAD_NUM; td++)
+            {
+                hash_for_row_threads[row][col][td].clear();
+                rates_for_row_threads[row][col][td].clear();
+                hash_for_col_threads[row][col][td].clear();
+                rates_for_col_threads[row][col][td].clear();
+            }
+
+        }
+    }
+    for (int data_idx = 0; data_idx < 16; data_idx++)
+    {
+        int row = data_idx / DIM_NUM;
+        int col = data_idx % DIM_NUM;
+
         sprintf(fn, "%s%d", FILE_NAME, data_idx);
         printf("fn=%s  :[%d][%d]\n", fn, row, col );
         ifstream ifs(fn);

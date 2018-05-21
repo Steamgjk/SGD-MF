@@ -83,9 +83,9 @@ int main(int argc, const char * argv[])
 
     char filename[100];
     //int i = atoi(argv[3]);
-    //for (int i = stat; i < ITER_NUM; i += 10)
+    for (int i = stat; i < ITER_NUM; i += 10)
     {
-        /*
+
         printf("i=%d\n", i );
 
         int row_idx = 0;
@@ -140,7 +140,8 @@ int main(int argc, const char * argv[])
             //printf("%s read\n", filename );
 
         }
-        **/
+
+        /*
         for (int i = 0; i < N; i++)
         {
             for (int j = 0; j < K; j++)
@@ -155,6 +156,7 @@ int main(int argc, const char * argv[])
                 Q[i][j] = drand48() * 1.6;
             }
         }
+        **/
 
         rmse = 0;
         int cnt = 0;
@@ -195,15 +197,7 @@ int main(int argc, const char * argv[])
 
                     rmse += (sum - ra ) * (sum - ra);
                     //printf("sum=%lf ra=%lf rmse=%lf\n", sum, ra, rmse );
-                    if (sum > ra)
-                    {
-                        pcnt++;
-                    }
-                    else
-                    {
-                        ncnt++;
-                    }
-                    cnt++;
+
                 }
 
             }
@@ -213,7 +207,7 @@ int main(int argc, const char * argv[])
         }
         rmse /= cnt;
         rmse = sqrt(rmse);
-        int i = 0;
+        //int i = 0;
         printf("i=%d rmse=%lf pcnt=%d  ncnt=%d\n", i, rmse, pcnt, ncnt );
         ofs << rmse << endl;
 

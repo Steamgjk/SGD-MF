@@ -348,14 +348,14 @@ int main(int argc, const char * argv[])
                 printf("hehere %d\t%lld\n", iter_cnt, mksp);
                 time_span[iter_cnt / 10] = mksp;
             }
-            if (iter_cnt == 1010)
+            if (iter_cnt % 100 == 0)
             {
-                for (int i = 0; i < 101; i++)
+                for (int i = 0; i < iter_cnt / 100; i++)
                 {
                     printf("%lld\n", time_span[i]);
                 }
-                exit(0);
             }
+
         }
         for (int i = 0; i < GROUP_NUM; i++)
         {

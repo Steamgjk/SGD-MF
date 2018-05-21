@@ -82,6 +82,7 @@ int main(int argc, const char * argv[])
 
 
     char filename[100];
+    int i = 0;
     //int i = atoi(argv[3]);
     //for (int i = stat; i < ITER_NUM; i += 10)
     {
@@ -208,7 +209,7 @@ int main(int argc, const char * argv[])
         }
         rmse /= cnt;
         rmse = sqrt(rmse);
-        int i = 0;
+
         printf("i=%d rmse=%lf pcnt=%d  ncnt=%d\n", i, rmse, pcnt, ncnt );
         ofs << rmse << endl;
 

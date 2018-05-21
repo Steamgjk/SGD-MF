@@ -235,7 +235,7 @@ int main(int argc, const char * argv[])
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     srand(1);
-    LoadTestRating();
+    //LoadTestRating();
     //printf("Load Complete\n");
     printf("start work\n");
     partitionP(WORKER_NUM, Pblocks);

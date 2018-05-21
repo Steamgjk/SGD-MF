@@ -85,7 +85,7 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 /**Yahoo!Music**/
-double yita = 0.001;
+double yita = 0.0001;
 double theta = 1;
 
 #define CAP 200
@@ -936,9 +936,9 @@ void recvTd(int recv_thread_id)
         for (int i = 0; i < Pblock.ele_num; i++)
         {
             Pblock.eles[i] = data_eles[i];
-            if (Pblock.eles[i] > 100 || Pblock.eles[i] < -100 )
+            //if (Pblock.eles[i] > 100 || Pblock.eles[i] < -100 )
             {
-                printf("P Exception!\n");
+                // printf("P Exception!\n");
             }
         }
         free(data_eles);
@@ -984,9 +984,9 @@ void recvTd(int recv_thread_id)
         for (int i = 0; i < Qblock.ele_num; i++)
         {
             Qblock.eles[i] = data_eles[i];
-            if (Qblock.eles[i] > 100 || Qblock.eles[i] < -100 )
+            //if (Qblock.eles[i] > 100 || Qblock.eles[i] < -100 )
             {
-                printf("Q Exception!\n");
+                //  printf("Q Exception!\n");
             }
         }
         free(data_eles);
@@ -1157,9 +1157,9 @@ void rdma_recvTd(int recv_thread_id)
         for (int i = 0; i < Pblock.ele_num; i++)
         {
             Pblock.eles[i] = data_eles[i];
-            if (Pblock.eles[i] > 100 || Pblock.eles[i] < -100 )
+            //if (Pblock.eles[i] > 100 || Pblock.eles[i] < -100 )
             {
-                printf("P Exception!\n");
+                //  printf("P Exception!\n");
             }
         }
         //printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);

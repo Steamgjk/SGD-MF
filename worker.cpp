@@ -684,6 +684,7 @@ void submf()
         rates_for_col_threads[row][col][td].clear();
     }
     int f1 = row * 4 + col;
+    printf("row=%d col=%d\n", row, col );
     LoadRequiredData(row, col, f1);
 
     gettimeofday(&ed, 0);

@@ -802,7 +802,7 @@ void sendTd(int send_thread_id)
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
 
             size_t total_len = struct_sz + data_sz;
-            //printf("total_len=%ld struct_sz=%ld data_sz=%ld  elenum=%d\n", total_len, struct_sz, data_sz, Pblock.ele_num );
+            printf("total_len=%ld struct_sz=%ld data_sz=%ld  elenum=%d\n", total_len, struct_sz, data_sz, Pblock.ele_num );
             struct timeval st, et, tspan;
             size_t sent_len = 0;
             size_t remain_len = total_len;
@@ -839,7 +839,7 @@ void sendTd(int send_thread_id)
             buf = (char*)malloc(struct_sz + data_sz);
             memcpy(buf, &(Qblock), struct_sz);
             memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
-            //printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
+            printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
             sent_len = 0;
             remain_len = total_len;
             ret = -1;
@@ -960,7 +960,7 @@ void recvTd(int recv_thread_id)
         Qblock.height = qb->height;
         Qblock.ele_num = qb-> ele_num;
         Qblock.eles.resize(qb->ele_num);
-        //printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
+        printf("recv pele %d qele %d\n", Pblock.ele_num, Qblock.ele_num );
         free(sockBuf);
 
         data_sz = sizeof(double) * (Qblock.ele_num);
@@ -990,7 +990,7 @@ void recvTd(int recv_thread_id)
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("recv two blocks time = %lld\n", mksp);
+        printf("recv two blocks time = %lld\n", mksp);
 
         hasRecved = true;
     }

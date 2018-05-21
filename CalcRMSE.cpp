@@ -145,14 +145,14 @@ int main(int argc, const char * argv[])
         {
             for (int j = 0; j < K; j++)
             {
-                P[i][j] = drand() * 1.6;
+                P[i][j] = drand48() * 1.6;
             }
         }
         for (int i = 0; i < K; i++)
         {
             for (int j = 0; j < M; j++)
             {
-                Q[i][j] = drand() * 1.6;
+                Q[i][j] = drand48() * 1.6;
             }
         }
 
@@ -213,6 +213,7 @@ int main(int argc, const char * argv[])
         }
         rmse /= cnt;
         rmse = sqrt(rmse);
+        int i = 0;
         printf("i=%d rmse=%lf pcnt=%d  ncnt=%d\n", i, rmse, pcnt, ncnt );
         ofs << rmse << endl;
 

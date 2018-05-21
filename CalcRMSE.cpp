@@ -82,82 +82,82 @@ int main(int argc, const char * argv[])
 
 
     char filename[100];
-    int i = 0;
+    //int i = 0;
     //int i = atoi(argv[3]);
-    //for (int i = stat; i < ITER_NUM; i += 10)
+    for (int i = stat; i < ITER_NUM; i += 10)
     {
 
         printf("i=%d\n", i );
-        /*
-                int row_idx = 0;
-                int col_idx = 0;
-                for (int j = 0 ; j < PORTION_NUM; j++)
+
+        int row_idx = 0;
+        int col_idx = 0;
+        for (int j = 0 ; j < PORTION_NUM; j++)
+        {
+            sprintf(filename, "./Rtrack/Pblock-%d-%d", i, j);
+            ifs.open(filename, ios::in | ios::out);
+            if (!ifs.is_open())
+            {
+                printf("fail to open %s\n", filename);
+                getchar();
+            }
+            else
+            {
+                printf("open %s\n", filename );
+            }
+            //getchar();
+            while (!ifs.eof())
+            {
+                for (int kk = 0; kk < K; kk++)
                 {
-                    sprintf(filename, "./Rtrack/Pblock-%d-%d", i, j);
-                    ifs.open(filename, ios::in | ios::out);
-                    if (!ifs.is_open())
-                    {
-                        printf("fail to open %s\n", filename);
-                        getchar();
-                    }
-                    else
-                    {
-                        printf("open %s\n", filename );
-                    }
-                    //getchar();
-                    while (!ifs.eof())
-                    {
-                        for (int kk = 0; kk < K; kk++)
-                        {
-                            ifs >> P[row_idx][kk];
-                        }
-                        row_idx++;
-                        //if (row_idx % 1000 == 0)
-                        // printf("row_idx=%d\n", row_idx);
-                    }
-                    ifs.close();
-                    //printf("%s read\n", filename );
-                    //getchar();
-                    sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
-                    //ifstream ifs1(filename, ios::in | ios::out);
-                    ifs.open(filename, ios::in | ios::out);
-                    if (!ifs.is_open())
-                    {
-                        printf("fail to open %s\n", filename);
-                        getchar();
-                    }
-                    double temp;
-                    while (!ifs.eof())
-                    {
+                    ifs >> P[row_idx][kk];
+                }
+                row_idx++;
+                //if (row_idx % 1000 == 0)
+                // printf("row_idx=%d\n", row_idx);
+            }
+            ifs.close();
+            //printf("%s read\n", filename );
+            //getchar();
+            sprintf(filename, "./Rtrack/Qblock-%d-%d", i, j);
+            //ifstream ifs1(filename, ios::in | ios::out);
+            ifs.open(filename, ios::in | ios::out);
+            if (!ifs.is_open())
+            {
+                printf("fail to open %s\n", filename);
+                getchar();
+            }
+            double temp;
+            while (!ifs.eof())
+            {
 
-                        for (int kk = 0; kk < K; kk++)
-                        {
-                            ifs >> Q[kk][col_idx];
-                        }
+                for (int kk = 0; kk < K; kk++)
+                {
+                    ifs >> Q[kk][col_idx];
+                }
 
-                        col_idx++;
+                col_idx++;
+            }
+            ifs.close();
+            //printf("%s read\n", filename );
+
+        }
+
+        /*
+                for (int i = 0; i < N; i++)
+                {
+                    for (int j = 0; j < K; j++)
+                    {
+                        P[i][j] = drand48() * 0.2;
                     }
-                    ifs.close();
-                    //printf("%s read\n", filename );
-
+                }
+                for (int i = 0; i < K; i++)
+                {
+                    for (int j = 0; j < M; j++)
+                    {
+                        Q[i][j] = drand48() * 0.2;
+                    }
                 }
         **/
-
-        for (int i = 0; i < N; i++)
-        {
-            for (int j = 0; j < K; j++)
-            {
-                P[i][j] = drand48() * 0.2;
-            }
-        }
-        for (int i = 0; i < K; i++)
-        {
-            for (int j = 0; j < M; j++)
-            {
-                Q[i][j] = drand48() * 0.2;
-            }
-        }
-
 
         rmse = 0;
         int cnt = 0;

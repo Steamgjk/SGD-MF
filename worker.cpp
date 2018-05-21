@@ -532,7 +532,7 @@ void CalcUpdt(int td_id)
             int rand_idx = -1;
             for (times_thresh; times_thresh > 0; times_thresh--)
             {
-                printf("times_thresh=%d\n", times_thresh );
+                //printf("times_thresh=%d\n", times_thresh );
                 rand_idx = random() % rtsz;
                 long real_hash_idx = hash_for_row_threads[p_block_idx][q_block_idx][td_id][rand_idx];
                 long i = real_hash_idx / M - row_sta_idx;
@@ -584,7 +584,7 @@ void CalcUpdt(int td_id)
                     }
                 }
             }
-            printf("Fini %d\n", td_id);
+            //printf("Fini %d\n", td_id);
             StartCalcUpdt[td_id] = false;
 
 
@@ -613,6 +613,7 @@ void submf()
     oldQ = Qblock.eles;
     //printf("copy Q fin ele=%ld Qsz=%d Qh=%d  K=%d\n", oldQ.size(), Qsz, Qblock.height, K);
     //getchar();
+    /*
     for (int i = 0; i < Psz; i++)
     {
         //printf("[%d]:%lf\n", i, oldP[i] );
@@ -633,6 +634,7 @@ void submf()
         }
 
     }
+    **/
     //printf("enter submf22\n");
 
     struct timeval beg, ed;

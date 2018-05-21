@@ -85,7 +85,7 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 /**Yahoo!Music**/
-double yita = 0.0001;
+double yita = 0.001;
 double theta = 1;
 
 #define CAP 200
@@ -201,6 +201,7 @@ void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
 void CalcUpdt(int thread_id);
 void LoadData();
+void LoadData4();
 void LoadRequiredData(int row, int col, int data_idx);
 void InitFlag();
 
@@ -231,6 +232,7 @@ int main(int argc, const char * argv[])
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     InitFlag();
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
+
     if (argc >= 3)
     {
         thresh_log = atoi(argv[2]);
@@ -282,7 +284,8 @@ int main(int argc, const char * argv[])
     bool isstart = false;
 
     //LoadData();
-    //printf("Load Rating Success\n");
+    LoadData4();
+    printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");
@@ -441,7 +444,58 @@ void LoadData()
         }
     }
 }
+void LoadData4()
+{
+    char fn[100];
+    long hash_id;
+    double rate;
+    long cnt = 0;
+    for (int row = 0; row < WORKER_NUM; row++)
+    {
+        for (int col = 0; col < WORKER_NUM; col++)
+        {
+            for (int td = 0; td < WORKER_THREAD_NUM; td++)
+            {
+                hash_for_row_threads[row][col][td].clear();
+                rates_for_row_threads[row][col][td].clear();
+                hash_for_col_threads[row][col][td].clear();
+                rates_for_col_threads[row][col][td].clear();
+            }
 
+        }
+    }
+    for (int data_idx = 0; data_idx < 16; data_idx++)
+    {
+        int row = data_idx / DIM_NUM;
+        int col = data_idx % DIM_NUM;
+        sprintf(fn, "%s%d", FILE_NAME, data_idx);
+        //printf("fn=%s  :[%d][%d]\n", fn, row, col );
+        ifstream ifs(fn);
+        if (!ifs.is_open())
+        {
+            printf("fail-LoadD4 to open %s\n", fn );
+            exit(-1);
+        }
+        cnt = 0;
+        long ridx, cidx;
+
+        while (!ifs.eof())
+        {
+            hash_id = -1;
+            ifs >> hash_id >> rate;
+            if (hash_id >= 0)
+            {
+                ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
+                cidx = ((hash_id) % M) % WORKER_THREAD_NUM;
+
+                hash_for_row_threads[row][col][ridx].push_back(hash_id);
+                rates_for_row_threads[row][col][ridx].push_back(rate);
+                hash_for_col_threads[row][col][cidx].push_back(hash_id);
+                rates_for_col_threads[row][col][cidx].push_back(rate);
+            }
+        }
+    }
+}
 
 void LoadRequiredData(int row, int col, int data_idx)
 {
@@ -674,25 +728,25 @@ void submf()
     **/
 
 
+    /*
+        int row = Pblock.block_id;
+        int col = Qblock.block_id;
+        //printf("row=%d col=%d\n", row, col );
+        for (int td = 0; td < WORKER_THREAD_NUM; td++)
+        {
+            hash_for_row_threads[row][col][td].clear();
+            rates_for_row_threads[row][col][td].clear();
+            hash_for_col_threads[row][col][td].clear();
+            rates_for_col_threads[row][col][td].clear();
+        }
+        int f1 = row * 4 + col;
+        printf("row=%d col=%d\n", row, col );
+        LoadRequiredData(row, col, f1);
 
-    int row = Pblock.block_id;
-    int col = Qblock.block_id;
-    //printf("row=%d col=%d\n", row, col );
-    for (int td = 0; td < WORKER_THREAD_NUM; td++)
-    {
-        hash_for_row_threads[row][col][td].clear();
-        rates_for_row_threads[row][col][td].clear();
-        hash_for_col_threads[row][col][td].clear();
-        rates_for_col_threads[row][col][td].clear();
-    }
-    int f1 = row * 4 + col;
-    printf("row=%d col=%d\n", row, col );
-    LoadRequiredData(row, col, f1);
-
-    gettimeofday(&ed, 0);
-    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Load time = %lld\n", mksp);
-
+        gettimeofday(&ed, 0);
+        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+        printf("Load time = %lld\n", mksp);
+    **/
 
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)

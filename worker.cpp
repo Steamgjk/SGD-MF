@@ -494,6 +494,7 @@ void LoadData4()
                 rates_for_col_threads[row][col][cidx].push_back(rate);
             }
         }
+        printf("Load %s okay\n", fn );
     }
 }
 
@@ -605,6 +606,9 @@ void CalcUpdt(int td_id)
                 for (int k = 0; k < K; ++k)
                 {
                     Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+
+                    Qblock.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
+
                     if (Pblock.eles[i * K + k] + 1 == Pblock.eles[i * K + k] - 1)
                     {
                         printf("p %d q %d  error =%lf i=%d j=%d k=%d rand_idx=%d vale=%lf pvale=%lf  qvalue=%lf\n", p_block_idx, q_block_idx, error, i, j, k, rand_idx,  rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx], oldP[i * K + k], oldQ[j * K + k] );
@@ -629,6 +633,8 @@ void CalcUpdt(int td_id)
                 }
                 for (int k = 0; k < K; ++k)
                 {
+                    Pblock.eles[i * K + k] += yita * (error * oldQ[j * K + k] - theta * oldP[i * K + k]);
+
                     Qblock.eles[j * K + k] += yita * (error * oldP[i * K + k] - theta * oldQ[j * K + k]);
                     if (Qblock.eles[j * K + k] + 1 == Qblock.eles[j * K + k] - 1)
                     {

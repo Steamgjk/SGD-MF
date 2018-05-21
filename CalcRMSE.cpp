@@ -150,7 +150,7 @@ int main(int argc, const char * argv[])
             ifs.open(fn, ios::in | ios::out);
             if (!ifs.is_open())
             {
-                printf("fail to open the file %s\n", TEST_NAME);
+                printf("fail-11 to open the file %s\n", fn);
                 exit(-1);
             }
 

@@ -254,18 +254,18 @@ int main(int argc, const char * argv[])
     *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
 
-    /*
-        std::thread recv_thread(rdma_recvTd, thread_id);
-        recv_thread.detach();
-        std::thread send_thread(rdma_sendTd, thread_id);
-        send_thread.detach();
-    **/
 
-    std::thread recv_thread(recvTd, thread_id);
+    std::thread recv_thread(rdma_recvTd, thread_id);
     recv_thread.detach();
-    std::thread send_thread(sendTd, thread_id);
+    std::thread send_thread(rdma_sendTd, thread_id);
     send_thread.detach();
 
+    /*
+        std::thread recv_thread(recvTd, thread_id);
+        recv_thread.detach();
+        std::thread send_thread(sendTd, thread_id);
+        send_thread.detach();
+    **/
 
     LoadActionConfig(ACTION_NAME);
     char state_name[100];
@@ -1064,7 +1064,7 @@ void SGD_MF()
         }
 
     }
-    printf("comere hhe\n");
+    //printf("comere hhe\n");
     for (int i = 0; i < Qblocks[q_block_idx].ele_num; i++)
     {
         if (oldQ[i] > 100 || oldQ[i] < -100)

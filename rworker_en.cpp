@@ -288,7 +288,6 @@ int main(int argc, const char * argv[])
 
     partitionP(DIM_NUM, Pblocks);
     partitionQ(DIM_NUM, Qblocks);
-    printf("Partition ok\n");
     for (int i = 0; i < DIM_NUM; i++)
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
@@ -300,6 +299,10 @@ int main(int argc, const char * argv[])
             //Qblocks[i].eles[j] = drand48() * 0.3;
 
             Pblocks[i].eles[j] = drand48() * 0.2;
+
+        }
+        for (int j = 0; j < Qblocks[i].ele_num; j++)
+        {
             Qblocks[i].eles[j] = drand48() * 0.2;
         }
     }

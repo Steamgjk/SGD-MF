@@ -328,7 +328,7 @@ int main(int argc, const char * argv[])
         }
         if (recvCount == WORKER_NUM)
         {
-            if (iter_t % 1 == 0)
+            if (iter_t % 10 == 0)
             {
                 gettimeofday(&ed, 0);
 

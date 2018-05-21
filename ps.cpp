@@ -454,7 +454,7 @@ void sendTd(int send_thread_id)
             int ret = send(fd, buf, (struct_sz + data_sz), 0);
             if (ret >= 0 )
             {
-                //printf("[Td:%d] send success pbid =%d ret=%d\n", send_thread_id, pbid, ret );
+                printf("[Td:%d] send success pbid =%d ret=%d\n", send_thread_id, pbid, ret );
             }
             free(buf);
 
@@ -467,7 +467,7 @@ void sendTd(int send_thread_id)
 
             if (ret >= 0 )
             {
-                //printf("[Td:%d] send success qbid=%d ret =%d\n", send_thread_id, qbid, ret);
+                printf("[Td:%d] send success qbid=%d ret =%d\n", send_thread_id, qbid, ret);
             }
             free(buf);
             canSend[send_thread_id] = false;
@@ -586,12 +586,12 @@ void recvTd(int recv_thread_id)
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
 
-        //printf("successful rece another Block\n");
+        printf("successful rece another Block\n");
         free(sockBuf);
         free(dataBuf);
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("recv success time = %lld\n", mksp );
+        printf("recv success time = %lld\n", mksp );
         recvCount++;
     }
 }

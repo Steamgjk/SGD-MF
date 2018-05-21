@@ -307,7 +307,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
-            //printf("has Received\n");
+            printf("has Received\n");
             if (!isstart)
             {
                 isstart = true;
@@ -320,9 +320,9 @@ int main(int argc, const char * argv[])
             int col_sta_idx = Qblock.sta_idx;
             int col_len = Qblock.height;
             int ele_num = row_len * col_len;
-            //printf("before submf\n");
+            printf("before submf\n");
             submf();
-            //printf("after submf\n");
+            printf("after submf\n");
             iter_cnt++;
 
             /*
@@ -364,7 +364,7 @@ void LoadRmatrix(int file_no, map<long, double>& myMap)
     ifstream ifs(fn);
     if (!ifs.is_open())
     {
-        printf("fail to open the file %s\n", fn);
+        printf("fail-Rmatrix to open the file %s\n", fn);
         exit(-1);
     }
     int cnt = 0;
@@ -418,7 +418,7 @@ void LoadData()
         ifstream ifs(fn);
         if (!ifs.is_open())
         {
-            printf("fail to open %s\n", fn );
+            printf("fail-LoadD to open %s\n", fn );
             exit(-1);
         }
         cnt = 0;
@@ -450,11 +450,11 @@ void LoadRequiredData(int row, int col, int data_idx)
     double rate;
     long cnt = 0;
     sprintf(fn, "%s%d", FILE_NAME, data_idx);
-    printf("fn=%s  :[%d][%d]\n", fn, row, col );
+    printf("fn-required=%s  :[%d][%d]\n", fn, row, col );
     ifstream ifs(fn);
     if (!ifs.is_open())
     {
-        printf("fail to open %s\n", fn );
+        printf("fail-required to open %s\n", fn );
         exit(-1);
     }
     cnt = 0;

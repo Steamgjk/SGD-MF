@@ -177,7 +177,7 @@ int worker_pidx[CAP];
 int worker_qidx[CAP];
 
 long long time_span[300];
-
+int iter_t = 0;
 int main(int argc, const char * argv[])
 {
     send_round_robin_idx = 0;
@@ -289,7 +289,7 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     **/
 
-    int iter_t = 0;
+
 
     for (int i = 0; i < WORKER_NUM; i++)
     {
@@ -297,7 +297,7 @@ int main(int argc, const char * argv[])
         worker_qidx[i] = 3 - i;
     }
     struct timeval beg, ed;
-
+    iter_t = 0;
     while (1 == 1)
     {
         srand(time(0));
@@ -330,13 +330,13 @@ int main(int argc, const char * argv[])
         }
         if (recvCount == WORKER_NUM)
         {
-            if (iter_t % 50 == 0 )
+            if (iter_t % 10 == 0 )
             {
                 gettimeofday(&ed, 0);
 
                 for (int bid = 0; bid < WORKER_NUM; bid++)
                 {
-                    WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
+                    //WriteLog(Pblocks[bid], Qblocks[bid], iter_t);
                 }
 
                 time_span[iter_t / 10] = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
@@ -350,9 +350,9 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t == 2010)
+        if (iter_t % 100 == 0)
         {
-            for (int i = 0; i < 201; i++)
+            for (int i = 0; i < iter_t / 10; i++)
             {
                 printf("%lld\n", time_span[i] );
             }
@@ -746,7 +746,7 @@ void rdma_sendTd(int send_thread_id)
     int timestp = 0;
     while (1 == 1)
     {
-
+//iter_cnt%QP_GROUP
         if (send_thread_id / WORKER_NUM != send_round_robin_idx)
         {
             continue;

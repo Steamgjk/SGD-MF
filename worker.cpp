@@ -284,8 +284,8 @@ int main(int argc, const char * argv[])
     bool isstart = false;
 
     //LoadData();
-    LoadData4();
-    printf("Load Rating Success\n");
+    //LoadData4();
+    //printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
     //printf("wait for you for 3s\n");
@@ -520,6 +520,8 @@ void LoadRequiredData(int row, int col, int data_idx)
     while (!ifs.eof())
     {
         ifs >> hash_id >> rate;
+        //min-max scaling for Yahoo!Music
+        rate = rate / 100;
         if (hash_id >= 0)
         {
             ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
@@ -754,25 +756,25 @@ void submf()
     **/
 
 
-    /*
-        int row = Pblock.block_id;
-        int col = Qblock.block_id;
-        //printf("row=%d col=%d\n", row, col );
-        for (int td = 0; td < WORKER_THREAD_NUM; td++)
-        {
-            hash_for_row_threads[row][col][td].clear();
-            rates_for_row_threads[row][col][td].clear();
-            hash_for_col_threads[row][col][td].clear();
-            rates_for_col_threads[row][col][td].clear();
-        }
-        int f1 = row * 4 + col;
-        printf("row=%d col=%d\n", row, col );
-        LoadRequiredData(row, col, f1);
 
-        gettimeofday(&ed, 0);
-        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf("Load time = %lld\n", mksp);
-    **/
+    int row = Pblock.block_id;
+    int col = Qblock.block_id;
+    //printf("row=%d col=%d\n", row, col );
+    for (int td = 0; td < WORKER_THREAD_NUM; td++)
+    {
+        hash_for_row_threads[row][col][td].clear();
+        rates_for_row_threads[row][col][td].clear();
+        hash_for_col_threads[row][col][td].clear();
+        rates_for_col_threads[row][col][td].clear();
+    }
+    int f1 = row * 4 + col;
+    printf("row=%d col=%d\n", row, col );
+    LoadRequiredData(row, col, f1);
+
+    gettimeofday(&ed, 0);
+    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+    printf("Load time = %lld\n", mksp);
+
 
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)

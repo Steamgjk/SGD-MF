@@ -83,8 +83,9 @@ int main(int argc, const char * argv[])
 
     char filename[100];
     //int i = atoi(argv[3]);
-    for (int i = stat; i < ITER_NUM; i += 10)
+    //for (int i = stat; i < ITER_NUM; i += 10)
     {
+        /*
         printf("i=%d\n", i );
 
         int row_idx = 0;
@@ -139,7 +140,21 @@ int main(int argc, const char * argv[])
             //printf("%s read\n", filename );
 
         }
-
+        **/
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < K; j++)
+            {
+                P[i][j] = drand() * 1.6;
+            }
+        }
+        for (int i = 0; i < K; i++)
+        {
+            for (int j = 0; j < M; j++)
+            {
+                Q[i][j] = drand() * 1.6;
+            }
+        }
 
         rmse = 0;
         int cnt = 0;

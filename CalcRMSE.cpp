@@ -74,6 +74,11 @@ int main(int argc, const char * argv[])
     {
         stat = atoi(argv[3]);
     }
+    int interval = 10;
+    if (argc >= 5)
+    {
+        interval = atoi(argv[4]);
+    }
     ifstream ifs;
     double rmse = 0;
 
@@ -84,7 +89,7 @@ int main(int argc, const char * argv[])
     char filename[100];
     //int i = 0;
     //int i = atoi(argv[3]);
-    for (int i = stat; i < ITER_NUM; i += 10)
+    for (int i = stat; i < ITER_NUM; i += interval)
     {
 
         printf("i=%d\n", i );

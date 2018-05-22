@@ -838,12 +838,13 @@ void rdma_sendTd(int send_thread_id)
 }
 void rdma_recvTd(int recv_thread_id)
 {
-    printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
+    int mapped_thread_id = recv_thread_id % WORKER_NUM;
+    printf("ps rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[mapped_thread_id], local_ports[recv_thread_id]);
     //char* buf = to_recv_block_mem + (recv_thread_id) * BLOCK_MEM_SZ * 2;
-    char* buf = to_recv_mem_arr[recv_thread_id];
+    char* buf = to_recv_mem_arr[mapped_thread_id];
     server_rdma_op sro;
 
-    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
+    int ret = sro.rdma_server_init(local_ips[mapped_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
     size_t struct_sz = sizeof(Block);
     int timestp = 1;
     while (1 == 1)

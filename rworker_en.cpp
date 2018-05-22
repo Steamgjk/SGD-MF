@@ -40,7 +40,6 @@ using namespace std;
 #define ACTION_NAME "./action"
 #define STATE_NAME "./state"
 
-#define GROUP_NUM 1
 
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};

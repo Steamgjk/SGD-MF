@@ -56,12 +56,15 @@ using namespace std;
 #define M 1000000
 #define K  100 //主题个数
 **/
+
 /**Yahoo!Music **/
+
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
+
 
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
@@ -746,8 +749,8 @@ void rdma_sendTd(int send_thread_id)
     int timestp = 0;
     while (1 == 1)
     {
-//iter_cnt%QP_GROUP
-        if (send_thread_id / WORKER_NUM != send_round_robin_idx)
+//
+        if (send_thread_id / WORKER_NUM != iter_cnt % QP_GROUP)
         {
             continue;
         }
@@ -802,7 +805,7 @@ void rdma_sendTd(int send_thread_id)
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
-            send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
+            //send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
             canSend[send_thread_id] = false;
 
             /*
@@ -845,6 +848,10 @@ void rdma_recvTd(int recv_thread_id)
     while (1 == 1)
     {
 
+        if (recv_thread_id / WORKER_NUM != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
         //printf("recving ...[%d]\n", recv_thread_id);
         int* flag = (int*)(void*)(buf);
         while ((*flag) < timestp )

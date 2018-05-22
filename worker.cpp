@@ -66,6 +66,7 @@ char* to_recv_block_mem;
 #define M 1000000
 #define K  100 //主题个数
 **/
+
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
@@ -85,8 +86,10 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 /**Yahoo!Music**/
+
 double yita = 0.001;
 double theta = 0.05;
+
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -284,7 +287,7 @@ int main(int argc, const char * argv[])
     bool isstart = false;
 
     //LoadData();
-    //LoadData4();
+    LoadData4();
     //printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
@@ -574,7 +577,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 5000;
+            int times_thresh = 1000;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;
@@ -1130,6 +1133,10 @@ void rdma_sendTd(int send_thread_id)
     int time_stp = 0;
     while (1 == 1)
     {
+        if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
         int real_total = 0;
         size_t p_total = 0;
         size_t q_total = 0;
@@ -1208,6 +1215,10 @@ void rdma_recvTd(int recv_thread_id)
     int time_stp = 1;
     while (1 == 1)
     {
+        if (recv_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
         struct timeval st, et;
         gettimeofday(&st, 0);
         while ((*flag) < time_stp)
@@ -1271,7 +1282,7 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         //printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
-        recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
+        //recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
         hasRecved = true;
 
 

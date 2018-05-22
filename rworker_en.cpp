@@ -40,19 +40,21 @@ using namespace std;
 #define ACTION_NAME "./action"
 #define STATE_NAME "./state"
 
+#define GROUP_NUM 1
+
 char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
 int local_ports[10] = {5511, 5512, 5513, 5514};
 std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
+
 /*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
@@ -61,26 +63,28 @@ std::vector<double> oldQ ;
 #define K  40 //主题个数
 **/
 
-/*
 //Jumbo
 double yita = 0.002;
 double theta = 0.05;
-**/
+
 /*
 //Movie-Len
 double yita = 0.003;
 double theta = 0.01;
 **/
+
 /**Yahoo!Music**/
+/*
 double yita = 0.001;
 double theta = 0.05;
-
+**/
+/*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-
+**/
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -88,9 +92,12 @@ double theta = 0.05;
 
 
 #define WORKER_THREAD_NUM 30
-
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*4)
+
+#define WORKER_N_1 4
+#define QP_GROUP 1
+
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
@@ -241,6 +248,7 @@ long long time_span[2000];
 int thread_id = -1;
 int p_block_idx;
 int q_block_idx;
+int iter_cnt = 0;
 int main(int argc, const char * argv[])
 {
     srand(time(0));
@@ -260,11 +268,22 @@ int main(int argc, const char * argv[])
         std::thread send_thread(rdma_sendTd, thread_id);
         send_thread.detach();
     **/
+    /*
+    std::thread recv_thread(recvTd, th_id);
+        recv_thread.detach();
+        std::thread send_thread(sendTd, th_idi);
+        send_thread.detach();
+        **/
 
-    std::thread recv_thread(recvTd, thread_id);
-    recv_thread.detach();
-    std::thread send_thread(sendTd, thread_id);
-    send_thread.detach();
+    for (int i = 0; i < QP_GROUP; i++)
+    {
+        int th_id = thread_id + i * WORKER_N_1;
+        printf(" th_id=%d\n", th_id );
+        std::thread recv_thread(rdma_recvTd, th_id);
+        recv_thread.detach();
+        std::thread send_thread(rdma_sendTd, th_id);
+        send_thread.detach();
+    }
 
 
     LoadActionConfig(ACTION_NAME);
@@ -328,7 +347,7 @@ int main(int argc, const char * argv[])
     std::vector<int> q_to_process(GROUP_NUM);
     std::vector<bool> send_this_p(GROUP_NUM);
     //Init Mark
-    int iter_cnt = 0;
+    iter_cnt = 0;
     struct timeval st, et, tspan;
     long long mksp;
     while (1 == 1)
@@ -1688,6 +1707,10 @@ void rdma_sendTd(int send_thread_id)
     struct timeval st, et, tspan;
     while (1 == 1)
     {
+        if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
         if (to_send_head < to_send_tail)
         {
 
@@ -1755,6 +1778,10 @@ void rdma_recvTd(int recv_thread_id)
     while (1 == 1)
     {
 
+        if (recv_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
         int block_idx = has_recved[recved_head];
         int block_p_or_q = actions[recved_head];
 

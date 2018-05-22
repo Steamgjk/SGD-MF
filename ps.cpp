@@ -750,7 +750,7 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
 //
-        if (send_thread_id / WORKER_NUM != iter_cnt % QP_GROUP)
+        if (send_thread_id / WORKER_NUM != iter_t % QP_GROUP)
         {
             continue;
         }
@@ -848,7 +848,7 @@ void rdma_recvTd(int recv_thread_id)
     while (1 == 1)
     {
 
-        if (recv_thread_id / WORKER_NUM != iter_cnt % QP_GROUP)
+        if (recv_thread_id / WORKER_NUM != iter_t % QP_GROUP)
         {
             continue;
         }

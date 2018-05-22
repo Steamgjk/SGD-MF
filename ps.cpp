@@ -702,7 +702,8 @@ void rdma_sendTd(int send_thread_id)
 {
 
     printf("ps  send_thread_id=%d\n", send_thread_id);
-    char* remote_ip = remote_ips[send_thread_id];
+    int mapped_thread_id = send_thread_id % WORKER_NUM;
+    char* remote_ip = remote_ips[mapped_thread_id];
     int remote_port = remote_ports[send_thread_id];
     struct sockaddr_in server_sockaddr;
     int ret, option;
@@ -754,7 +755,7 @@ void rdma_sendTd(int send_thread_id)
         {
             continue;
         }
-        int mapped_thread_id = send_thread_id % WORKER_NUM;
+
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         while (canSend[mapped_thread_id] == false)
         {

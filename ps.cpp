@@ -738,7 +738,7 @@ void rdma_sendTd(int send_thread_id)
 
     //size_t offset = (send_thread_id) * BLOCK_MEM_SZ * 2;
     //char* buf = to_send_block_mem + offset;
-    char* buf = to_send_mem_arr[send_thread_id];
+    char* buf = to_send_mem_arr[mapped_thread_id];
     ret = cro.client_send_metadata_to_server1(buf, BLOCK_MEM_SZ * 2);
     if (ret)
     {

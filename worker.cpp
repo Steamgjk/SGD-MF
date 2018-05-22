@@ -759,21 +759,21 @@ void submf()
     **/
 
 
-
-    int row = Pblock.block_id;
-    int col = Qblock.block_id;
-    //printf("row=%d col=%d\n", row, col );
-    for (int td = 0; td < WORKER_THREAD_NUM; td++)
-    {
-        hash_for_row_threads[row][col][td].clear();
-        rates_for_row_threads[row][col][td].clear();
-        hash_for_col_threads[row][col][td].clear();
-        rates_for_col_threads[row][col][td].clear();
-    }
-    int f1 = row * 4 + col;
-    printf("row=%d col=%d\n", row, col );
-    LoadRequiredData(row, col, f1);
-
+    /*
+        int row = Pblock.block_id;
+        int col = Qblock.block_id;
+        //printf("row=%d col=%d\n", row, col );
+        for (int td = 0; td < WORKER_THREAD_NUM; td++)
+        {
+            hash_for_row_threads[row][col][td].clear();
+            rates_for_row_threads[row][col][td].clear();
+            hash_for_col_threads[row][col][td].clear();
+            rates_for_col_threads[row][col][td].clear();
+        }
+        int f1 = row * 4 + col;
+        printf("row=%d col=%d\n", row, col );
+        LoadRequiredData(row, col, f1);
+    **/
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
     printf("Load time = %lld\n", mksp);

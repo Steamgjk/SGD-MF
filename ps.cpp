@@ -846,7 +846,7 @@ void rdma_recvTd(int recv_thread_id)
             tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
             if ((*tail_total_len_ptr) != total_len)
             {
-                printf("[%d]tail_total_len_ptr =%d\n", recv_thread_id, (*tail_total_len_ptr));
+                printf("[%d]total_len=%d  tail_total_len_ptr =%d\n", recv_thread_id, total_len, (*tail_total_len_ptr));
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
             else

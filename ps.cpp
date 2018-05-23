@@ -75,8 +75,8 @@ char* to_recv_mem_arr[10];
 
 
 #define QP_GROUP 2
-int send_round_robin_idx = 0;
-int recv_round_robin_idx = 0;
+int send_round_robin_idx[CAP];
+int recv_round_robin_idx[CAP];
 
 int WORKER_NUM = 4;
 char* local_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
@@ -86,8 +86,7 @@ int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
 double P[N][K];
 double Q[K][M];
-bool worker_debug = false;
-bool main_debug = false;
+
 
 
 struct Block
@@ -183,8 +182,7 @@ long long time_span[300];
 int iter_t = 0;
 int main(int argc, const char * argv[])
 {
-    send_round_robin_idx = 0;
-    recv_round_robin_idx = 0;
+
     for (int i = 0; i < CAP; i++)
     {
         local_ports[i] = 44411 + i;
@@ -283,8 +281,6 @@ int main(int argc, const char * argv[])
     }
     **/
 
-
-
     /*
         std::thread send_thread(rdma_sendTd, 2);
         send_thread.detach();
@@ -292,12 +288,15 @@ int main(int argc, const char * argv[])
         recv_thread.detach();
     **/
 
-
-
     for (int i = 0; i < WORKER_NUM; i++)
     {
         worker_pidx[i] = i;
         worker_qidx[i] = 3 - i;
+    }
+    for (int i = 0; i < WORKER_NUM; i++)
+    {
+        send_round_robin_idx[i] = i;
+        recv_round_robin_idx[i] = i;
     }
     struct timeval beg, ed;
     iter_t = 0;
@@ -347,9 +346,7 @@ int main(int argc, const char * argv[])
                 printf("time= %d\t%lld\n", iter_t, time_span[iter_t / 10] );
 
             }
-            //printf("iter_t=%d\n", iter_t );
-            send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
-            recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
+
 
             recvCount = 0;
         }
@@ -752,7 +749,7 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
 //
-        if ( (send_thread_id / WORKER_NUM != iter_t % QP_GROUP) || (canSend[mapped_thread_id] == false) )
+        if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
@@ -793,38 +790,15 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
 
             ret = cro.start_remote_write(real_total, 0);
-            //printf("doenot update flag\n");
-            //getchar();
-
-
-            //ret = cro.start_remote_write(sizeof(int), 0);
-            //printf("update flag\n");
-            //if (ret == 0 )
+            if (ret == 0 )
             {
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
-            //send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
+
+            send_round_robin_idx[mapped_thread_id] = (send_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
             canSend[mapped_thread_id] = false;
 
-            /*
-                        int time_thresh = 0;
-                        while (canSend[send_thread_id] == false)
-                        {
 
-                            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                            if (canSend[send_thread_id] == true || time_thresh == 3)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                ret = cro.start_remote_write(real_total, 0);
-                                time_thresh++;
-                            }
-
-                            //printf("[%d]resend...\n", send_thread_id );
-                        }
-                        **/
         }
 
     }
@@ -847,7 +821,7 @@ void rdma_recvTd(int recv_thread_id)
     while (1 == 1)
     {
 
-        if (recv_thread_id / WORKER_NUM != iter_t % QP_GROUP)
+        if (recv_round_robin_idx[mapped_thread_id] != recv_thread_id)
         {
             continue;
         }
@@ -920,6 +894,7 @@ void rdma_recvTd(int recv_thread_id)
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d] recv success time = %lld\n", recv_thread_id, mksp );
         //getchar();
+        recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;
     }
 }

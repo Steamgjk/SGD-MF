@@ -1194,7 +1194,7 @@ void rdma_sendTd(int send_thread_id)
                     break;
                 }
 
-                //printf("resend one\n");
+                printf("[%d]:resend one\n", send_thread_id);
 
             }
 

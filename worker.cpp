@@ -1147,7 +1147,6 @@ void rdma_sendTd(int send_thread_id)
         int check_sum = 0;
         struct timeval st, et, tspan;
         int*flag = (int*)(void*) to_send_block_mem;
-        *flag = -1;
         char* real_sta_buf = to_send_block_mem + sizeof(int);
         if (canSend)
         {

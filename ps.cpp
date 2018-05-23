@@ -751,16 +751,12 @@ void rdma_sendTd(int send_thread_id)
     while (1 == 1)
     {
 //
-        if (send_thread_id / WORKER_NUM != iter_t % QP_GROUP)
+        if ( (send_thread_id / WORKER_NUM != iter_t % QP_GROUP) || (canSend[mapped_thread_id] == false) )
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        while (canSend[mapped_thread_id] == false)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
 
         int* flag = (int*)(void*)buf;
         *flag = -1;

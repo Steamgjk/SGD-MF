@@ -329,7 +329,7 @@ int main(int argc, const char * argv[])
             //printf("before submf\n");
             submf();
             //printf("after submf\n");
-            iter_cnt++;
+            //iter_cnt++;
 
             /*
             if (iter_cnt % 10 == 0)
@@ -1284,6 +1284,8 @@ void rdma_recvTd(int recv_thread_id)
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         //printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         //recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
+
+        iter_cnt++;
         hasRecved = true;
 
 

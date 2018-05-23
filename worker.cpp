@@ -1183,6 +1183,7 @@ void rdma_sendTd(int send_thread_id)
 
 /////
             time_stp += WORKER_N_1 * QP_GROUP ;
+            *flag  = time_stp;
             send_round_robin_idx++;
             while (canSend == false)
             {

@@ -774,7 +774,7 @@ void rdma_sendTd(int send_thread_id)
             timestp++;
             int pbid = worker_pidx[mapped_thread_id];
             int qbid = worker_qidx[mapped_thread_id];
-            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + p_data_sz;
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
@@ -804,7 +804,7 @@ void rdma_sendTd(int send_thread_id)
                 printf("[Td:%d] send success qbid=%d isP=%d ret =%d total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, ret, real_total, Qblocks[qbid].height);
             }
             //send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
-            canSend[send_thread_id] = false;
+            canSend[mapped_thread_id] = false;
 
             /*
                         int time_thresh = 0;

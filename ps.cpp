@@ -829,6 +829,7 @@ void rdma_recvTd(int recv_thread_id)
         int* flag = (int*)(void*)(buf);
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         char* real_sta_buf = buf + sizeof(int) + sizeof(int);
+        int* tail_total_len_ptr = NULL;
         while ((*flag) < timestp )
         {
             printf("[%d]flag =%d\n", recv_thread_id, (*flag));
@@ -838,7 +839,7 @@ void rdma_recvTd(int recv_thread_id)
                 continue;
             }
             int total_len = *total_len_ptr;
-            int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
+            tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
             if ((*tail_total_len_ptr) != total_len)
             {
                 printf("[%d]tail_total_len_ptr =%d\n", recv_thread_id, (*tail_total_len_ptr));

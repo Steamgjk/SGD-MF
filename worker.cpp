@@ -1184,7 +1184,9 @@ void rdma_sendTd(int send_thread_id)
             {
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
                 cnt++;
-                printf("[%d]:resend one\n", send_thread_id);
+                int*fla = (int*)(void*)buf;
+                int*total_l = (int*)(void*)(buf + sizeof(int));
+                printf("[%d]:resend one fla=%d  total_l=%d\n", send_thread_id, (*fla), (*total_l));
                 if (cnt > 100)
                 {
                     break;

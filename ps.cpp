@@ -319,7 +319,8 @@ int main(int argc, const char * argv[])
         {
             canSend[i] = true;
         }
-        //printf("canSend! flag ok\n");
+        printf("canSend!\n");
+        getchar();
         while (recvCount != WORKER_NUM)
         {
             //cout << "RecvCount\t" << recvCount << endl;
@@ -773,7 +774,7 @@ void rdma_sendTd(int send_thread_id)
             timestp++;
             int pbid = worker_pidx[mapped_thread_id];
             int qbid = worker_qidx[mapped_thread_id];
-            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             p_total = struct_sz + p_data_sz;
             q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();

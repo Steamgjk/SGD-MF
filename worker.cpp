@@ -329,7 +329,7 @@ int main(int argc, const char * argv[])
             //printf("before submf\n");
             submf();
             //printf("after submf\n");
-            //iter_cnt++;
+            iter_cnt++;
 
             /*
             if (iter_cnt % 10 == 0)
@@ -1133,7 +1133,7 @@ void rdma_sendTd(int send_thread_id)
     int time_stp = 0;
     while (1 == 1)
     {
-        if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        if (send_thread_id / WORKER_N_1 != send_round_robin_idx % QP_GROUP)
         {
             continue;
         }
@@ -1177,11 +1177,6 @@ void rdma_sendTd(int send_thread_id)
 
             ret = cro.start_remote_write(real_total, 0);
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
-
-            //ret = cro.start_remote_write(sizeof(int), 0);
-            //printf("[%d]:send flag\n", send_thread_id);
-            send_round_robin_idx = (send_round_robin_idx + 1) % QP_GROUP;
-
             canSend = false;
             int cnt = 0;
             long time_interval = 100;
@@ -1190,7 +1185,7 @@ void rdma_sendTd(int send_thread_id)
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
                 cnt++;
                 printf("[%d]:resend one\n", send_thread_id);
-                if (cnt > 100 || (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP))
+                if (cnt > 100)
                 {
                     break;
                 }
@@ -1198,6 +1193,7 @@ void rdma_sendTd(int send_thread_id)
                 time_interval = (time_interval << 1);
 
             }
+            send_round_robin_idx++;
 
         }
     }
@@ -1217,7 +1213,7 @@ void rdma_recvTd(int recv_thread_id)
     int time_stp = 1;
     while (1 == 1)
     {
-        if (recv_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        if (recv_thread_id / WORKER_N_1 != recv_round_robin_idx % QP_GROUP)
         {
             continue;
         }
@@ -1283,10 +1279,10 @@ void rdma_recvTd(int recv_thread_id)
         time_stp++;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
-        //recv_round_robin_idx = (recv_round_robin_idx + 1) % QP_GROUP;
+        printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
 
-        iter_cnt++;
+
+        recv_round_robin_idx++;
         hasRecved = true;
 
 

@@ -1197,7 +1197,7 @@ void rdma_sendTd(int send_thread_id)
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(time_interval));
                 time_interval = (time_interval << 1);
-                printf("[%d] may be can jumb\n", send_thread_id );
+                //printf("[%d] may be can jumb\n", send_thread_id );
 
             }
             time_stp += WORKER_N_1 * QP_GROUP ;

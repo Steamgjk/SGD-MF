@@ -1153,7 +1153,7 @@ void rdma_sendTd(int send_thread_id)
         {
             time_stp++;
             buf = to_send_block_mem;
-            //printf("flagp=%p bufp=%p val=%d %d\n", flag, buf, (*flag), (*buf) );
+            printf("[%d] canSend\n", send_thread_id );
             p_data_sz = sizeof(double) * Pblock.ele_num;
             q_data_sz = sizeof(double) * Qblock.ele_num;
             p_total = struct_sz + p_data_sz;

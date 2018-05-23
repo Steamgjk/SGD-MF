@@ -817,7 +817,7 @@ void rdma_recvTd(int recv_thread_id)
 
     int ret = sro.rdma_server_init(local_ips[mapped_thread_id], local_ports[recv_thread_id], buf, BLOCK_MEM_SZ * 2);
     size_t struct_sz = sizeof(Block);
-    int timestp = 1;
+    int timestp = recv_thread_id;
     while (1 == 1)
     {
 
@@ -832,7 +832,7 @@ void rdma_recvTd(int recv_thread_id)
         int* tail_total_len_ptr = NULL;
         while (1 == 1)
         {
-            if ((*flag) < timestp )
+            if ((*flag) !=  timestp )
             {
                 continue;
             }
@@ -896,7 +896,7 @@ void rdma_recvTd(int recv_thread_id)
         *flag = -1;
         *total_len_ptr = -3;
         *tail_total_len_ptr = -2;
-        timestp++;
+        timestp += WORKER_NUM * QP_GROUP;
 
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

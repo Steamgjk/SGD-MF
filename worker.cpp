@@ -1187,17 +1187,15 @@ void rdma_sendTd(int send_thread_id)
             long time_interval = 100;
             while (canSend == false)
             {
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(time_interval));
-                time_interval = (time_interval << 1);
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
                 cnt++;
-                if (cnt > 100)
+                printf("[%d]:resend one\n", send_thread_id);
+                if (cnt > 100 || (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP))
                 {
                     break;
                 }
-
-                printf("[%d]:resend one\n", send_thread_id);
+                std::this_thread::sleep_for(std::chrono::milliseconds(time_interval));
+                time_interval = (time_interval << 1);
 
             }
 

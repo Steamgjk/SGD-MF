@@ -1181,7 +1181,7 @@ void rdma_sendTd(int send_thread_id)
             int cnt = 0;
             long time_interval = 100;
 
-            /*
+
             while (canSend == false)
             {
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
@@ -1197,7 +1197,7 @@ void rdma_sendTd(int send_thread_id)
                 time_interval = (time_interval << 1);
 
             }
-            **/
+
             send_round_robin_idx++;
 
         }

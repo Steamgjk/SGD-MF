@@ -1181,8 +1181,8 @@ void rdma_sendTd(int send_thread_id)
             long time_interval = 100;
 
 /////
-            time_stp += WORKER_N_1 * QP_GROUP ;
             *flag  = time_stp;
+
             send_round_robin_idx++;
             while (canSend == false)
             {
@@ -1199,6 +1199,7 @@ void rdma_sendTd(int send_thread_id)
                 time_interval = (time_interval << 1);
 
             }
+            time_stp += WORKER_N_1 * QP_GROUP ;
 
 
 

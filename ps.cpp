@@ -757,7 +757,7 @@ void rdma_sendTd(int send_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
-
+        printf("iter_t=%d send_thread_id=%d mapped_thread_id=%d\n", iter_t, send_thread_id, mapped_thread_id );
 
         int* flag = (int*)(void*)buf;
         *flag = -1;

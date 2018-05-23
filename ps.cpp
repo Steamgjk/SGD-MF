@@ -827,28 +827,27 @@ void rdma_recvTd(int recv_thread_id)
         }
         //printf("recving ...[%d]\n", recv_thread_id);
         int* flag = (int*)(void*)(buf);
+        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
         while ((*flag) < timestp )
         {
             printf("[%d]flag =%d\n", recv_thread_id, (*flag));
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+            if ((*total_len_ptr) <= 0)
+            {
+                continue;
+            }
+            int total_len = *total_len_ptr;
+            int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
+            if ((*tail_total_len_ptr) != total_len)
+            {
+                printf("[%d]tail_total_len_ptr =%d\n", recv_thread_id, (*tail_total_len_ptr));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
         }
 
         //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
 
-        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
-        while ((*total_len_ptr) <= 0)
-        {
-
-        }
-        int total_len = *total_len_ptr;
-        char* real_sta_buf = buf + sizeof(int) + sizeof(int);
-
-        int* tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
-        while ((*tail_total_len_ptr) != total_len)
-        {
-            printf("[%d]tail_total_len_ptr =%d\n", recv_thread_id, (*tail_total_len_ptr));
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
         //printf("[%d]ok check total_len=%d\n", recv_thread_id, total_len );
         struct timeval st, et, tspan;
         gettimeofday(&st, 0);

@@ -1151,7 +1151,7 @@ void rdma_sendTd(int send_thread_id)
         char* real_sta_buf = to_send_block_mem + sizeof(int);
         if (canSend)
         {
-            time_stp += WORKER_N_1 * QP_GROUP ;
+
             buf = to_send_block_mem;
             printf("[%d] canSend\n", send_thread_id );
             p_data_sz = sizeof(double) * Pblock.ele_num;
@@ -1181,6 +1181,8 @@ void rdma_sendTd(int send_thread_id)
             int cnt = 0;
             long time_interval = 100;
 
+/////
+            time_stp += WORKER_N_1 * QP_GROUP ;
 
             while (canSend == false)
             {

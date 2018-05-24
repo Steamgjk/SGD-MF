@@ -765,7 +765,6 @@ void rdma_sendTd(int send_thread_id)
         size_t p_data_sz = 0;
         size_t q_data_sz = 0;
         int total_len = 0;
-        int timestp = send_thread_id;
         if (canSend[mapped_thread_id] == true)
         {
             //timestp++;
@@ -797,7 +796,7 @@ void rdma_sendTd(int send_thread_id)
 
             send_round_robin_idx[mapped_thread_id] = (send_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
             canSend[mapped_thread_id] = false;
-            time_stp += WORKER_NUM * QP_GROUP ;
+            timestp += WORKER_NUM * QP_GROUP ;
 
         }
 

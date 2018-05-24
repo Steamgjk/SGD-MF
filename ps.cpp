@@ -29,7 +29,12 @@
 #include <sys/time.h>
 #include <map>
 
+
 #define TWO_SIDED_RDMA 1
+
+#if TWO_SIDED_RDMA
+#include "rdma_t.h"
+#endif
 
 #if ONE_SIDED_RDMA
 #include "server_rdma_op.h"

@@ -1,15 +1,12 @@
 #include "rdma_t.h"
 
-#if HAVE_RDMA
 #include <rdma/rdma_cma.h>
-#include "rdma_t.h"
 //void rc_die(const char *reason);
 
 #define TIMEOUT_IN_MS 500
 
 #define MIN_CQE 10
 
-#endif // RDMA_SUPPORT
 
 #include <string>
 #include <vector>
@@ -81,118 +78,6 @@ void log_info(const char *format, ...)
 }
 
 
-#if HAVE_RDMA
-
-
-static node_item* get_new_node(void)
-{
-	node_item* nit = (node_item*)std::malloc(sizeof(node_item));
-	if (nit == nullptr)
-	{
-		printf("fatal error : malloc node_item error\n");
-		exit(-1);
-	}
-	nit->next = nullptr;
-	nit->data_ptr = nullptr;
-	return nit;
-}
-
-static _rdma_thread_pack_* get_new_thread_pack(struct rdma_cm_id* id, node_item* nit)
-{
-	_rdma_thread_pack_* rtp = (_rdma_thread_pack_*)std::malloc(sizeof(_rdma_thread_pack_));
-	if (rtp == nullptr)
-	{
-		printf("fatal error : malloc _rdma_thread_pack_ error\n");
-		exit(-1);
-	}
-	rtp->rdma_id = id;
-	rtp->nit = nit;
-	return rtp;
-}
-
-
-/*加载所有的网络节点*/
-/*
-12.12.10.XXX
-12.12.11.XXX
-*/
-
-
-/*
-static void send_message(struct rdma_cm_id *id)
-{
-	struct context *ctx = (struct context *)id->context;
-	struct ibv_send_wr wr, *bad_wr = NULL;
-	struct ibv_sge sge;
-
-	memset(&wr, 0, sizeof(wr));
-
-	wr.wr_id = (uintptr_t)id;
-	wr.opcode = IBV_WR_SEND;
-	wr.sg_list = &sge;
-	wr.num_sge = 1;
-	wr.send_flags = IBV_SEND_SIGNALED;
-
-	sge.addr = (uintptr_t)ctx->msg;
-	sge.length = sizeof(*ctx->msg);
-	sge.lkey = ctx->msg_mr->lkey;
-
-	TEST_NZ(ibv_post_send(id->qp, &wr, &bad_wr));
-}
-
-void send_tensor(struct rdma_cm_id *id, char* buff, uint32_t len)
-{
-	//printf("Sending tensor...\n");
-	struct context *ctx = (struct context *)id->context;
-	struct ibv_send_wr wr, *bad_wr = NULL;
-	struct ibv_sge sge;
-	if (buff)
-		memcpy(ctx->buffer, buff, len);
-	memset(&wr, 0, sizeof(wr));
-	wr.wr_id = (uintptr_t)id;
-	wr.opcode = IBV_WR_RDMA_WRITE_WITH_IMM;
-	wr.send_flags = IBV_SEND_SIGNALED;
-	wr.imm_data = htonl(len);
-	wr.wr.rdma.remote_addr = ctx->peer_addr;
-	wr.wr.rdma.rkey = ctx->peer_rkey;
-	if (len)
-	{
-		wr.sg_list = &sge;
-		wr.num_sge = 1;
-
-		sge.addr = (uintptr_t)ctx->buffer;
-		sge.length = len;
-		sge.lkey = ctx->buffer_mr->lkey;
-	}
-	TEST_NZ(ibv_post_send(id->qp, &wr, &bad_wr));
-}
-
-
-void post_receive_client(struct rdma_cm_id *id)
-{
-	struct context *ctx = (struct context *)id->context;
-	struct ibv_recv_wr wr, *bad_wr = NULL;
-	struct ibv_sge sge;
-	memset(&wr, 0, sizeof(wr));
-	wr.wr_id = (uintptr_t)id;
-	wr.sg_list = &sge;
-	wr.num_sge = 1;
-	sge.addr = (uintptr_t)ctx->msg;
-	sge.length = sizeof(*ctx->msg);
-	sge.lkey = ctx->msg_mr->lkey;
-	TEST_NZ(ibv_post_recv(id->qp, &wr, &bad_wr));
-}
-
-static void post_receive_server(struct rdma_cm_id *id)
-{
-	struct ibv_recv_wr wr, *bad_wr = NULL;
-	memset(&wr, 0, sizeof(wr));
-	wr.wr_id = (uintptr_t)id;
-	wr.sg_list = NULL;
-	wr.num_sge = 0;
-	TEST_NZ(ibv_post_recv(id->qp, &wr, &bad_wr));
-}
-**/
 static char* data_gene(int size)
 {
 	char* _data = (char*)malloc(size * sizeof(char) + 1);
@@ -217,163 +102,7 @@ void send_by_RDMA(struct ibv_wc *wc)
 {
 
 }
-/*
-static void send_by_RDMA(struct ibv_wc *wc)
-{
-	struct rdma_cm_id *id = (struct rdma_cm_id *)(uintptr_t)wc->wr_id;
-	struct context *ctx = (struct context *)id->context;
 
-	if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
-	{
-		printf("send thread %ld will never be here!!!!!\n", pthread_self());
-		exit(0);
-	}
-	else if (wc->opcode & IBV_WC_RECV)
-	{
-		if (ctx->msg->id == MSG_MR)
-		{
-			ctx->peer_addr = ctx->msg->data.mr.addr;
-			ctx->peer_rkey = ctx->msg->data.mr.rkey;
-			printf("received remote memory address and key\n");
-			ctx->remote_idle = true;
-#if __RDMA_SLOW__
-			printf("thread %ld will send data in 10 seconds\n", pthread_self());
-			std::this_thread::sleep_for(std::chrono::seconds(10));
-#endif
-			//__send_str = data_gene(1024 * 1024 * 100);
-			send_tensor(id, __send_str, __send_len);
-		}
-		else if (ctx->msg->id == MSG_DONE)
-		{
-			printf("received DONE, disconnecting\n");
-			rdma_disconnect(id);
-			return;
-		}
-		else if (ctx->msg->id == MSG_READY)
-		{
-			ctx->remote_idle = true;
-#if __RDMA_SLOW__
-			printf("thread %ld will send data in 10 seconds\n", pthread_self());
-			std::this_thread::sleep_for(std::chrono::seconds(10));
-#endif
-			send_tensor(id, __send_str, __send_len);
-		}
-		post_receive_client(id);
-	}
-	return;
-}
-
-void* recv_by_RDMA(struct ibv_wc *wc, uint32_t& recv_len)
-{
-	struct rdma_cm_id *id = (struct rdma_cm_id *)(uintptr_t)wc->wr_id;
-	struct context *ctx = (struct context *)id->context;
-	void* _data = nullptr;
-
-	if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
-	{
-		uint32_t size = ntohl(wc->imm_data);
-		struct sockaddr_in* client_addr = (struct sockaddr_in *)rdma_get_peer_addr(id);
-		static int64_t lpop = 0;
-
-		lpop++;
-		//printf("%s\n",ctx->buffer);
-		//msg_struct* msg = (msg_struct*)(ctx->buffer);
-		//printf("recv from node %d count: %d\n", msg->rank, ++recvcount[msg->rank]);
-		_data = (void*)std::malloc(sizeof(char) * size);
-		recv_len = size;
-
-		std::memcpy(_data, ctx->buffer, size);
-		printf("OOOOOK\n");
-		post_receive_server(id);
-		ctx->msg->id = MSG_READY;
-		send_message(id);
-	}
-	else if (wc->opcode & IBV_WC_RECV)
-	{
-		printf("recv thread %ld will never be here!!!!!\n", pthread_self());
-		exit(0);
-	}
-	return _data;
-}
-
-
-
-void *polling_recv_cq(struct rdma_cm_id *id)
-{
-	struct ibv_cq *cq = NULL;
-	struct ibv_wc wc;
-
-
-	struct context *ctx = (struct context *)id->context;
-	void *ev_ctx = NULL;
-
-
-	while (true)
-	{
-		TEST_NZ(ibv_get_cq_event(ctx->comp_channel, &cq, &ev_ctx));
-		ibv_ack_cq_events(cq, 1);
-		TEST_NZ(ibv_req_notify_cq(cq, 0));
-
-		while (ibv_poll_cq(cq, 1, &wc))
-		{
-			if (wc.status == IBV_WC_SUCCESS)
-			{
-				void* recv_data = nullptr;
-				int sz = recv4data(&wc, recv_data);
-				if (recv_data != nullptr)//received data, will append to recv_chain...
-				{
-					printf("Polling Recved Data  sz = %d\n", sz);
-				}
-			}
-			else
-			{
-				printf("\nwc = %s\n", ibv_wc_status_str(wc.status));
-				rc_die("poll_cq: status is not IBV_WC_SUCCESS");
-			}
-		}
-	}
-	return NULL;
-}
-
-int recv4data(struct ibv_wc *wc, void*& data_ptr)
-{
-	struct rdma_cm_id *id = (struct rdma_cm_id *)(uintptr_t)wc->wr_id;
-	struct context *ctx = (struct context *)id->context;
-	//void* _data = nullptr;
-	data_ptr = nullptr;
-	uint32_t size = -1;
-	if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
-	{
-		size = ntohl(wc->imm_data);
-		struct sockaddr_in* client_addr = (struct sockaddr_in *)rdma_get_peer_addr(id);
-		static int64_t lpop = 0;
-
-		data_ptr = (void*)std::malloc(sizeof(char) * size);
-		if (data_ptr == nullptr)
-		{
-			printf("fatal error in recv data malloc!!!!\n");
-			exit(-1);
-		}
-		std::memcpy(data_ptr, ctx->buffer, size);
-		//printf("recv4data:Data can be gained\n");
-
-		post_receive_server(id);
-		ctx->msg->id = MSG_READY;
-		send_message(id);
-		//printf("send_message back\n");
-	}
-	else if (wc->opcode & IBV_WC_RECV)
-	{
-		printf("recv thread will never be here!!!!!\n");
-		exit(0);
-	}
-	else
-	{
-		//printWCode(wc);
-	}
-	return size;
-}
-**/
 void printWCode(struct ibv_wc *wc)
 {
 	switch (wc->opcode)
@@ -464,50 +193,6 @@ static void *send_poll_cq(void *tmp_id)
 	}
 	return NULL;
 }
-/*
-void rdma_send_data(struct ibv_wc *wc, void* data2send, size_t data_len)
-{
-	//printf("Here:rdma_send_data....\n");
-	//printWCode(wc);
-	struct rdma_cm_id *id = (struct rdma_cm_id *)(uintptr_t)wc->wr_id;
-	struct context *ctx = (struct context *)id->context;
-
-	if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
-	{
-		printf("send thread %ld will never be here!!!!!\n", pthread_self());
-		exit(0);
-	}
-	else if (wc->opcode & IBV_WC_RECV)
-	{
-		if (ctx->msg->id == MSG_MR)
-		{
-			ctx->peer_addr = ctx->msg->data.mr.addr;
-			ctx->peer_rkey = ctx->msg->data.mr.rkey;
-			//printf("received remote memory address and key\n");
-			ctx->remote_idle = true;
-
-			//__send_str = data_gene(1024 * 1024 * 100);
-			send_tensor(id, (char*)data2send, data_len);
-			//printf("INIt SEnd\n");
-		}
-		else if (ctx->msg->id == MSG_DONE)
-		{
-			//printf("received DONE, disconnecting\n");
-			rdma_disconnect(id);
-			return;
-		}
-		else if (ctx->msg->id == MSG_READY)
-		{
-			ctx->remote_idle = true;
-			//printf("COns Send\n");
-			send_tensor(id, (char*)data2send, data_len);
-			//printf("Adter Send\n");
-		}
-		post_receive_client(id);
-	}
-	return;
-}
-**/
 
 
 
@@ -998,6 +683,3 @@ void test_rdma_header()
 
 
 
-
-
-#endif

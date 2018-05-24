@@ -1182,6 +1182,7 @@ void rdma_sendTd(int send_thread_id)
 
 
             send_round_robin_idx++;
+            /*
             while (canSend == false)
             {
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
@@ -1202,6 +1203,7 @@ void rdma_sendTd(int send_thread_id)
                 //printf("[%d] may be can jumb\n", send_thread_id );
 
             }
+            **/
             time_stp += WORKER_N_1 * QP_GROUP ;
 
 

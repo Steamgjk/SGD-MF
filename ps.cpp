@@ -745,7 +745,7 @@ void rdma_sendTd(int send_thread_id)
     }
     printf("[%d]client_send_metadata_to_server1  ok\n", send_thread_id);
 
-    int timestp = 0;
+    int timestp = send_thread_id;
     while (1 == 1)
     {
 //
@@ -768,7 +768,7 @@ void rdma_sendTd(int send_thread_id)
 
         if (canSend[mapped_thread_id] == true)
         {
-            timestp++;
+            //timestp++;
             int pbid = worker_pidx[mapped_thread_id];
             int qbid = worker_qidx[mapped_thread_id];
             //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
@@ -787,7 +787,7 @@ void rdma_sendTd(int send_thread_id)
 
             memcpy(real_sta_buf + p_total, &(Qblocks[qbid]), struct_sz);
             memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), q_data_sz);
-            memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
+            memcpy(real_sta_buf + total_len, &timestp, sizeof(int));
 
             ret = cro.start_remote_write(real_total, 0);
             if (ret == 0 )
@@ -797,7 +797,7 @@ void rdma_sendTd(int send_thread_id)
 
             send_round_robin_idx[mapped_thread_id] = (send_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
             canSend[mapped_thread_id] = false;
-
+            time_stp += WORKER_NUM * QP_GROUP ;
 
         }
 

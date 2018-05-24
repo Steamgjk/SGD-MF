@@ -1173,14 +1173,13 @@ void rdma_sendTd(int send_thread_id)
             //int* tmp = (int*)(void*)buf;
             //printf("head =%d  %d\n", *((int*)(void*)buf), (*tmp) );
 
+            *flag  = time_stp;
             ret = cro.start_remote_write(real_total, 0);
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
             canSend = false;
             int cnt = 0;
             long time_interval = 100;
 
-/////
-            *flag  = time_stp;
 
             send_round_robin_idx++;
             while (canSend == false)
@@ -1222,7 +1221,7 @@ void rdma_recvTd(int recv_thread_id)
     int*flag = (int*)(void*)to_recv_block_mem;
     char*buf = to_recv_block_mem;
     size_t struct_sz = sizeof(Block);
-    int time_stp = 1;
+    int time_stp = recv_thread_id;
     while (1 == 1)
     {
         if (recv_thread_id / WORKER_N_1 != recv_round_robin_idx % QP_GROUP)
@@ -1231,24 +1230,39 @@ void rdma_recvTd(int recv_thread_id)
         }
         struct timeval st, et;
         gettimeofday(&st, 0);
-        while ((*flag) < time_stp)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
+
+
         //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
-
-        while ((*total_len_ptr) <= 0)
-        {
-
-        }
-        int total_len = *total_len_ptr;
         char* real_sta_buf = buf + sizeof(int) + sizeof(int);
-        int* tail_total_len = (int*)(void*)(real_sta_buf + total_len);
+        int* tail_total_len = NULL;
         while ((*tail_total_len) != total_len)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+
+        while (1 == 1)
+        {
+            if ((*flag) != time_stp)
+            {
+                continue;
+            }
+            if ((*total_len_ptr) <= 0)
+            {
+                continue;
+            }
+            int total_len = *total_len_ptr;
+            tail_total_len = (int*)(void*)(real_sta_buf + total_len);
+            if ((*tail_total_len_ptr) != timestp)
+            {
+                continue;
+            }
+            else
+            {
+                break;
+            }
+        }
+
         struct Block* pb = (struct Block*)(void*)real_sta_buf;
         Pblock.block_id = pb->block_id;
         Pblock.data_age = pb->data_age;
@@ -1288,7 +1302,7 @@ void rdma_recvTd(int recv_thread_id)
         *flag = -1;
         *total_len_ptr = -3;
         *tail_total_len = -2;
-        time_stp++;
+        time_stp += WORKER_N_1 * QP_GROUP;;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);

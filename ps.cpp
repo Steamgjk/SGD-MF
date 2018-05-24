@@ -757,7 +757,6 @@ void rdma_sendTd(int send_thread_id)
         printf("iter_t=%d send_thread_id=%d mapped_thread_id=%d\n", iter_t, send_thread_id, mapped_thread_id );
 
         int* flag = (int*)(void*)buf;
-        *flag = -1;
         int real_total = 0;
         size_t p_total = 0;
         size_t q_total = 0;

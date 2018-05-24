@@ -1152,7 +1152,7 @@ void rdma_sendTd(int send_thread_id)
         {
 
             buf = to_send_block_mem;
-            printf("[%d] canSend\n", send_thread_id );
+            //printf("[%d] canSend\n", send_thread_id );
             p_data_sz = sizeof(double) * Pblock.ele_num;
             q_data_sz = sizeof(double) * Qblock.ele_num;
             p_total = struct_sz + p_data_sz;
@@ -1161,7 +1161,6 @@ void rdma_sendTd(int send_thread_id)
             real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
             char* real_sta_buf = buf + sizeof(int) + sizeof(int);
 
-            //*flag = total_len;
             memcpy(buf, &time_stp, sizeof(int));
             memcpy(buf + sizeof(int), &total_len, sizeof(int));
             //printf("2  flagp=%p bufp=%p val=%d %d  [%d]\n", flag, buf, (*flag), *((int*)(void*)buf), total_len );
@@ -1169,7 +1168,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
             memcpy(real_sta_buf + p_total, &(Qblock), struct_sz);
             memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
-            memcpy(real_sta_buf + total_len, &total_len, sizeof(int));
+            memcpy(real_sta_buf + total_len, &time_stp, sizeof(int));
 
             //int* tmp = (int*)(void*)buf;
             //printf("head =%d  %d\n", *((int*)(void*)buf), (*tmp) );
@@ -1190,7 +1189,7 @@ void rdma_sendTd(int send_thread_id)
                 cnt++;
                 int*fla = (int*)(void*)buf;
                 int*total_l = (int*)(void*)(buf + sizeof(int));
-                printf("[%d]:resend one fla=%d  total_l=%d\n", send_thread_id, (*fla), (*total_l));
+                //printf("[%d]:resend one fla=%d  total_l=%d\n", send_thread_id, (*fla), (*total_l));
                 if (cnt > 100)
                 {
                     break;
@@ -1201,7 +1200,7 @@ void rdma_sendTd(int send_thread_id)
                 {
                     time_interval = 500;
                 }
-                printf("[%d] may be can jumb\n", send_thread_id );
+                //printf("[%d] may be can jumb\n", send_thread_id );
 
             }
             time_stp += WORKER_N_1 * QP_GROUP ;

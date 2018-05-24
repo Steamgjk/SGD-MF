@@ -74,7 +74,7 @@ char* to_send_mem_arr[10];
 char* to_recv_mem_arr[10];
 
 
-#define QP_GROUP 1
+#define QP_GROUP 2
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
 

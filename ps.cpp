@@ -836,7 +836,7 @@ void rdma_recvTd(int recv_thread_id)
             {
                 continue;
             }
-            printf("[%d]flag =%d\n", recv_thread_id, (*flag));
+            //printf("[%d]flag =%d\n", recv_thread_id, (*flag));
 
             if ((*total_len_ptr) <= 0)
             {
@@ -846,8 +846,9 @@ void rdma_recvTd(int recv_thread_id)
             tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
             if ((*tail_total_len_ptr) != timestp)
             {
-                printf("[%d]total_len=%d  tail_total_len_ptr =%d timestp=%d\n", recv_thread_id, total_len, (*tail_total_len_ptr), timestp);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //printf("[%d]total_len=%d  tail_total_len_ptr =%d timestp=%d\n", recv_thread_id, total_len, (*tail_total_len_ptr), timestp);
+                //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                continue;
             }
             else
             {

@@ -2,7 +2,7 @@
 //  main.cpp
 //  linux_socket_api
 //
-//  Created by bikang on 16/11/2.
+//  Created by Jinkun Geng
 //  Copyright (c) 2016年 bikang. All rights reserved.
 //
 
@@ -30,16 +30,24 @@
 #include <sys/time.h>
 #include <map>
 
+#define TWO_SIDED_RDMA
+
+#if ONE_SIDED_RDMA
 #include "client_rdma_op.h"
 #include "server_rdma_op.h"
+#endif
+
 using namespace std;
 #define GROUP_NUM 1
 #define DIM_NUM 4
 
+#if ONE_SIDED_RDMA
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
+#endif
+
 
 //cnt=15454227 sizeof(long)=8
 //#define FILE_NAME "./netflix_row.txt"
@@ -197,8 +205,6 @@ void recvTd(int recv_thread_id);
 void rdma_sendTd(int send_thread_id);
 void rdma_recvTd(int recv_thread_id);
 
-//void submf(double *minR, Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.0002, float beta = 0.02);
-//void submf(Block& minP, Block& minQ, Updates& updateP, Updates& updateQ,  int minK, int steps = 50, float alpha = 0.1, float beta = 0.1);
 void submf();
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
 void LoadRmatrix(int file_no, map<long, double>& myMap);
@@ -231,10 +237,12 @@ int main(int argc, const char * argv[])
     }
     int thresh_log = 2000;
     thread_id = atoi(argv[1]);
+#if ONE_SIDED_RDMA
     to_send_block_mem = (void*)malloc(MEM_SIZE);
     to_recv_block_mem = (void*)malloc(MEM_SIZE);
     InitFlag();
     printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
+#endif
 
     if (argc >= 3)
     {
@@ -1084,8 +1092,20 @@ void recvTd(int recv_thread_id)
     }
 }
 
+#if TWO_SIDED_RDMA
+void rdma_sendTd(int send_thread_id)
+{
+
+}
+
+void rdma_recvTd(int recv_thread_id)
+{
+
+}
+#endif
 
 
+#if ONE_SIDED_RDMA
 void rdma_sendTd(int send_thread_id)
 {
     printf("[%d] worker send waiting for 3s...\n", send_thread_id);
@@ -1314,3 +1334,4 @@ void rdma_recvTd(int recv_thread_id)
 
     }
 }
+#endif

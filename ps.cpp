@@ -28,8 +28,12 @@
 #include <fstream>
 #include <sys/time.h>
 #include <map>
+
+#if ONE_SIDED_RDMA
 #include "server_rdma_op.h"
 #include "client_rdma_op.h"
+#endif
+
 using namespace std;
 #define CAP 200
 //#define FILE_NAME "./netflix_row.txt"
@@ -65,14 +69,16 @@ using namespace std;
 #define M 624961
 #define K  100 //主题个数
 
+#define TWO_SIDED_RDMA
 
+#if ONE_SIDED_RDMA
 #define BLOCK_MEM_SZ (250000000)
 #define MEM_SIZE (BLOCK_MEM_SZ*4*2)
 char* to_send_block_mem;
 char* to_recv_block_mem;
 char* to_send_mem_arr[10];
 char* to_recv_mem_arr[10];
-
+#endif
 
 #define QP_GROUP 2
 int send_round_robin_idx[CAP];
@@ -188,6 +194,7 @@ int main(int argc, const char * argv[])
         local_ports[i] = 44411 + i;
         remote_ports[i] = 55511 + i;
     }
+#if ONE_SIDED_RDMA
     //to_send_block_mem = (void*)malloc(MEM_SIZE);
     //to_recv_block_mem = (void*)malloc(MEM_SIZE);
     for (int i = 0 ; i < WORKER_NUM; i++)
@@ -197,7 +204,7 @@ int main(int argc, const char * argv[])
     }
     //printf("to_send_block_mem=%p  to_recv_block_mem=%p\n", to_send_block_mem, to_recv_block_mem );
     InitFlag();
-
+#endif
 
     //gen P and Q
     if (argc == 2)
@@ -691,10 +698,22 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 
 
+#if TWO_SIDED_RDMA
+void rdma_sendTd(int send_thread_id)
+{
+
+}
+
+void rdma_recvTd(int recv_thread_id)
+{
+
+}
+#endif
 
 
 
 
+#if ONE_SIDED_RDMA
 
 void rdma_sendTd(int send_thread_id)
 {
@@ -906,3 +925,4 @@ void rdma_recvTd(int recv_thread_id)
     }
 }
 
+#endif

@@ -245,8 +245,8 @@ int main(int argc, const char * argv[])
     {
         int th_id = thread_id + i * WORKER_N_1;
         printf("recv th_id=%d\n", th_id );
-        //std::thread recv_thread(rdma_recvTd, th_id);
-        std::thread recv_thread(recvTd, thread_id);
+        std::thread recv_thread(rdma_recvTd, th_id);
+        //std::thread recv_thread(recvTd, thread_id);
         recv_thread.detach();
     }
 
@@ -258,8 +258,8 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < QP_GROUP; i++)
     {
         int th_id = thread_id + i * WORKER_N_1;
-        //std::thread send_thread(rdma_sendTd, th_id);
-        std::thread send_thread(sendTd, thread_id);
+        std::thread send_thread(rdma_sendTd, th_id);
+        //std::thread send_thread(sendTd, thread_id);
         send_thread.detach();
     }
 

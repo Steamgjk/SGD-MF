@@ -29,6 +29,8 @@
 #include <sys/time.h>
 #include <map>
 
+#define TWO_SIDED_RDMA 1
+
 #if ONE_SIDED_RDMA
 #include "server_rdma_op.h"
 #include "client_rdma_op.h"
@@ -69,7 +71,7 @@ using namespace std;
 #define M 624961
 #define K  100 //主题个数
 
-#define TWO_SIDED_RDMA
+
 
 #if ONE_SIDED_RDMA
 #define BLOCK_MEM_SZ (250000000)

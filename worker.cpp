@@ -1296,9 +1296,9 @@ void rdma_recvTd(int recv_thread_id)
             Qblock.eles[i] = data_eles[i];
         }
 
-        *flag = -1;
-        *total_len_ptr = -3;
-        *tail_total_len_ptr = -2;
+        //*flag = -1;
+        //*total_len_ptr = -3;
+        //*tail_total_len_ptr = -2;
         time_stp += WORKER_N_1 * QP_GROUP;
         /*
         gettimeofday(&et, 0);

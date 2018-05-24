@@ -5,8 +5,8 @@ TARGET1 = worker
 TARGET2 = rworker_en
 LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm
 CFLAGS=-Wall -g -fpermissive -std=c++11
-OBJS=ps.o server_rdma_op.o client_rdma_op.o rdma_common.o
-OBJS1=worker.o server_rdma_op.o client_rdma_op.o rdma_common.o
+OBJS=ps.o rdma_t.o
+OBJS1=worker.o rdma_t.o
 OBJS2=rworker_en.o server_rdma_op.o client_rdma_op.o rdma_common.o
 
 $(TARGET): $(OBJS)
@@ -25,6 +25,8 @@ server_rdma_op.o: server_rdma_op.cpp
 	$(CC) $(CFLAGS) -c server_rdma_op.cpp
 client_rdma_op.o: client_rdma_op.cpp
 	$(CC) $(CFLAGS) -c client_rdma_op.cpp 
+rdma_t.o: rdma_t.cpp
+	$(CC) $(CFLAGS) -c rdma_t.cpp 
 rdma_common.o: rdma_common.cpp
 	$(CC) $(CFLAGS) -c rdma_common.cpp
 

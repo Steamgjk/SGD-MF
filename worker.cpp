@@ -1178,7 +1178,7 @@ void rdma_sendTd(int send_thread_id)
             printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
             canSend = false;
             int cnt = 0;
-            long time_interval = 100;
+            long time_interval = 10;
 
 
             send_round_robin_idx++;
@@ -1189,7 +1189,7 @@ void rdma_sendTd(int send_thread_id)
                 int*fla = (int*)(void*)buf;
                 int*total_l = (int*)(void*)(buf + sizeof(int));
                 //printf("[%d]:resend one fla=%d  total_l=%d\n", send_thread_id, (*fla), (*total_l));
-                if (cnt > 100)
+                if (cnt > 10)
                 {
                     break;
                 }

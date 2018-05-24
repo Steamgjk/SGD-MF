@@ -313,7 +313,7 @@ int main(int argc, const char * argv[])
 
         if (hasRecved)
         {
-            printf("has Received itercnt=%d\n", iter_cnt);
+            //printf("has Received itercnt=%d\n", iter_cnt);
             if (!isstart)
             {
                 isstart = true;
@@ -1175,7 +1175,7 @@ void rdma_sendTd(int send_thread_id)
 
             *flag  = time_stp;
             ret = cro.start_remote_write(real_total, 0);
-            printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
+            //printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
             canSend = false;
             int cnt = 0;
             long time_interval = 10;
@@ -1228,9 +1228,10 @@ void rdma_recvTd(int recv_thread_id)
         {
             continue;
         }
+        /*
         struct timeval st, et;
         gettimeofday(&st, 0);
-
+        */
 
         //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
@@ -1298,11 +1299,12 @@ void rdma_recvTd(int recv_thread_id)
         *flag = -1;
         *total_len_ptr = -3;
         *tail_total_len_ptr = -2;
-        time_stp += WORKER_N_1 * QP_GROUP;;
+        time_stp += WORKER_N_1 * QP_GROUP;
+        /*
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
-
+        **/
 
         recv_round_robin_idx++;
         hasRecved = true;

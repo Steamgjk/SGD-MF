@@ -1235,11 +1235,7 @@ void rdma_recvTd(int recv_thread_id)
         //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         char* real_sta_buf = buf + sizeof(int) + sizeof(int);
-        int* tail_total_len = NULL;
-        while ((*tail_total_len) != total_len)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
+        int* tail_total_len_ptr = NULL;
 
         while (1 == 1)
         {
@@ -1252,8 +1248,8 @@ void rdma_recvTd(int recv_thread_id)
                 continue;
             }
             int total_len = *total_len_ptr;
-            tail_total_len = (int*)(void*)(real_sta_buf + total_len);
-            if ((*tail_total_len_ptr) != timestp)
+            tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
+            if ((*tail_total_len_ptr) != time_stp)
             {
                 continue;
             }
@@ -1301,7 +1297,7 @@ void rdma_recvTd(int recv_thread_id)
 
         *flag = -1;
         *total_len_ptr = -3;
-        *tail_total_len = -2;
+        *tail_total_len_ptr = -2;
         time_stp += WORKER_N_1 * QP_GROUP;;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

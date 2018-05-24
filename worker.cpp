@@ -364,6 +364,7 @@ int main(int argc, const char * argv[])
 
 
 }
+#if ONE_SIDED_RDMA
 void InitFlag()
 {
     int* pb = (int*)(void*)(to_recv_block_mem);
@@ -371,6 +372,7 @@ void InitFlag()
     pb = (int*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
     *pb = -1;
 }
+#endif
 void LoadRmatrix(int file_no, map<long, double>& myMap)
 {
     char fn[100];

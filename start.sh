@@ -15,3 +15,4 @@ g++  -g   genMatrix.cpp -o genMatrix -pthread -libverbs -lrdmacm -std=c++11
 g++  -g   genNewMatrix.cpp -o genNewMatrix -pthread -libverbs -lrdmacm -std=c++11
 g++  -g   CalcRMSE.cpp -o CalcRMSE -pthread -libverbs -lrdmacm -std=c++11
 g++  -g   check.cpp -o check -pthread -libverbs -lrdmacm -std=c++11
+g++  -g   yahoo_process.cpp -o yahoo_process -pthread -libverbs -lrdmacm -std=c++11

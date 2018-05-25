@@ -32,9 +32,12 @@
 
 
 #define TWO_SIDED_RDMA 1
+
 #if TWO_SIDED_RDMA
-#include "rdma_t.h"
+#include "rdma_two_sided_client_op.h"
+#include "rdma_two_sided_server_op.h"
 #endif
+
 #if ONE_SIDED_RDMA
 #include "client_rdma_op.h"
 #include "server_rdma_op.h"
@@ -1098,13 +1101,176 @@ void recvTd(int recv_thread_id)
 }
 
 #if TWO_SIDED_RDMA
+
+void send_tensor_single(struct rdma_cm_id *id, char* data2send, size_t data_len, uint32_t index)
+{
+    struct context *ctx = (struct context *)id->context;
+
+    char*sta = ctx->buffer[index];
+
+    if ((data_len + sizeof(size_t)) > BUFFER_SIZE)
+    {
+        perror("fatal error, send msg length is too long \n");
+        exit(-1);
+    }
+
+    char* _buff = ctx->buffer[index];
+    std::memcpy(_buff, (char*)(&data_len), sizeof(size_t));
+    _buff += sizeof(size_t);
+    std::memcpy(_buff, data2send, data_len);
+    _write_remote(id, data_len + sizeof(uint32_t), index);
+
+
+}
+
+
+void concurrency_send_by_RDMA(struct ibv_wc *wc, node_item* nit, int& mem_used)
+{
+    struct rdma_cm_id *id = (struct rdma_cm_id *)(uintptr_t)wc->wr_id;
+    struct context *ctx = (struct context *)id->context;
+
+    if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
+    {
+        _post_receive(id, wc->imm_data);
+        send_tensor_single(id, nit, wc->imm_data);
+    }
+    else if (wc->opcode == IBV_WC_RECV)
+    {
+        switch (ctx->k_exch[1]->id)
+        {
+        case MSG_MR:
+        {
+            log_info("recv MD5 is %llu\n", ctx->k_exch[1]->md5);
+            for (int index = 0; index < MAX_CONCURRENCY; index++)
+            {
+                //reserved the (buffer)key info from server.
+                ctx->peer_addr[index] = ctx->k_exch[1]->key_info[index].addr;
+                ctx->peer_rkey[index] = ctx->k_exch[1]->key_info[index].rkey;
+                struct sockaddr_in* client_addr = (struct sockaddr_in *)rdma_get_peer_addr(id);
+                printf("server[%s,%d] to ", inet_ntoa(client_addr->sin_addr), client_addr->sin_port);
+                printf("client buffer %d: %p\n", index, ctx->peer_addr[index]);
+                printf("my ach addr: %d %p\n", index, ctx->ack_mr[index]->addr);
+            }
+            /**send one tensor...**/
+            send_tensor_single(id, nit, 0);
+            mem_used++;
+        }
+        break;
+        default:
+            break;
+        }
+    }
+}
+
+
+
 void rdma_sendTd(int send_thread_id)
 {
+
+    char* remote_ip = remote_ips[send_thread_id % WORKER_N_1];
+    int remote_port = remote_ports[send_thread_id];
+    char* local_ip = local_ips[send_thread_id % WORKER_N_1];
+    struct rdma_cm_id* rc_id = rdma_client_init_connection(local_ip, remote_ip, remote_port);
+
+///
+    struct ibv_cq *cq = NULL;
+    struct ibv_wc wc[MAX_CONCURRENCY * 2];
+    //struct rdma_cm_id *id = (struct rdma_cm_id *)tmp_id;
+    struct context *ctx = (struct context *)send_rc_id->context;
+    void *ev_ctx = NULL;
+    int mem_used = 0;
+
+
+    while (1 == 1)
+    {
+        TEST_NZ(ibv_get_cq_event(ctx->comp_channel, &cq, &ev_ctx));
+        ibv_ack_cq_events(cq, 1);
+        TEST_NZ(ibv_req_notify_cq(cq, 0));
+
+        int wc_num = ibv_poll_cq(cq, MAX_CONCURRENCY * 2, wc);
+        //log_info("2Right wc_num = %d\n", wc_num);
+        if (wc_num < 0)
+        {
+            perror("fatal error in ibv_poll_cq, -1");
+            exit(-1);
+        }
+
+        for (int index = 0; index < wc_num; index++)
+        {
+
+            if (wc[index].status == IBV_WC_SUCCESS)
+            {
+                concurrency_send_by_RDMA(&wc[index], to_right_head, mem_used);
+            }
+            else
+            {
+                rc_die("poll_cq4: status is not IBV_WC_SUCCESS");
+            }
+        }
+        if (mem_used)
+        {
+            for (mem_used; mem_used < MAX_CONCURRENCY; mem_used++)
+            {
+                to_right_head = send_tensor_single(send_rc_id, to_right_head, mem_used);
+            }
+        }
+    }
 
 }
 
 void rdma_recvTd(int recv_thread_id)
 {
+    int bind_port = local_ports[recv_thread_id];
+    struct rdma_cm_id* rc_id = RDMA_Wait4Connection(bind_port);
+    if (rc_id)
+    {
+        printf("[%d]Connection Comes \n", recv_thread_id);
+    }
+    else
+    {
+        printf("[%d]Connection NULL\n", recv_thread_id);
+    }
+
+    struct ibv_cq *cq = NULL;
+    //struct ibv_wc wc;
+    struct ibv_wc wc[MAX_CONCURRENCY * 2];
+    struct context *ctx = (struct context *)rc_id->context;
+    void *ev_ctx = NULL;
+
+    TEST_NZ(ibv_get_cq_event(ctx->comp_channel, &cq, &ev_ctx));
+    ibv_ack_cq_events(cq, 1);
+    TEST_NZ(ibv_req_notify_cq(cq, 0));
+
+    while (1 == 1)
+    {
+        int wc_num = ibv_poll_cq(cq, MAX_CONCURRENCY * 2, wc);
+
+        for (int index = 0; index < wc_num; index++)
+        {
+            if (wc[index].status == IBV_WC_SUCCESS)
+            {
+                /*****here to modified recv* wc---->wc[index]****/
+                void* recv_data = nullptr;
+                uint32_t recv_len;
+
+                recv_data = concurrency_recv_by_RDMA(&wc[index], recv_len);
+                if (recv_data != nullptr)
+                {
+                    //here to process the recved data
+                    //
+                    free(recv_data);
+                    recv_data = NULL;
+                }
+            }
+            else
+            {
+                printf("\nwc = %s\n", ibv_wc_status_str(wc[index].status));
+                rc_die("poll_cq3: status is not IBV_WC_SUCCESS");
+            }
+        }
+
+    }
+
 
 }
 #endif

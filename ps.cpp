@@ -33,7 +33,8 @@
 #define TWO_SIDED_RDMA 1
 
 #if TWO_SIDED_RDMA
-#include "rdma_t.h"
+#include "rdma_two_sided_client_op.h"
+#include "rdma_two_sided_server_op.h"
 #endif
 
 #if ONE_SIDED_RDMA

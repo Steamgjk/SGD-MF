@@ -5,9 +5,9 @@ TARGET1 = worker
 TARGET2 = rworker_en
 LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm
 CFLAGS=-Wall -g -fpermissive -std=c++11
-OBJS=ps.o rdma_t.o
-OBJS1=worker.o rdma_t.o
-OBJS2=rworker_en.o server_rdma_op.o client_rdma_op.o rdma_common.o
+OBJS=ps.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
+OBJS1=worker.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
+OBJS2=rworker_en.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
@@ -25,10 +25,13 @@ server_rdma_op.o: server_rdma_op.cpp
 	$(CC) $(CFLAGS) -c server_rdma_op.cpp
 client_rdma_op.o: client_rdma_op.cpp
 	$(CC) $(CFLAGS) -c client_rdma_op.cpp 
-rdma_t.o: rdma_t.cpp
-	$(CC) $(CFLAGS) -c rdma_t.cpp 
 rdma_common.o: rdma_common.cpp
 	$(CC) $(CFLAGS) -c rdma_common.cpp
-
+rdma_two_sided_client_op.o: rdma_two_sided_client_op.cpp
+	$(CC) $(CFLAGS) -c rdma_two_sided_client_op.cpp
+rdma_two_sided_server_op.o: rdma_two_sided_client_op.cpp
+	$(CC) $(CFLAGS) -c rdma_two_sided_server_op.cpp
+common.o: common.cpp
+	$(CC) $(CFLAGS) -c common.cpp
 clean:
 	rm -rf *.o  *~

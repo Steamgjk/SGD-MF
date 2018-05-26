@@ -59,6 +59,7 @@ void RdmaTwoSidedServerOp::server_on_pre_conn(struct rdma_cm_id *id, struct ibv_
   posix_memalign((void **)&ctx->msg, sysconf(_SC_PAGESIZE), sizeof(*ctx->msg));
   TEST_Z(ctx->msg_mr = ibv_reg_mr((pd), ctx->msg, sizeof(*ctx->msg), IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_WRITE));
 
+  ctx->buf_registered = true;
   server_post_receive(id);
 }
 

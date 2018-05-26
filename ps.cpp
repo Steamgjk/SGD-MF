@@ -742,9 +742,10 @@ void rdma_sendTd(int send_thread_id)
     size_t struct_sz = sizeof(Block);
     while (c_ctx[send_thread_id].buf_registered == false)
     {
-        printf("[%d] has not registered buffer\n", send_thread_id);
+        //printf("[%d] has not registered buffer\n", send_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    printf("[%d] has registered send buffer\n", send_thread_id);
     while (1 == 1)
     {
         if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )
@@ -789,9 +790,10 @@ void rdma_recvTd(int recv_thread_id)
     size_t struct_sz = sizeof(Block);
     while (s_ctx[recv_thread_id].buf_registered == false)
     {
-        printf("[%d] recv has not registered buffer\n", recv_thread_id);
+        //printf("[%d] recv has not registered buffer\n", recv_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    printf("[%d] has registered receive buffer\n", recv_thread_id);
     while (1 == 1)
     {
         if (recv_round_robin_idx[recv_thread_id] != recv_thread_id)

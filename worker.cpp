@@ -1165,9 +1165,10 @@ void rdma_sendTd(int send_thread_id)
     int mapped_thread_id = send_thread_id / WORKER_N_1;
     while (c_ctx[mapped_thread_id].buf_registered == false)
     {
-        printf("[%d] has not registered buffer\n", send_thread_id);
+        //printf("[%d] has not registered buffer\n", send_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    printf("[%d] has registered send buffer\n", send_thread_id);
     while (1 == 1)
     {
         //printf("canSend=%d\n", canSend );
@@ -1213,9 +1214,10 @@ void rdma_recvTd(int recv_thread_id)
     int mapped_thread_id = recv_thread_id / WORKER_N_1;
     while (s_ctx[mapped_thread_id].buf_registered == false)
     {
-        printf("[%d] recv has not registered buffer\n", recv_thread_id);
+        //printf("[%d] recv has not registered buffer\n", recv_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    printf("[%d] has registered receive buffer\n", recv_thread_id);
     while (1 == 1)
     {
         if (mapped_thread_id != recv_round_robin_idx % QP_GROUP)

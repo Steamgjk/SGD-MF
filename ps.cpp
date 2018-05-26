@@ -804,6 +804,8 @@ void rdma_recvTd(int recv_thread_id)
         }
         if (s_ctx[recv_thread_id].buf_prepared == false)
         {
+            printf("[%d] buf_prepared = false\n", recv_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             continue;
         }
 

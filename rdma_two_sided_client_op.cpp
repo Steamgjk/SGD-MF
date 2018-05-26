@@ -66,7 +66,8 @@ void RdmaTwoSidedClientOp::client_send_next_chunk(struct rdma_cm_id *id)
   printf("check buf prepared\n");
   while (!ctx->buf_prepared)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    printf("to send has not well prepared\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
   printf("buf prepared = true\n");
   /*

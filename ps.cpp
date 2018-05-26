@@ -853,7 +853,7 @@ void rdma_recvTd(int recv_thread_id)
         //this buf I have read it, so please prepare new buf content
         s_ctx[recv_thread_id].buf_prepared == false;
 
-        printf("[%d]get pid=%d qid=%d\n", recv_thread_id, pb->block_id, qb->block_id );
+        printf("[%d]get pid=%d qid=%d  buf_prepared=%d\n", recv_thread_id, pb->block_id, qb->block_id, s_ctx[recv_thread_id].buf_prepared);
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;
     }

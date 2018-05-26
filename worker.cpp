@@ -551,10 +551,7 @@ void LoadData4()
             }
         }
         printf("Load %s okay\n", fn );
-        if (data_idx == 2)
-        {
-            return;
-        }
+
     }
 }
 
@@ -831,7 +828,7 @@ void submf()
     **/
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Load time = %lld\n", mksp);
+    //printf("Load time = %lld\n", mksp);
 
 
     bool canbreak = true;

@@ -267,23 +267,23 @@ int main(int argc, const char * argv[])
         std::thread send_thread(rdma_sendTd, thread_id);
         send_thread.detach();
     **/
-    /*
+
     std::thread recv_thread(recvTd, th_id);
-        recv_thread.detach();
-        std::thread send_thread(sendTd, th_idi);
-        send_thread.detach();
-        **/
+    recv_thread.detach();
+    std::thread send_thread(sendTd, th_idi);
+    send_thread.detach();
 
-    for (int i = 0; i < QP_GROUP; i++)
-    {
-        int th_id = thread_id + i * WORKER_N_1;
-        printf(" th_id=%d\n", th_id );
-        std::thread recv_thread(rdma_recvTd, th_id);
-        recv_thread.detach();
-        std::thread send_thread(rdma_sendTd, th_id);
-        send_thread.detach();
-    }
-
+    /*
+        for (int i = 0; i < QP_GROUP; i++)
+        {
+            int th_id = thread_id + i * WORKER_N_1;
+            printf(" th_id=%d\n", th_id );
+            std::thread recv_thread(rdma_recvTd, th_id);
+            recv_thread.detach();
+            std::thread send_thread(rdma_sendTd, th_id);
+            send_thread.detach();
+        }
+    **/
 
     LoadActionConfig(ACTION_NAME);
     char state_name[100];
@@ -1791,15 +1791,15 @@ void rdma_recvTd(int recv_thread_id)
         char* real_sta = buf + sizeof(int);
         while ( (*flag) <= 0)
         {
-            printf("flag ka  %d\n", (*flag));
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("flag ka  %d\n", (*flag));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = *flag;
         int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {
-            printf("total ka  %d  %d\n", (*tail_total_len_ptr), total_len );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("total ka  %d  %d\n", (*tail_total_len_ptr), total_len );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
         struct Block * pb = (struct Block*)(void*)real_sta;

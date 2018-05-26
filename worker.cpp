@@ -30,7 +30,7 @@
 #include <sys/time.h>
 #include <map>
 
-#define CAP 100
+#define CAP 30
 
 #define TWO_SIDED_RDMA 1
 

@@ -88,6 +88,11 @@ char* to_send_mem_arr[10];
 char* to_recv_mem_arr[10];
 #endif
 
+#if TWO_SIDED_RDMA
+struct client_context c_ctx[CAP];
+struct conn_context s_ctx[CAP];
+#endif
+
 #define QP_GROUP 2
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
@@ -98,8 +103,8 @@ int local_ports[CAP] = {4411, 4412, 4413, 4414};
 char* remote_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.19", "12.12.10.17"};
 int remote_ports[CAP] = {5511, 5512, 5513, 5514};
 
-double P[N][K];
-double Q[K][M];
+//double P[N][K];
+//double Q[K][M];
 
 
 
@@ -183,6 +188,13 @@ void sendTd(int send_thread_id);
 void recvTd(int recv_thread_id);
 void rdma_sendTd(int send_thread_id);
 void rdma_recvTd(int recv_thread_id);
+
+#if TWO_SIDED_RDMA
+void rdma_sendTd_loop(int send_thread_id);
+void rdma_recvTd_loop(int recv_thread_id);
+#endif
+
+
 void partitionP(int portion_num,  Block* Pblocks);
 void partitionQ(int portion_num,  Block* Qblocks);
 void InitFlag();
@@ -705,6 +717,14 @@ void rdma_sendTd(int send_thread_id)
 }
 
 void rdma_recvTd(int recv_thread_id)
+{
+
+}
+void rdma_sendTd_loop(int send_thread_id)
+{
+
+}
+void rdma_recvTd_loop(int recv_thread_id)
 {
 
 }

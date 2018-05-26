@@ -714,6 +714,7 @@ void partitionQ(int portion_num,  Block * Qblocks)
 void rdma_sendTd(int send_thread_id)
 {
     int mapped_thread_id = send_thread_id % WORKER_NUM;
+    size_t struct_sz = sizeof(Block);
     while (1 == 1)
     {
         if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )

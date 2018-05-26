@@ -1139,6 +1139,7 @@ void rdma_recvTd_loop(int recv_thread_id)
 void rdma_sendTd(int send_thread_id)
 {
 
+    size_t struct_sz = sizeof(Block);
     while (1 == 1)
     {
         //printf("canSend=%d\n", canSend );
@@ -1147,7 +1148,7 @@ void rdma_sendTd(int send_thread_id)
             //struct timeval st, et, tspan;
 
             printf("Td:%d cansend\n", thread_id );
-            size_t struct_sz = sizeof(Block);
+
             size_t p_data_sz = sizeof(double) * Pblock.ele_num;
             size_t q_data_sz = sizeof(double) * Qblock.ele_num;
             size_t p_total = struct_sz + p_data_sz;

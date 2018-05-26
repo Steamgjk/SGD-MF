@@ -307,7 +307,10 @@ void * RdmaTwoSidedClientOp::client_poll_cq(void* void_ch)
       if (wc.status == IBV_WC_SUCCESS)
         client_on_completion(&wc);
       else
+      {
+        printf("client status=%d\n", wc.status );
         rc_die("client poll_cq: status is not IBV_WC_SUCCESS");
+      }
     }
   }
 

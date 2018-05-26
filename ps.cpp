@@ -773,6 +773,7 @@ void rdma_sendTd(int send_thread_id)
 
             printf("[Td:%d] send success qbid=%d isP=%d  total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, total_len, Qblocks[qbid].height);
 
+            c_ctx[send_thread_id].buf_len = total_len;
             c_ctx[send_thread_id].buf_prepared = true;
 
             send_round_robin_idx[mapped_thread_id] = (send_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);

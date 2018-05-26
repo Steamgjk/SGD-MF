@@ -1183,7 +1183,7 @@ void rdma_sendTd(int send_thread_id)
             size_t q_total = struct_sz + q_data_sz;
             size_t total_len = p_total + q_total;
 
-            c_ctx[mapped_thread_id].buf_len = total_len;
+
 
             char* buf = c_ctx[mapped_thread_id].buffer;
 
@@ -1195,6 +1195,7 @@ void rdma_sendTd(int send_thread_id)
 
             printf("[%d][%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld\n", send_thread_id, mapped_thread_id, p_total, p_data_sz, q_total, q_data_sz);
 
+            c_ctx[mapped_thread_id].buf_len = total_len;
             c_ctx[mapped_thread_id].buf_prepared = true;
 
             canSend = false;

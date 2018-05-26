@@ -1198,10 +1198,12 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + p_total, &(Qblock), struct_sz);
             memcpy(buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
 
-            printf("[%d][%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld total_len=%ld\n", send_thread_id, mapped_thread_id, p_total, p_data_sz, q_total, q_data_sz, total_len);
+
 
             c_ctx[mapped_thread_id].buf_len = total_len;
             c_ctx[mapped_thread_id].buf_prepared = true;
+
+            printf("[%d][%d] Marked send buf  p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld total_len=%ld\n", send_thread_id, mapped_thread_id, p_total, p_data_sz, q_total, q_data_sz, total_len);
 
             canSend = false;
         }
@@ -1234,8 +1236,11 @@ void rdma_recvTd(int recv_thread_id)
         */
         if (s_ctx[mapped_thread_id].buf_prepared == false)
         {
+            printf("[%d] recv buf prepared = false\n", recv_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             continue;
         }
+        printf("[%d] recv buf prepared = true\n", recv_thread_id );
 
         char* real_sta_buf = s_ctx[mapped_thread_id].buffer;
 

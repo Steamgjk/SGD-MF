@@ -811,6 +811,7 @@ void rdma_recvTd(int recv_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             continue;
         }
+        printf("[%d] recv buf_prepared = true\n", recv_thread_id );
 
         char* real_sta_buf = s_ctx[recv_thread_id].buffer;
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);

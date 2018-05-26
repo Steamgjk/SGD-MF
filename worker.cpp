@@ -1211,8 +1211,8 @@ void rdma_recvTd(int recv_thread_id)
         //printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
 
         size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
-        struct Block
-            Qblock.block_id = qb->block_id;
+        struct Block* qb = (struct Block*)(void*)(real_sta_buf + p_total);
+        Qblock.block_id = qb->block_id;
         Qblock.data_age = qb->data_age;
         Qblock.sta_idx = qb->sta_idx;
         Qblock.height = qb->height;
@@ -1233,8 +1233,6 @@ void rdma_recvTd(int recv_thread_id)
         s_ctx[recv_thread_id].buf_prepared = true;
         recv_round_robin_idx++;
         hasRecved = true;
-
-
     }
 
 }

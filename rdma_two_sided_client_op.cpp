@@ -128,8 +128,16 @@ void RdmaTwoSidedClientOp::client_on_completion(struct ibv_wc *wc)
       rc_disconnect(id);
       return;
     }
+    else
+    {
+      printf("Comehere \n");
+    }
 
     client_post_receive(id);
+  }
+  else
+  {
+    printf("wc-opcode=%d\n", wc->opcode  );
   }
 }
 

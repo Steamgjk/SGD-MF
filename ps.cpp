@@ -1027,7 +1027,7 @@ void rdma_recvTd(int recv_thread_id)
             {
                 continue;
             }
-            //printf("[%d]flag =%d\n", recv_thread_id, (*flag));
+            printf("[%d]flag =%d\n", recv_thread_id, (*flag));
 
             if ((*total_len_ptr) <= 0)
             {

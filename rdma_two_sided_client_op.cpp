@@ -73,7 +73,7 @@ void RdmaTwoSidedClientOp::client_send_next_chunk(struct rdma_cm_id *id)
   memcpy(ctx->buffer, str, ctx->buf_len);
   **/
   printf("send tchunk...\n");
-  printf("buf= %s  len=%ld\n", ctx->buffer, ctx->buf_len );
+  //printf("buf= %s  len=%ld\n", ctx->buffer, ctx->buf_len );
 
   client_write_remote(id, ctx->buf_len);
   ctx->buf_prepared = false;

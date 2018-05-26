@@ -103,7 +103,7 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
 
       printf("received %i bytes.\n", size);
 
-      printf("ctx->buffer=%p  %s\n", ctx->buffer, ctx->buffer );
+      //printf("ctx->buffer=%p  %s\n", ctx->buffer, ctx->buffer );
       server_post_receive(id);
 
       ctx->buf_prepared = true;

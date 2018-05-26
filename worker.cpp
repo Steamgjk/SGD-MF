@@ -1236,11 +1236,11 @@ void rdma_recvTd(int recv_thread_id)
         */
         if (s_ctx[mapped_thread_id].buf_prepared == false)
         {
-            printf("[%d] recv buf prepared = false\n", recv_thread_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("[%d] recv buf prepared = false\n", recv_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
-        printf("[%d] recv buf prepared = true\n", recv_thread_id );
+        //printf("[%d] recv buf prepared = true\n", recv_thread_id );
 
         char* real_sta_buf = s_ctx[mapped_thread_id].buffer;
 

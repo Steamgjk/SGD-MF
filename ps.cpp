@@ -752,17 +752,17 @@ void rdma_sendTd(int send_thread_id)
     {
         if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )
         {
-            printf("canSend =%d\n", canSend[mapped_thread_id] );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("canSend =%d\n", canSend[mapped_thread_id] );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
 
-        printf("iter_t=%d send_thread_id=%d mapped_thread_id=%d\n", iter_t, send_thread_id, mapped_thread_id );
+        //printf("iter_t=%d send_thread_id=%d mapped_thread_id=%d\n", iter_t, send_thread_id, mapped_thread_id );
         if (canSend[mapped_thread_id] == true)
         {
             int pbid = worker_pidx[mapped_thread_id];
             int qbid = worker_qidx[mapped_thread_id];
-            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             size_t p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             size_t p_total = struct_sz + p_data_sz;
             size_t q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
@@ -775,7 +775,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(real_sta_buf + p_total, &(Qblocks[qbid]), struct_sz);
             memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), q_data_sz);
 
-            printf("[Td:%d] send success qbid=%d isP=%d  total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, total_len, Qblocks[qbid].height);
+            //printf("[Td:%d] send success qbid=%d isP=%d  total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, total_len, Qblocks[qbid].height);
 
             c_ctx[send_thread_id].buf_len = total_len;
             c_ctx[send_thread_id].buf_prepared = true;
@@ -801,17 +801,17 @@ void rdma_recvTd(int recv_thread_id)
     {
         if (recv_round_robin_idx[mapped_thread_id] != recv_thread_id)
         {
-            printf("[%d] cazaizheli\n", recv_thread_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("[%d] cazaizheli\n", recv_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
         if (s_ctx[recv_thread_id].buf_prepared == false)
         {
-            printf("[%d] recv buf_prepared = false\n", recv_thread_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //printf("[%d] recv buf_prepared = false\n", recv_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
-        printf("[%d] recv buf_prepared = true\n", recv_thread_id );
+        //printf("[%d] recv buf_prepared = true\n", recv_thread_id );
 
         char* real_sta_buf = s_ctx[recv_thread_id].buffer;
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);
@@ -853,7 +853,7 @@ void rdma_recvTd(int recv_thread_id)
         //this buf I have read it, so please prepare new buf content
         s_ctx[recv_thread_id].buf_prepared = false;
 
-        printf("[%d]get pid=%d qid=%d  buf_prepared=%d\n", recv_thread_id, pb->block_id, qb->block_id, s_ctx[recv_thread_id].buf_prepared);
+        //printf("[%d]get pid=%d qid=%d  buf_prepared=%d\n", recv_thread_id, pb->block_id, qb->block_id, s_ctx[recv_thread_id].buf_prepared);
 
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;

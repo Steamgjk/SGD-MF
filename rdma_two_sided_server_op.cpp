@@ -82,7 +82,7 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
   if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
   {
     uint32_t size = ntohl(wc->imm_data);
-    printf("IBV_WC_RECV_RDMA_WITH_IMM  size=%ld\n", size );
+    //printf("IBV_WC_RECV_RDMA_WITH_IMM  size=%ld\n", size );
     if (size == 0)
     {
       //ctx->msg->id = MSG_DONE;
@@ -94,14 +94,14 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
       {
 
       }
-      printf("server ctx has been marked false-0\n");
+      //printf("server ctx has been marked false-0\n");
       server_send_message(id);
     }
     else
     {
       ssize_t ret;
 
-      printf("received %i bytes.  buf_prepared=%d\n", size, ctx->buf_prepared);
+      //printf("received %i bytes.  buf_prepared=%d\n", size, ctx->buf_prepared);
 
       //printf("ctx->buffer=%p  %s\n", ctx->buffer, ctx->buffer );
       server_post_receive(id);
@@ -112,7 +112,7 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
       {
 
       }
-      printf("server ctx has been marked false\n");
+      //printf("server ctx has been marked false\n");
       ctx->msg->id = MSG_READY;
       server_send_message(id);
 

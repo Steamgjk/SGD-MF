@@ -63,19 +63,19 @@ void RdmaTwoSidedClientOp::client_post_receive(struct rdma_cm_id *id)
 void RdmaTwoSidedClientOp::client_send_next_chunk(struct rdma_cm_id *id)
 {
   struct client_context *ctx = (struct client_context *)id->context;
-  printf("check buf prepared\n");
+  //printf("check buf prepared\n");
   while (!ctx->buf_prepared)
   {
-    printf("to send has not well prepared\n");
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //printf("to send has not well prepared\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  printf("client send buf has been marked prepared = true\n");
+  //printf("client send buf has been marked prepared = true\n");
   /*
   char*str = "iamok";
   ctx->buf_len = strlen(str);
   memcpy(ctx->buffer, str, ctx->buf_len);
   **/
-  printf("send tchunk...\n");
+  //printf("send tchunk...\n");
   //printf("buf= %s  len=%ld\n", ctx->buffer, ctx->buf_len );
 
   client_write_remote(id, ctx->buf_len);

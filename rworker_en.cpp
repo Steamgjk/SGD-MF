@@ -283,7 +283,7 @@ int main(int argc, const char * argv[])
         **/
         std::thread recv_thread(recvTd, th_id);
         recv_thread.detach();
-        std::thread send_thread(sendTd, th_idi);
+        std::thread send_thread(sendTd, th_id);
         send_thread.detach();
     }
 

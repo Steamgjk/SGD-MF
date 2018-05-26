@@ -1210,7 +1210,7 @@ void rdma_recvTd(int recv_thread_id)
     size_t struct_sz = sizeof(Block);
     while (s_ctx[recv_thread_id].buf_registered == false)
     {
-        printf("[%d] recv has not registered buffer\n", send_thread_id);
+        printf("[%d] recv has not registered buffer\n", recv_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     while (1 == 1)

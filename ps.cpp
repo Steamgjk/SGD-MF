@@ -786,9 +786,9 @@ void rdma_recvTd(int recv_thread_id)
 {
     int mapped_thread_id = recv_thread_id % WORKER_NUM;
     size_t struct_sz = sizeof(Block);
-    while (c_ctx[send_thread_id].buf_registered == false)
+    while (s_ctx[recv_thread_id].buf_registered == false)
     {
-        printf("[%d] has not registered buffer\n", send_thread_id);
+        printf("[%d] recv has not registered buffer\n", recv_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     while (1 == 1)

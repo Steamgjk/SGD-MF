@@ -265,6 +265,8 @@ void RdmaTwoSidedServerOp:: server_build_params(struct rdma_conn_param *params)
 
   params->initiator_depth = params->responder_resources = 1;
   params->rnr_retry_count = 7; /* infinite retry */
+  //add this one
+  params->retry_count = 7;
 }
 
 void RdmaTwoSidedServerOp:: server_build_qp_attr(struct ibv_qp_init_attr *qp_attr)

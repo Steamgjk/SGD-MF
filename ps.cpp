@@ -713,12 +713,100 @@ void partitionQ(int portion_num,  Block * Qblocks)
 #if TWO_SIDED_RDMA
 void rdma_sendTd(int send_thread_id)
 {
+    int mapped_thread_id = send_thread_id % WORKER_NUM;
+    while (1 == 1)
+    {
+        if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            continue;
+        }
+        printf("iter_t=%d send_thread_id=%d mapped_thread_id=%d\n", iter_t, send_thread_id, mapped_thread_id );
+        if (canSend[mapped_thread_id] == true)
+        {
+            int pbid = worker_pidx[mapped_thread_id];
+            int qbid = worker_qidx[mapped_thread_id];
+            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
+            p_total = struct_sz + p_data_sz;
+            q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
+            q_total = struct_sz + q_data_sz;
+            total_len = p_total + q_total;
+            char* real_sta_buf = c_ctx[send_thread_id].buffer;
 
+            memcpy(real_sta_buf, &(Pblocks[pbid]), struct_sz);
+            memcpy(real_sta_buf + struct_sz, (char*) & (Pblocks[pbid].eles[0]), p_data_sz );
+            memcpy(real_sta_buf + p_total, &(Qblocks[qbid]), struct_sz);
+            memcpy(real_sta_buf + p_total + struct_sz , (char*) & (Qblocks[qbid].eles[0]), q_data_sz);
+
+            printf("[Td:%d] send success qbid=%d isP=%d  total_len=%ld qh=%d\n", send_thread_id, qbid, Qblocks[qbid].isP, total_len, Qblocks[qbid].height);
+
+            c_ctx[send_thread_id].buf_prepared = true;
+
+            send_round_robin_idx[mapped_thread_id] = (send_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
+            canSend[mapped_thread_id] = false;
+        }
+
+    }
 }
 
 void rdma_recvTd(int recv_thread_id)
 {
+    int mapped_thread_id = recv_thread_id % WORKER_NUM;
+    while (1 == 1)
+    {
+        if (recv_round_robin_idx[mapped_thread_id] != recv_thread_id)
+        {
+            continue;
+        }
+        if (s_ctx[recv_thread_id].buf_prepared == false)
+        {
+            continue;
+        }
+        struct timeval st, et, tspan;
+        gettimeofday(&st, 0);
+        char* real_sta_buf = s_ctx[recv_thread_id].buffer;
+        struct Block * pb = (struct Block*)(void*)(real_sta_buf);
+        int block_idx = pb->block_id ;
+        Pblocks[block_idx].block_id = pb->block_id;
+        Pblocks[block_idx].sta_idx = pb->sta_idx;
+        Pblocks[block_idx].height = pb->height;
+        Pblocks[block_idx].ele_num = pb->ele_num;
+        Pblocks[block_idx].eles.resize(pb->ele_num);
+        Pblocks[block_idx].isP = pb->isP;
+        double*data_eles = (double*)(void*) (real_sta_buf + struct_sz);
+        for (int i = 0; i < pb->ele_num; i++)
+        {
+            Pblocks[block_idx].eles[i] = data_eles[i];
+        }
 
+        //printf("[%d]successful reve one Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+
+        size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
+
+        pb = (struct Block*)(void*)(real_sta_buf + p_total);
+        block_idx = pb->block_id ;
+        Qblocks[block_idx].block_id = pb->block_id;
+        Qblocks[block_idx].sta_idx = pb->sta_idx;
+        Qblocks[block_idx].height = pb->height;
+        Qblocks[block_idx].ele_num = pb->ele_num;
+        Qblocks[block_idx].eles.resize(pb->ele_num);
+        Qblocks[block_idx].isP = pb->isP;
+        for (int i = 0; i < pb->ele_num; i++)
+        {
+            Qblocks[block_idx].eles[i] = data_eles[i];
+        }
+
+        //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
+
+        timestp += WORKER_NUM * QP_GROUP;
+        gettimeofday(&et, 0);
+        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+        printf("[%d] recv success time = %lld\n", recv_thread_id, mksp );
+        //getchar();
+        recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
+        recvCount++;
+    }
 }
 
 void rdma_sendTd_loop(int send_thread_id)

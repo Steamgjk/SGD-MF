@@ -277,17 +277,18 @@ int main(int argc, const char * argv[])
     {
         int th_id = thread_id + i * WORKER_N_1;
         printf(" th_id=%d\n", th_id );
-
-        std::thread recv_thread(rdma_recvTd, th_id);
-        recv_thread.detach();
-        std::thread send_thread(rdma_sendTd, th_id);
-        send_thread.detach();
         /*
+                std::thread recv_thread(rdma_recvTd, th_id);
+                recv_thread.detach();
+                std::thread send_thread(rdma_sendTd, th_id);
+                send_thread.detach();
+        **/
+
         std::thread recv_thread(recvTd, th_id);
         recv_thread.detach();
         std::thread send_thread(sendTd, th_id);
         send_thread.detach();
-        **/
+
     }
 
 

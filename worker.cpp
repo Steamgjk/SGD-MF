@@ -1457,7 +1457,7 @@ void rdma_recvTd(int recv_thread_id)
                 //std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
-            //printf("[%d] flag= %d\n", recv_thread_id, (*flag) );
+            printf("[%d] flag= %d\n", recv_thread_id, (*flag) );
             if ((*total_len_ptr) <= 0)
             {
                 //std::this_thread::sleep_for(std::chrono::milliseconds(1));

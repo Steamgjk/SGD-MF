@@ -832,15 +832,18 @@ void rdma_recvTd(int recv_thread_id)
 
         size_t p_total = struct_sz + sizeof(double) * pb->ele_num;
 
-        pb = (struct Block*)(void*)(real_sta_buf + p_total);
-        block_idx = pb->block_id ;
-        Qblocks[block_idx].block_id = pb->block_id;
-        Qblocks[block_idx].sta_idx = pb->sta_idx;
-        Qblocks[block_idx].height = pb->height;
-        Qblocks[block_idx].ele_num = pb->ele_num;
-        Qblocks[block_idx].eles.resize(pb->ele_num);
-        Qblocks[block_idx].isP = pb->isP;
-        for (int i = 0; i < pb->ele_num; i++)
+        struct Block * qb = (struct Block*)(void*)(real_sta_buf + p_total);
+
+        data_eles = (double*)(void*) (real_sta_buf + p_total + struct_sz);
+
+        block_idx = qb->block_id ;
+        Qblocks[block_idx].block_id = qb->block_id;
+        Qblocks[block_idx].sta_idx = qb->sta_idx;
+        Qblocks[block_idx].height = qb->height;
+        Qblocks[block_idx].ele_num = qb->ele_num;
+        Qblocks[block_idx].eles.resize(qb->ele_num);
+        Qblocks[block_idx].isP = qb->isP;
+        for (int i = 0; i < qb->ele_num; i++)
         {
             Qblocks[block_idx].eles[i] = data_eles[i];
         }
@@ -850,6 +853,7 @@ void rdma_recvTd(int recv_thread_id)
         //this buf I have read it, so please prepare new buf content
         s_ctx[recv_thread_id].buf_prepared == false;
 
+        printf("[%d]get pid=%d qid=%d\n", recv_thread_id, pb->block_id, qb->block_id );
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;
     }

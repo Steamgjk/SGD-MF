@@ -32,7 +32,9 @@
 
 #define CAP 30
 
-#define TWO_SIDED_RDMA 1
+
+#define TWO_SIDED_RDMA 0
+#define ONE_SIDED_RDMA 1
 
 #if TWO_SIDED_RDMA
 #include "rdma_two_sided_client_op.h"

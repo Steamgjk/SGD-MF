@@ -1706,8 +1706,9 @@ void rdma_sendTd(int send_thread_id)
 
     char*buf = NULL;
     size_t offset = 0;
-    size_t flag_offset = sizeof(int);
+    size_t flag_offset = sizeof(int) + sizeof(int);
     struct timeval st, et, tspan;
+    int tmp_stp = 0;
     while (1 == 1)
     {
         if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
@@ -1717,6 +1718,7 @@ void rdma_sendTd(int send_thread_id)
         if (to_send_head < to_send_tail)
         {
 
+            time_stp++;
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
@@ -1724,7 +1726,8 @@ void rdma_sendTd(int send_thread_id)
             size_t data_sz = 0;
             buf = to_send_block_mem;
             int*flag = (int*)(void*)buf;
-            *flag = -1;
+            int*total_len_ptr = (int*)(void*)(buf + sizeof(int));
+            *flag = time_stp;
 
             int real_total = 0;
             int total_len = 0;
@@ -1736,27 +1739,31 @@ void rdma_sendTd(int send_thread_id)
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
 
                 total_len = struct_sz + data_sz;
-                real_total = total_len + sizeof(int) + sizeof(int);
+                real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
 
                 memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
                 memcpy(real_sta + total_len, &total_len, sizeof(int));
-                ret = cro.start_remote_write(real_total, offset);
+                //ret = cro.start_remote_write(real_total, offset);
 
             }
             else
             {
                 data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
                 total_len = struct_sz + data_sz;
-                real_total = total_len + sizeof(int) + sizeof(int);
+                real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
                 memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
                 memcpy(real_sta + total_len, &total_len, sizeof(int));
-                ret = cro.start_remote_write(real_total, offset);
+                //ret = cro.start_remote_write(real_total, offset);
 
             }
-            *flag = total_len;
-            ret = cro.start_remote_write(sizeof(int), offset);
+            //*flag = total_len;
+            *total_len_ptr = total_len;
+
+            ret = cro.start_remote_write(real_total, offset);
+
+            //ret = cro.start_remote_write(sizeof(int), offset);
 
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);
@@ -1777,7 +1784,7 @@ void rdma_recvTd(int recv_thread_id)
     size_t struct_sz = sizeof(Block);
     size_t offset = 0;
     int total_len = -1;
-
+    int time_stp = 0;
     while (1 == 1)
     {
 
@@ -1787,18 +1794,23 @@ void rdma_recvTd(int recv_thread_id)
         }
         int block_idx = has_recved[recved_head];
         int block_p_or_q = actions[recved_head];
-
+        time_stp++;
         //0 is to right trans/recv Q, 1 is up, trans p
         struct timeval st, et, tspan;
         char* buf = to_recv_block_mem + offset;
         int* flag = (int*)(void*)buf;
-        char* real_sta = buf + sizeof(int);
-        while ( (*flag) <= 0)
+        int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
+        char* real_sta = buf + sizeof(int) + sizeof(int);
+        while ( (*flag) != time_stp)
         {
             //printf("flag ka  %d\n", (*flag));
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        int total_len = *flag;
+        while ((*total_len_ptr) <= 0 )
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        int total_len = (*total_len_ptr);
         int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
         while ((*tail_total_len_ptr) != total_len)
         {

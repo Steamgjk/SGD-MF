@@ -1806,6 +1806,7 @@ void rdma_recvTd(int recv_thread_id)
             //printf("flag ka  %d\n", (*flag));
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        printf("flag=%d\n", (*flag) );
         while ((*total_len_ptr) <= 0 )
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -1856,7 +1857,6 @@ void rdma_recvTd(int recv_thread_id)
             }
         }
 
-        *flag = -1;
         *tail_total_len_ptr = -2;
         *total_len_ptr = -3;
         gettimeofday(&et, 0);

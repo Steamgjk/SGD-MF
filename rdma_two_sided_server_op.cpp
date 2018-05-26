@@ -46,9 +46,9 @@ void RdmaTwoSidedServerOp::server_post_receive(struct rdma_cm_id *id)
   TEST_NZ(ibv_post_recv(id->qp, &wr, &bad_wr));
 }
 
-void RdmaTwoSidedServerOp::server_on_pre_conn(struct rdma_cm_id *id,  struct ibv_pd *pd)
+void RdmaTwoSidedServerOp::server_on_pre_conn(struct rdma_cm_id *id, struct ibv_pd *pd, struct conn_context* ctx)
 {
-  struct conn_context *ctx = (struct conn_context *)malloc(sizeof(struct conn_context));
+  //struct conn_context *ctx = (struct conn_context *)malloc(sizeof(struct conn_context));
 
   id->context = ctx;
 
@@ -87,6 +87,13 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
       //ctx->msg->id = MSG_DONE;
       ctx->msg->id = MSG_READY;
       server_post_receive(id);
+      ctx->buf_prepared = true;
+      ctx->buf_len = size;
+      while (ctx->buf_prepared == true)
+      {
+
+      }
+
       server_send_message(id);
     }
     else
@@ -97,6 +104,13 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
 
       printf("ctx->buffer=%p  %s\n", ctx->buffer, ctx->buffer );
       server_post_receive(id);
+
+      ctx->buf_prepared = true;
+      ctx->buf_len = size;
+      while (ctx->buf_prepared == true)
+      {
+
+      }
 
       ctx->msg->id = MSG_READY;
       server_send_message(id);
@@ -119,12 +133,12 @@ void RdmaTwoSidedServerOp::server_on_disconnect(struct rdma_cm_id *id)
 
   printf("finished transferring\n");
 
-  free(ctx);
+  //free(ctx);
 }
 
 
 
-void RdmaTwoSidedServerOp::rc_server_loop(const char *port)
+void RdmaTwoSidedServerOp::rc_server_loop(const char *port, struct conn_context* ctx)
 {
   struct sockaddr_in6 addr;
   struct rdma_cm_id *listener = NULL;
@@ -139,7 +153,7 @@ void RdmaTwoSidedServerOp::rc_server_loop(const char *port)
   TEST_NZ(rdma_bind_addr(listener, (struct sockaddr *)&addr));
   TEST_NZ(rdma_listen(listener, 10)); /* backlog=10 is arbitrary */
 
-  server_event_loop(ec, 0); // don't exit on disconnect
+  server_event_loop(ec, 0, ctx); // don't exit on disconnect
 
   rdma_destroy_id(listener);
   rdma_destroy_event_channel(ec);
@@ -148,7 +162,7 @@ void RdmaTwoSidedServerOp::rc_server_loop(const char *port)
 
 
 
-void RdmaTwoSidedServerOp::server_event_loop(struct rdma_event_channel *ec, int exit_on_disconnect)
+void RdmaTwoSidedServerOp::server_event_loop(struct rdma_event_channel *ec, int exit_on_disconnect, struct conn_context* ctx)
 {
   struct rdma_cm_event *event = NULL;
   struct rdma_conn_param cm_params;
@@ -166,7 +180,7 @@ void RdmaTwoSidedServerOp::server_event_loop(struct rdma_event_channel *ec, int 
     {
       server_build_connection(event_copy.id);
 
-      server_on_pre_conn(event_copy.id, s_ctx->pd);
+      server_on_pre_conn(event_copy.id, s_ctx->pd, ctx);
 
 
       TEST_NZ(rdma_resolve_route(event_copy.id, TIMEOUT_IN_MS));
@@ -181,7 +195,7 @@ void RdmaTwoSidedServerOp::server_event_loop(struct rdma_event_channel *ec, int 
     {
       server_build_connection(event_copy.id);
 
-      server_on_pre_conn(event_copy.id, s_ctx->pd);
+      server_on_pre_conn(event_copy.id, s_ctx->pd, ctx);
 
       TEST_NZ(rdma_accept(event_copy.id, &cm_params));
 

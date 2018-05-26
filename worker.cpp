@@ -54,6 +54,10 @@ char* to_send_block_mem;
 char* to_recv_block_mem;
 #endif
 
+#if TWO_SIDED_RDMA
+struct client_context c_ctx[CAP];
+struct conn_context s_ctx[CAP];
+#endif
 
 //cnt=15454227 sizeof(long)=8
 //#define FILE_NAME "./netflix_row.txt"
@@ -210,6 +214,11 @@ void recvTd(int recv_thread_id);
 
 void rdma_sendTd(int send_thread_id);
 void rdma_recvTd(int recv_thread_id);
+
+#if TWO_SIDED_RDMA
+void rdma_sendTd_loop(int send_thread_id);
+void rdma_recvTd_loop(int recv_thread_id);
+#endif
 
 void submf();
 void WriteLog(Block&Pb, Block&Qb, int iter_cnt);
@@ -1102,174 +1111,120 @@ void recvTd(int recv_thread_id)
 
 #if TWO_SIDED_RDMA
 
-void send_tensor_single(struct rdma_cm_id *id, char* data2send, size_t data_len, uint32_t index)
+void rdma_sendTd_loop(int send_thread_id)
 {
-    struct context *ctx = (struct context *)id->context;
-
-    char*sta = ctx->buffer[index];
-
-    if ((data_len + sizeof(size_t)) > BUFFER_SIZE)
-    {
-        perror("fatal error, send msg length is too long \n");
-        exit(-1);
-    }
-
-    char* _buff = ctx->buffer[index];
-    std::memcpy(_buff, (char*)(&data_len), sizeof(size_t));
-    _buff += sizeof(size_t);
-    std::memcpy(_buff, data2send, data_len);
-    _write_remote(id, data_len + sizeof(uint32_t), index);
-
+    char* remote_ip = remote_ips[send_thread_id % WORKER_N_1];
+    int remote_port = remote_ports[send_thread_id];
+    char* local_ip = local_ips[send_thread_id % WORKER_N_1];
+    printf("thread_id=%d\n", thread_id);
+    char str_port[100];
+    sprintf(str_port, "%d", remote_port);
+    RdmaTwoSidedClientOp ct;
+    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[send_thread_id]));
 
 }
 
-
-void concurrency_send_by_RDMA(struct ibv_wc *wc, node_item* nit, int& mem_used)
+void rdma_recvTd_loop(int recv_thread_id)
 {
-    struct rdma_cm_id *id = (struct rdma_cm_id *)(uintptr_t)wc->wr_id;
-    struct context *ctx = (struct context *)id->context;
+    int bind_port = local_ports[recv_thread_id];
+    char str_port[100];
+    sprintf(str_port, "%d", bind_port);
+    RdmaTwoSidedServerOp rtos;
+    rtos.rc_server_loop(str_port, &(s_ctx[recv_thread_id]));
 
-    if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
-    {
-        _post_receive(id, wc->imm_data);
-        send_tensor_single(id, nit, wc->imm_data);
-    }
-    else if (wc->opcode == IBV_WC_RECV)
-    {
-        switch (ctx->k_exch[1]->id)
-        {
-        case MSG_MR:
-        {
-            log_info("recv MD5 is %llu\n", ctx->k_exch[1]->md5);
-            for (int index = 0; index < MAX_CONCURRENCY; index++)
-            {
-                //reserved the (buffer)key info from server.
-                ctx->peer_addr[index] = ctx->k_exch[1]->key_info[index].addr;
-                ctx->peer_rkey[index] = ctx->k_exch[1]->key_info[index].rkey;
-                struct sockaddr_in* client_addr = (struct sockaddr_in *)rdma_get_peer_addr(id);
-                printf("server[%s,%d] to ", inet_ntoa(client_addr->sin_addr), client_addr->sin_port);
-                printf("client buffer %d: %p\n", index, ctx->peer_addr[index]);
-                printf("my ach addr: %d %p\n", index, ctx->ack_mr[index]->addr);
-            }
-            /**send one tensor...**/
-            send_tensor_single(id, nit, 0);
-            mem_used++;
-        }
-        break;
-        default:
-            break;
-        }
-    }
 }
-
 
 
 void rdma_sendTd(int send_thread_id)
 {
-
-    char* remote_ip = remote_ips[send_thread_id % WORKER_N_1];
-    int remote_port = remote_ports[send_thread_id];
-    char* local_ip = local_ips[send_thread_id % WORKER_N_1];
-    struct rdma_cm_id* rc_id = rdma_client_init_connection(local_ip, remote_ip, remote_port);
-
-///
-    struct ibv_cq *cq = NULL;
-    struct ibv_wc wc[MAX_CONCURRENCY * 2];
-    //struct rdma_cm_id *id = (struct rdma_cm_id *)tmp_id;
-    struct context *ctx = (struct context *)send_rc_id->context;
-    void *ev_ctx = NULL;
-    int mem_used = 0;
-
-
-    while (1 == 1)
-    {
-        TEST_NZ(ibv_get_cq_event(ctx->comp_channel, &cq, &ev_ctx));
-        ibv_ack_cq_events(cq, 1);
-        TEST_NZ(ibv_req_notify_cq(cq, 0));
-
-        int wc_num = ibv_poll_cq(cq, MAX_CONCURRENCY * 2, wc);
-        //log_info("2Right wc_num = %d\n", wc_num);
-        if (wc_num < 0)
+    /*
+        while (1 == 1)
         {
-            perror("fatal error in ibv_poll_cq, -1");
-            exit(-1);
-        }
-
-        for (int index = 0; index < wc_num; index++)
-        {
-
-            if (wc[index].status == IBV_WC_SUCCESS)
+            //printf("canSend=%d\n", canSend );
+            if (canSend)
             {
-                concurrency_send_by_RDMA(&wc[index], to_right_head, mem_used);
-            }
-            else
-            {
-                rc_die("poll_cq4: status is not IBV_WC_SUCCESS");
-            }
-        }
-        if (mem_used)
-        {
-            for (mem_used; mem_used < MAX_CONCURRENCY; mem_used++)
-            {
-                to_right_head = send_tensor_single(send_rc_id, to_right_head, mem_used);
-            }
-        }
-    }
+                printf("Td:%d cansend\n", thread_id );
+                size_t struct_sz = sizeof(Block);
+                size_t data_sz = sizeof(double) * Pblock.ele_num;
 
+
+                char* buf = (char*)malloc(struct_sz + data_sz);
+                memcpy(buf, &(Pblock), struct_sz);
+                memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
+
+                size_t total_len = struct_sz + data_sz;
+                printf("total_len=%ld struct_sz=%ld data_sz=%ld  elenum=%d\n", total_len, struct_sz, data_sz, Pblock.ele_num );
+                struct timeval st, et, tspan;
+                size_t sent_len = 0;
+                size_t remain_len = total_len;
+                int ret = -1;
+                size_t to_send_len = 4096;
+                //gettimeofday(&st, 0);
+
+
+                while (remain_len > 0)
+                {
+                    if (to_send_len > remain_len)
+                    {
+                        to_send_len = remain_len;
+                    }
+                    //printf("sending...\n");
+                    ret = send(fd, buf + sent_len, to_send_len, 0);
+                    if (ret >= 0)
+                    {
+                        remain_len -= to_send_len;
+                        sent_len += to_send_len;
+                        //printf("remain_len = %ld\n", remain_len);
+                    }
+                    else
+                    {
+                        printf("still fail\n");
+                    }
+                    //getchar();
+                }
+                free(buf);
+
+
+                data_sz = sizeof(double) * Qblock.ele_num;
+                total_len = struct_sz + data_sz;
+                buf = (char*)malloc(struct_sz + data_sz);
+                memcpy(buf, &(Qblock), struct_sz);
+                memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
+                printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
+                sent_len = 0;
+                remain_len = total_len;
+                ret = -1;
+                to_send_len = 4096;
+                while (remain_len > 0)
+                {
+                    if (to_send_len > remain_len)
+                    {
+                        to_send_len = remain_len;
+                    }
+                    //printf("sending...\n");
+                    ret = send(fd, buf + sent_len, to_send_len, 0);
+                    if (ret >= 0)
+                    {
+                        remain_len -= to_send_len;
+                        sent_len += to_send_len;
+                    }
+                    else
+                    {
+                        printf("still fail\n");
+                    }
+                }
+
+                free(buf);
+
+                canSend = false;
+            }
+
+        }
+        **/
 }
 
 void rdma_recvTd(int recv_thread_id)
 {
-    int bind_port = local_ports[recv_thread_id];
-    struct rdma_cm_id* rc_id = RDMA_Wait4Connection(bind_port);
-    if (rc_id)
-    {
-        printf("[%d]Connection Comes \n", recv_thread_id);
-    }
-    else
-    {
-        printf("[%d]Connection NULL\n", recv_thread_id);
-    }
-
-    struct ibv_cq *cq = NULL;
-    //struct ibv_wc wc;
-    struct ibv_wc wc[MAX_CONCURRENCY * 2];
-    struct context *ctx = (struct context *)rc_id->context;
-    void *ev_ctx = NULL;
-
-    TEST_NZ(ibv_get_cq_event(ctx->comp_channel, &cq, &ev_ctx));
-    ibv_ack_cq_events(cq, 1);
-    TEST_NZ(ibv_req_notify_cq(cq, 0));
-
-    while (1 == 1)
-    {
-        int wc_num = ibv_poll_cq(cq, MAX_CONCURRENCY * 2, wc);
-
-        for (int index = 0; index < wc_num; index++)
-        {
-            if (wc[index].status == IBV_WC_SUCCESS)
-            {
-                /*****here to modified recv* wc---->wc[index]****/
-                void* recv_data = nullptr;
-                uint32_t recv_len;
-
-                recv_data = concurrency_recv_by_RDMA(&wc[index], recv_len);
-                if (recv_data != nullptr)
-                {
-                    //here to process the recved data
-                    //
-                    free(recv_data);
-                    recv_data = NULL;
-                }
-            }
-            else
-            {
-                printf("\nwc = %s\n", ibv_wc_status_str(wc[index].status));
-                rc_die("poll_cq3: status is not IBV_WC_SUCCESS");
-            }
-        }
-
-    }
 
 
 }

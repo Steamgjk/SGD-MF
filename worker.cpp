@@ -1162,9 +1162,9 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
 
             memcpy(buf + p_total, &(Qblock), struct_sz);
-            memcpy(buf + p_total = struct_sz , (char*) & (Qblock.eles[0]), q - data_sz);
+            memcpy(buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
 
-            printf("[%d] p_total = %d  q_total=%s\n", send_thread_id, p_total, q_total);
+            printf("[%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld\n", send_thread_id, p_total, p_data_sz, q_total, q_data_sz);
 
             c_ctx[send_thread_id].buf_prepared = true;
 

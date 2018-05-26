@@ -13,7 +13,7 @@
 
 const int TIMEOUT_IN_MS = 500;
 
-const size_t BUFFER_SIZE = 10 * 1024 * 1024;
+const size_t BUFFER_SIZE = 500 * 1024 * 1024;
 
 enum message_id
 {

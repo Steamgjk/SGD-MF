@@ -740,6 +740,11 @@ void rdma_sendTd(int send_thread_id)
 {
     int mapped_thread_id = send_thread_id % WORKER_NUM;
     size_t struct_sz = sizeof(Block);
+    while (c_ctx[send_thread_id].buf_registered == false)
+    {
+        printf("[%d] has not registered buffer\n", send_thread_id);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
     while (1 == 1)
     {
         if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )
@@ -747,12 +752,13 @@ void rdma_sendTd(int send_thread_id)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
+
         printf("iter_t=%d send_thread_id=%d mapped_thread_id=%d\n", iter_t, send_thread_id, mapped_thread_id );
         if (canSend[mapped_thread_id] == true)
         {
             int pbid = worker_pidx[mapped_thread_id];
             int qbid = worker_qidx[mapped_thread_id];
-            //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
+            printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
             size_t p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
             size_t p_total = struct_sz + p_data_sz;
             size_t q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
@@ -780,6 +786,11 @@ void rdma_recvTd(int recv_thread_id)
 {
     int mapped_thread_id = recv_thread_id % WORKER_NUM;
     size_t struct_sz = sizeof(Block);
+    while (c_ctx[send_thread_id].buf_registered == false)
+    {
+        printf("[%d] has not registered buffer\n", send_thread_id);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
     while (1 == 1)
     {
         if (recv_round_robin_idx[mapped_thread_id] != recv_thread_id)

@@ -1163,6 +1163,11 @@ void rdma_sendTd(int send_thread_id)
 {
 
     size_t struct_sz = sizeof(Block);
+    while (c_ctx[send_thread_id].buf_registered == false)
+    {
+        printf("[%d] has not registered buffer\n", send_thread_id);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
     while (1 == 1)
     {
         //printf("canSend=%d\n", canSend );
@@ -1203,6 +1208,11 @@ void rdma_recvTd(int recv_thread_id)
 {
 
     size_t struct_sz = sizeof(Block);
+    while (s_ctx[recv_thread_id].buf_registered == false)
+    {
+        printf("[%d] recv has not registered buffer\n", send_thread_id);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
     while (1 == 1)
     {
         if (recv_thread_id / WORKER_N_1 != recv_round_robin_idx % QP_GROUP)

@@ -837,7 +837,8 @@ void rdma_recvTd(int recv_thread_id)
 
         //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
-        s_ctx[recv_thread_id].buf_prepared == true;
+        //this buf I have read it, so please prepare new buf content
+        s_ctx[recv_thread_id].buf_prepared == false;
 
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;

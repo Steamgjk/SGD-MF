@@ -1445,7 +1445,7 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&st, 0);
         */
 
-        //printf("[%d]ok out flag=%d\n", recv_thread_id, (*flag) );
+
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         char* real_sta_buf = buf + sizeof(int) + sizeof(int);
         int* tail_total_len_ptr = NULL;
@@ -1456,6 +1456,7 @@ void rdma_recvTd(int recv_thread_id)
             {
                 continue;
             }
+            printf("[%d] flag= %d\n", recv_thread_id, (*flag) );
             if ((*total_len_ptr) <= 0)
             {
                 continue;

@@ -32,8 +32,8 @@
 #include <sys/time.h>
 #include <queue>
 
-#define TWO_SIDED_RDMA 1
-#define ONE_SIDED_RDMA 0
+#define TWO_SIDED_RDMA 0
+#define ONE_SIDED_RDMA 1
 
 #if TWO_SIDED_RDMA
 #include "rdma_two_sided_client_op.h"
@@ -1742,7 +1742,7 @@ void rdma_sendTd(int send_thread_id)
 
                 memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
-                memcpy(real_sta + total_len, &total_len, sizeof(int));
+                memcpy(real_sta + total_len, &time_stp, sizeof(int));
                 //ret = cro.start_remote_write(real_total, offset);
 
             }
@@ -1753,7 +1753,7 @@ void rdma_sendTd(int send_thread_id)
                 real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
                 memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
-                memcpy(real_sta + total_len, &total_len, sizeof(int));
+                memcpy(real_sta + total_len, &time_stp, sizeof(int));
                 //ret = cro.start_remote_write(real_total, offset);
 
             }
@@ -1812,7 +1812,7 @@ void rdma_recvTd(int recv_thread_id)
         }
         int total_len = (*total_len_ptr);
         int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
-        while ((*tail_total_len_ptr) != total_len)
+        while ((*tail_total_len_ptr) != time_stp)
         {
             //printf("total ka  %d  %d\n", (*tail_total_len_ptr), total_len );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));

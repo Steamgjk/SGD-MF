@@ -1454,17 +1454,20 @@ void rdma_recvTd(int recv_thread_id)
         {
             if ((*flag) != time_stp)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
-            printf("[%d] flag= %d\n", recv_thread_id, (*flag) );
+            //printf("[%d] flag= %d\n", recv_thread_id, (*flag) );
             if ((*total_len_ptr) <= 0)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
             int total_len = *total_len_ptr;
             tail_total_len_ptr = (int*)(void*)(real_sta_buf + total_len);
             if ((*tail_total_len_ptr) != time_stp)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
             else

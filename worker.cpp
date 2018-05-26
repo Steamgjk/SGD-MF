@@ -639,7 +639,7 @@ void CalcUpdt(int td_id)
             ctsz = hash_for_col_threads[p_block_idx][q_block_idx][td_id].size();
             if (rtsz == 0 || ctsz == 0)
             {
-                printf("p %d q %d td=%d empty\n", p_block_idx, q_block_idx, td_id );
+                //printf("p %d q %d td=%d empty\n", p_block_idx, q_block_idx, td_id );
                 //exit(0);
                 StartCalcUpdt[td_id] = false;
                 continue;

@@ -752,7 +752,8 @@ void rdma_sendTd(int send_thread_id)
     {
         if ( send_round_robin_idx[mapped_thread_id] != send_thread_id || (canSend[mapped_thread_id] == false) )
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            printf("canSend =%d\n", canSend[mapped_thread_id] );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             continue;
         }
 

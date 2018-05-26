@@ -799,9 +799,6 @@ void rdma_recvTd(int recv_thread_id)
 
         //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
-        gettimeofday(&et, 0);
-        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        printf("[%d] recv success time = %lld\n", recv_thread_id, mksp );
         //getchar();
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;

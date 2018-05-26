@@ -140,6 +140,7 @@ void RdmaTwoSidedServerOp::server_on_disconnect(struct rdma_cm_id *id)
 
 void RdmaTwoSidedServerOp::rc_server_loop(const char *port, struct conn_context* ctx)
 {
+  printf("rc_server_loop ctx =%p\n", ctx );
   struct sockaddr_in6 addr;
   struct rdma_cm_id *listener = NULL;
   struct rdma_event_channel *ec = NULL;

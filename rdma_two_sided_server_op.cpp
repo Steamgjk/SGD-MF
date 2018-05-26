@@ -82,7 +82,7 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
   if (wc->opcode == IBV_WC_RECV_RDMA_WITH_IMM)
   {
     uint32_t size = ntohl(wc->imm_data);
-
+    printf("IBV_WC_RECV_RDMA_WITH_IMM  size=%ld\n", size );
     if (size == 0)
     {
       //ctx->msg->id = MSG_DONE;
@@ -300,7 +300,10 @@ void * RdmaTwoSidedServerOp::server_poll_cq(void* void_ch)
     while (ibv_poll_cq(cq, 1, &wc))
     {
       if (wc.status == IBV_WC_SUCCESS)
+      {
+        printf("server_on_completion SUCCESS\n");
         server_on_completion(&wc);
+      }
       else
       {
         printf("status=%d\n", wc.status );

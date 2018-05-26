@@ -352,13 +352,14 @@ int main(int argc, const char * argv[])
             printf("%d  [%d:%d]\n", i, worker_pidx[i], worker_qidx[i] );
         }
 
-
+        printf("here start to send\n");
+        getchar();
+        printf("canSend...!\n");
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;
         }
-        printf("canSend...!\n");
-        getchar();
+
         //getchar();
         while (recvCount != WORKER_NUM)
         {

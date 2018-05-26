@@ -726,7 +726,7 @@ void rdma_sendTd_loop(int send_thread_id)
     int mapped_thread_id = send_thread_id % WORKER_NUM;
     char* remote_ip = remote_ips[mapped_thread_id];
     int remote_port = remote_ports[send_thread_id];
-    printf("thread_id=%d\n", thread_id);
+    printf("send_thread_id=%d\n", send_thread_id);
     char str_port[100];
     sprintf(str_port, "%d", remote_port);
     RdmaTwoSidedClientOp ct;

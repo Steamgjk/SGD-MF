@@ -63,10 +63,12 @@ void RdmaTwoSidedClientOp::client_post_receive(struct rdma_cm_id *id)
 void RdmaTwoSidedClientOp::client_send_next_chunk(struct rdma_cm_id *id)
 {
   struct client_context *ctx = (struct client_context *)id->context;
+  printf("check buf prepared\n");
   while (!ctx->buf_prepared)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
+  printf("buf prepared = true\n");
   /*
   char*str = "iamok";
   ctx->buf_len = strlen(str);

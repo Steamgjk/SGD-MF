@@ -31,8 +31,20 @@
 #include <fstream>
 #include <sys/time.h>
 #include <queue>
-#include "client_rdma_op.h"
+
+#define TWO_SIDED_RDMA 1
+#define ONE_SIDED_RDMA 0
+
+#if TWO_SIDED_RDMA
+#include "rdma_two_sided_client_op.h"
+#include "rdma_two_sided_server_op.h"
+#endif
+
+#if ONE_SIDED_RDMA
 #include "server_rdma_op.h"
+#include "client_rdma_op.h"
+#endif
+
 using namespace std;
 
 
@@ -86,11 +98,9 @@ double theta = 0.05;
 #define M 624961
 #define K  100 //主题个数
 
-
 #define CAP 30
 #define SEQ_LEN 2000
 #define QU_LEN 10000
-
 
 #define WORKER_THREAD_NUM 30
 #define BLOCK_MEM_SZ (250000000)
@@ -110,6 +120,18 @@ int CACHE_NUM = 20;
 int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
 int process_tail[WORKER_TD];
+
+
+#if TWO_SIDED_RDMA
+struct client_context c_ctx[CAP];
+struct conn_context s_ctx[CAP];
+#endif
+
+#if TWO_SIDED_RDMA
+void rdma_sendTd_loop(int send_thread_id);
+void rdma_recvTd_loop(int recv_thread_id);
+void InitContext();
+#endif
 
 
 
@@ -466,6 +488,19 @@ int main(int argc, const char * argv[])
     }
 }
 
+#if TWO_SIDED_RDMA
+void InitContext()
+{
+    for (int i = 0; i < CAP; i++)
+    {
+        c_ctx[i].buf_prepared = false;
+        c_ctx[i].buf_registered = false;
+        s_ctx[i].buf_prepared = false;
+        s_ctx[i].buf_registered = false;
+
+    }
+}
+#endif
 
 void CalcUpdt(int td_id)
 {
@@ -1456,165 +1491,94 @@ void partitionQ(int portion_num,  Block * Qblocks)
 
 
 
-
-void rdma_sendTd1(int send_thread_id)
+#if TWO_SIDED_RDMA
+void rdma_sendTd(int send_thread_id)
 {
-    printf("worker send_thread_id=%d\n", send_thread_id);
-    printf("worker send waiting for 3s...\n");
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    int right_idx = (send_thread_id + 1) % WORKER_NUM;
-    char* remote_ip = local_ips[right_idx];
-    int remote_port = local_ports[right_idx];
-
-    struct sockaddr_in server_sockaddr;
-    int ret, option;
-    bzero(&server_sockaddr, sizeof server_sockaddr);
-    server_sockaddr.sin_family = AF_INET;
-    server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-
-    get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
-    server_sockaddr.sin_port = htons(remote_port);
-
-    client_rdma_op cro;
-    ret = cro.client_prepare_connection(&server_sockaddr);
-    if (ret)
+    size_t struct_sz = sizeof(Block);
+    while (c_ctx[send_thread_id].buf_registered == false)
     {
-        rdma_error("Failed to setup client connection , ret = %d \n", ret);
-        return ret;
+        //printf("[%d] has not registered buffer\n", send_thread_id);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-    ret = cro.client_pre_post_recv_buffer();
-    if (ret)
-    {
-        rdma_error("Failed to setup client connection , ret = %d \n", ret);
-        return ret;
-    }
-    ret = cro.client_connect_to_server();
-    if (ret)
-    {
-        rdma_error("Failed to setup client connection , ret = %d \n", ret);
-        return ret;
-    }
-
-    ret = cro.client_send_metadata_to_server1(to_send_block_mem, BLOCK_MEM_SZ);
-    if (ret)
-    {
-        rdma_error("Failed to setup client connection , ret = %d \n", ret);
-        return ret;
-    }
-
-    char*buf = NULL;
-    size_t offset = 0;
-    struct timeval st, et, tspan;
+    printf("[%d] has registered send buffer\n", send_thread_id);
+    size_t struct_sz = sizeof(Block);
+    size_t data_sz  = 0;
     while (1 == 1)
     {
+        if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
         if (to_send_head < to_send_tail)
         {
-
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];
             //0 is to right trans Q, 1 is up, trans p
-            size_t struct_sz = sizeof(Block);
-            size_t data_sz = 0;
-            char*buf = to_send_block_mem;
-            int real_total = 0;
-            int total_len = 0;
-            char*real_sta = buf + sizeof(int);
+            char* real_sta = c_ctx[send_thread_id].buffer;
             if (block_p_or_q == 0)
             {
                 //send q
                 data_sz = sizeof(double) * Qblocks[block_idx].eles.size();
-                //printf("to_send_head =%d send q block_idx=%d realid %d\n", to_send_head, block_idx, Qblocks[block_idx].block_id);
                 total_len = struct_sz + data_sz;
-                real_total = sizeof(int) + total_len + sizeof(int);
-                memcpy(buf, &total_len, sizeof(int));
+
                 memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
-                memcpy(real_sta + total_len, &total_len, sizeof(int));
-                ret = cro.start_remote_write(real_total, offset);
-                //memcpy(buf, &(Qblocks[block_idx]), struct_sz);
-                //printf("before memcpy2\n");
-                //memcpy(buf + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
-                //ret = cro.start_remote_write(total_len, offset);
-                //printf("writer one Pblock\n");
+
             }
             else
             {
                 data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
                 total_len = struct_sz + data_sz;
-                real_total = sizeof(int) + total_len + sizeof(int);
-                memcpy(buf, &total_len, sizeof(int));
                 memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
-                memcpy(real_sta + total_len, &total_len, sizeof(int));
-                ret = cro.start_remote_write(real_total, offset);
-                /*
-                //send p
-                data_sz = sizeof(double) * Pblocks[block_idx].eles.size();
 
-                total_len = struct_sz + data_sz;
-                memcpy(buf, &(Pblocks[block_idx]), struct_sz);
-                memcpy(buf + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
-                ret = cro.start_remote_write(total_len, offset);
-                //printf("writer one Qblock\n");
-                **/
             }
-            offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
-            gettimeofday(&et, 0);
-            long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-            //printf("[Id:%d] send success stucsz=%ld data_sz=%ld %d block_id=%d timespan=%lld to_Send_head=%d\n", thread_id, struct_sz, data_sz, ret, block_idx, mksp, to_send_head);
+            c_ctx[send_thread_id].buf_len = total_len;
+            c_ctx[send_thread_id].buf_prepared = true;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
         }
     }
 
 }
-void rdma_recvTd1(int recv_thread_id)
-{
-    printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
-    server_rdma_op sro;
-    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
 
-    printf("rdma_recvTd:rdma_server_init...\n");
+void rdma_recvTd(int recv_thread_id)
+{
     size_t struct_sz = sizeof(Block);
-    size_t offset = 0;
-    int total_len = -1;
+    while (s_ctx[recv_thread_id].buf_registered == false)
+    {
+        //printf("[%d] recv has not registered buffer\n", recv_thread_id);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    printf("[%d] has registered receive buffer\n", recv_thread_id);
 
     while (1 == 1)
     {
 
+        if (recv_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        {
+            continue;
+        }
+        if (s_ctx[recv_thread_id].buf_prepared == false)
+        {
+            //printf("[%d] recv buf prepared = false\n", recv_thread_id );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            continue;
+        }
+
         int block_idx = has_recved[recved_head];
         int block_p_or_q = actions[recved_head];
-
         //0 is to right trans/recv Q, 1 is up, trans p
         struct timeval st, et, tspan;
-        char* buf = to_recv_block_mem + offset;
-        int* total_len_ptr = (int*)(void*)buf;
-        char* real_sta = buf + sizeof(int);
-        while ((*total_len_ptr) <= 0)
-        {
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        total_len = *total_len_ptr;
-        int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
-        while ((*tail_total_len_ptr) != total_len)
-        {
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        /*
-        struct Block * pb = (struct Block*)(void*)buf;
-        while (pb->block_id < 0)
-        {
-            //printf("waiting... block_id = %d\n", pb->block_id );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        **/
+
+        char* real_sta = s_ctx[recv_thread_id].buffer;
+
         struct Block * pb = (struct Block*)(void*)real_sta;
         gettimeofday(&st, 0);
         size_t data_sz = sizeof(double) * (pb->ele_num);
-        //double* data_eles  = (double*) (void*)(buf + struct_sz);
         double* data_eles  = (double*) (void*)(real_sta + struct_sz);
-        //printf("recv  blockid=%d  ele=%d isP=%d\n", pb->block_id, pb->ele_num, pb->isP );
+
         if (block_p_or_q == 0)
         {
             //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);
@@ -1646,22 +1610,47 @@ void rdma_recvTd1(int recv_thread_id)
                 Pblocks[block_idx].eles[i] = data_eles[i];
             }
         }
-        //pb->block_id = -1;
-        *total_len_ptr = -1;
-        *tail_total_len_ptr = -2;
+
+        s_ctx[recv_thread_id].buf_prepared = false;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
-        //printf("recv success time = %lld, recved_head=%d has_processed=%d data_sz=%ld\n", mksp, recved_head, has_processed, data_sz );
-        offset = (offset + BLOCK_MEM_SZ) % (MEM_SIZE);
+        printf("[%d]recv  mksp=%lld\n", recv_thread_id, mksp );
         recved_head = (recved_head + 1) % QU_LEN;
 
     }
 
 }
 
+void rdma_sendTd_loop(int send_thread_id)
+{
+    int right_idx = (send_thread_id + 1) % WORKER_NUM;
+    char* remote_ip = local_ips[right_idx];
+    int remote_port = local_ports[right_idx];
+
+    printf("send_thread_id=%d\n", send_thread_id);
+    char str_port[100];
+    sprintf(str_port, "%d", remote_port);
+    RdmaTwoSidedClientOp ct;
+    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[send_thread_id]));
+}
+
+void rdma_recvTd_loop(int recv_thread_id)
+{
+    int bind_port =  local_ports[recv_thread_id];
+    char str_port[100];
+    sprintf(str_port, "%d", bind_port);
+    RdmaTwoSidedServerOp rtos;
+    rtos.rc_server_loop(str_port, &(s_ctx[recv_thread_id]));
+
+}
+#endif
 
 
 
+
+
+
+#if ONE_SIDED_RDMA
 void rdma_sendTd(int send_thread_id)
 {
     printf("worker send_thread_id=%d\n", send_thread_id);
@@ -1871,3 +1860,4 @@ void rdma_recvTd(int recv_thread_id)
     }
 
 }
+#endif

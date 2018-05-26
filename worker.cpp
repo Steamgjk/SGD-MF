@@ -549,6 +549,10 @@ void LoadData4()
             }
         }
         printf("Load %s okay\n", fn );
+        if (data_idx == 2)
+        {
+            return;
+        }
     }
 }
 

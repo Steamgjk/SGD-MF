@@ -65,7 +65,7 @@ void RdmaTwoSidedClientOp::client_send_next_chunk(struct rdma_cm_id *id)
   struct client_context *ctx = (struct client_context *)id->context;
   while (!ctx->buf_prepared)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
   /*
   char*str = "iamok";

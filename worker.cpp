@@ -219,6 +219,7 @@ void rdma_recvTd(int recv_thread_id);
 #if TWO_SIDED_RDMA
 void rdma_sendTd_loop(int send_thread_id);
 void rdma_recvTd_loop(int recv_thread_id);
+void InitContext();
 #endif
 
 void submf();
@@ -387,6 +388,20 @@ void InitFlag()
     *pb = -1;
     pb = (int*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ);
     *pb = -1;
+}
+#endif
+
+#if TWO_SIDED_RDMA
+void InitContext()
+{
+    for (int i = 0; i < CAP; i++)
+    {
+        c_ctx[i].buf_prepared = false;
+        c_ctx[i].buf_registered = false;
+        s_ctx[i].buf_prepared = false;
+        s_ctx[i].buf_registered = false;
+
+    }
 }
 #endif
 void LoadRmatrix(int file_no, map<long, double>& myMap)
@@ -1121,7 +1136,7 @@ void rdma_sendTd_loop(int send_thread_id)
     char str_port[100];
     sprintf(str_port, "%d", remote_port);
     RdmaTwoSidedClientOp ct;
-    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[send_thread_id]));
+    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[send_thread_id / WORKER_N_1]));
 
 }
 
@@ -1131,7 +1146,7 @@ void rdma_recvTd_loop(int recv_thread_id)
     char str_port[100];
     sprintf(str_port, "%d", bind_port);
     RdmaTwoSidedServerOp rtos;
-    rtos.rc_server_loop(str_port, &(s_ctx[recv_thread_id]));
+    rtos.rc_server_loop(str_port, &(s_ctx[recv_thread_id / WORKER_N_1]));
 
 }
 

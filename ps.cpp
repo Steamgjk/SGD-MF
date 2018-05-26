@@ -192,6 +192,7 @@ void rdma_recvTd(int recv_thread_id);
 #if TWO_SIDED_RDMA
 void rdma_sendTd_loop(int send_thread_id);
 void rdma_recvTd_loop(int recv_thread_id);
+void InitContext();
 #endif
 
 
@@ -226,6 +227,9 @@ int main(int argc, const char * argv[])
     InitFlag();
 #endif
 
+#if TWO_SIDED_RDMA
+    InitContext();
+#endif
     //gen P and Q
     if (argc == 2)
     {
@@ -400,6 +404,19 @@ void InitFlag()
     {
         bk = (int*)(void*)to_recv_mem_arr[i];
         *bk = -1;
+    }
+}
+#endif
+#if TWO_SIDED_RDMA
+void InitContext()
+{
+    for (int i = 0; i < CAP; i++)
+    {
+        c_ctx[i].buf_prepared = false;
+        c_ctx[i].buf_registered = false;
+        s_ctx[i].buf_prepared = false;
+        s_ctx[i].buf_registered = false;
+
     }
 }
 #endif
@@ -801,6 +818,8 @@ void rdma_recvTd(int recv_thread_id)
         //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
         //getchar();
+        s_ctx[recv_thread_id].buf_prepared == true;
+
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);
         recvCount++;
     }

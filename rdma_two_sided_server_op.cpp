@@ -300,7 +300,10 @@ void * RdmaTwoSidedServerOp::server_poll_cq(void* void_ch)
       if (wc.status == IBV_WC_SUCCESS)
         server_on_completion(&wc);
       else
+      {
+        printf("status=%d\n", wc.status );
         rc_die("poll_cq: status is not IBV_WC_SUCCESS");
+      }
     }
   }
 

@@ -94,7 +94,7 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
       {
 
       }
-
+      printf("server ctx has been marked false-0\n");
       server_send_message(id);
     }
     else
@@ -112,7 +112,7 @@ void RdmaTwoSidedServerOp::server_on_completion(struct ibv_wc *wc)
       {
 
       }
-
+      printf("server ctx has been marked false\n");
       ctx->msg->id = MSG_READY;
       server_send_message(id);
 

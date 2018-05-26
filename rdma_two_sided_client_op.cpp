@@ -138,7 +138,7 @@ void RdmaTwoSidedClientOp::client_on_completion(struct ibv_wc *wc)
   }
   else
   {
-    printf("wc-opcode=%d\n", wc->opcode  );
+    printf("wc-opcode=%d  IBV_WC_RDMA_WRITE=%d\n", wc->opcode, IBV_WC_RDMA_WRITE  );
   }
 }
 

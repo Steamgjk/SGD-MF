@@ -720,12 +720,26 @@ void rdma_recvTd(int recv_thread_id)
 {
 
 }
+
 void rdma_sendTd_loop(int send_thread_id)
 {
-
+    int mapped_thread_id = send_thread_id % WORKER_NUM;
+    char* remote_ip = remote_ips[mapped_thread_id];
+    int remote_port = remote_ports[send_thread_id];
+    printf("thread_id=%d\n", thread_id);
+    char str_port[100];
+    sprintf(str_port, "%d", remote_port);
+    RdmaTwoSidedClientOp ct;
+    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[send_thread_id]));
 }
+
 void rdma_recvTd_loop(int recv_thread_id)
 {
+    int bind_port =  local_ports[recv_thread_id];
+    char str_port[100];
+    sprintf(str_port, "%d", bind_port);
+    RdmaTwoSidedServerOp rtos;
+    rtos.rc_server_loop(str_port, &(s_ctx[recv_thread_id]));
 
 }
 #endif

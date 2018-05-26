@@ -1138,95 +1138,104 @@ void rdma_recvTd_loop(int recv_thread_id)
 
 void rdma_sendTd(int send_thread_id)
 {
-    /*
-        while (1 == 1)
+
+    while (1 == 1)
+    {
+        //printf("canSend=%d\n", canSend );
+        if (canSend)
         {
-            //printf("canSend=%d\n", canSend );
-            if (canSend)
-            {
-                printf("Td:%d cansend\n", thread_id );
-                size_t struct_sz = sizeof(Block);
-                size_t data_sz = sizeof(double) * Pblock.ele_num;
+            //struct timeval st, et, tspan;
 
+            printf("Td:%d cansend\n", thread_id );
+            size_t struct_sz = sizeof(Block);
+            size_t p_data_sz = sizeof(double) * Pblock.ele_num;
+            size_t q_data_sz = sizeof(double) * Qblock.ele_num;
+            size_t p_total = struct_sz + p_data_sz;
+            size_t q_total = struct_sz + q_data_sz;
+            size_t total_len = p_total + q_total;
 
-                char* buf = (char*)malloc(struct_sz + data_sz);
-                memcpy(buf, &(Pblock), struct_sz);
-                memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), data_sz);
+            c_ctx[send_thread_id].buf_len = total_len;
 
-                size_t total_len = struct_sz + data_sz;
-                printf("total_len=%ld struct_sz=%ld data_sz=%ld  elenum=%d\n", total_len, struct_sz, data_sz, Pblock.ele_num );
-                struct timeval st, et, tspan;
-                size_t sent_len = 0;
-                size_t remain_len = total_len;
-                int ret = -1;
-                size_t to_send_len = 4096;
-                //gettimeofday(&st, 0);
+            char* buf = c_ctx[send_thread_id].buffer;
 
+            memcpy(buf, &(Pblock), struct_sz);
+            memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
 
-                while (remain_len > 0)
-                {
-                    if (to_send_len > remain_len)
-                    {
-                        to_send_len = remain_len;
-                    }
-                    //printf("sending...\n");
-                    ret = send(fd, buf + sent_len, to_send_len, 0);
-                    if (ret >= 0)
-                    {
-                        remain_len -= to_send_len;
-                        sent_len += to_send_len;
-                        //printf("remain_len = %ld\n", remain_len);
-                    }
-                    else
-                    {
-                        printf("still fail\n");
-                    }
-                    //getchar();
-                }
-                free(buf);
+            memcpy(buf + p_total, &(Qblock), struct_sz);
+            memcpy(buf + p_total = struct_sz , (char*) & (Qblock.eles[0]), q - data_sz);
 
+            printf("[%d] p_total = %d  q_total=%s\n", send_thread_id, p_total, q_total);
 
-                data_sz = sizeof(double) * Qblock.ele_num;
-                total_len = struct_sz + data_sz;
-                buf = (char*)malloc(struct_sz + data_sz);
-                memcpy(buf, &(Qblock), struct_sz);
-                memcpy(buf + struct_sz , (char*) & (Qblock.eles[0]), data_sz);
-                printf("Q  total_len=%ld struct_sz=%ld data_sz=%ld ele_num=%d\n", total_len, struct_sz, data_sz, Qblock.ele_num );
-                sent_len = 0;
-                remain_len = total_len;
-                ret = -1;
-                to_send_len = 4096;
-                while (remain_len > 0)
-                {
-                    if (to_send_len > remain_len)
-                    {
-                        to_send_len = remain_len;
-                    }
-                    //printf("sending...\n");
-                    ret = send(fd, buf + sent_len, to_send_len, 0);
-                    if (ret >= 0)
-                    {
-                        remain_len -= to_send_len;
-                        sent_len += to_send_len;
-                    }
-                    else
-                    {
-                        printf("still fail\n");
-                    }
-                }
+            c_ctx[send_thread_id].buf_prepared = true;
 
-                free(buf);
-
-                canSend = false;
-            }
-
+            canSend = false;
         }
-        **/
+
+    }
+
 }
 
 void rdma_recvTd(int recv_thread_id)
 {
 
+    size_t struct_sz = sizeof(Block);
+    while (1 == 1)
+    {
+        if (recv_thread_id / WORKER_N_1 != recv_round_robin_idx % QP_GROUP)
+        {
+            continue;
+        }
+        /*
+        struct timeval st, et;
+        gettimeofday(&st, 0);
+        */
+        if (s_ctx[recv_thread_id].buf_prepared == false)
+        {
+            continue;
+        }
+
+        char* real_sta_buf = s_ctx[recv_thread_id].buffer;
+
+        struct Block* pb = (struct Block*)(void*)real_sta_buf;
+        Pblock.block_id = pb->block_id;
+        Pblock.data_age = pb->data_age;
+        Pblock.sta_idx = pb->sta_idx;
+        Pblock.height = pb->height;
+        Pblock.ele_num = pb->ele_num;
+        Pblock.eles.resize(pb->ele_num);
+        double* data_eles = (double*)(void*) (real_sta_buf + struct_sz);
+        for (int i = 0; i < Pblock.ele_num; i++)
+        {
+            Pblock.eles[i] = data_eles[i];
+        }
+        //printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
+
+        size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
+        struct Block
+            Qblock.block_id = qb->block_id;
+        Qblock.data_age = qb->data_age;
+        Qblock.sta_idx = qb->sta_idx;
+        Qblock.height = qb->height;
+        Qblock.ele_num = qb-> ele_num;
+        Qblock.eles.resize(qb->ele_num);
+        //printf("[%d]get qblock id=%d  ele_num=%d  isP=%d qb=%p\n", recv_thread_id,  qb->block_id, qb->ele_num, qb->isP, qb);
+        //data_eles = (double*)(void*)(to_recv_block_mem + BLOCK_MEM_SZ + struct_sz);
+        data_eles = (double*)(void*)(real_sta_buf + p_total + struct_sz);
+        for (int i = 0; i < Qblock.ele_num; i++)
+        {
+            Qblock.eles[i] = data_eles[i];
+        }
+        /*
+        gettimeofday(&et, 0);
+        long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+        printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
+        **/
+        s_ctx[recv_thread_id].buf_prepared = true;
+        recv_round_robin_idx++;
+        hasRecved = true;
+
+
+    }
 
 }
 #endif

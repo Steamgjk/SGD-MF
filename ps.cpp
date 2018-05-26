@@ -727,11 +727,11 @@ void rdma_sendTd(int send_thread_id)
             int pbid = worker_pidx[mapped_thread_id];
             int qbid = worker_qidx[mapped_thread_id];
             //printf("%d] canSend pbid=%d  qbid=%d sid=%d\n", send_thread_id, pbid, qbid, send_thread_id % WORKER_NUM );
-            p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
-            p_total = struct_sz + p_data_sz;
-            q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
-            q_total = struct_sz + q_data_sz;
-            total_len = p_total + q_total;
+            size_t p_data_sz = sizeof(double) * Pblocks[pbid].eles.size();
+            size_t p_total = struct_sz + p_data_sz;
+            size_t q_data_sz = sizeof(double) * Qblocks[qbid].eles.size();
+            size_t q_total = struct_sz + q_data_sz;
+            size_t total_len = p_total + q_total;
             char* real_sta_buf = c_ctx[send_thread_id].buffer;
 
             memcpy(real_sta_buf, &(Pblocks[pbid]), struct_sz);
@@ -753,6 +753,7 @@ void rdma_sendTd(int send_thread_id)
 void rdma_recvTd(int recv_thread_id)
 {
     int mapped_thread_id = recv_thread_id % WORKER_NUM;
+    size_t struct_sz = sizeof(Block);
     while (1 == 1)
     {
         if (recv_round_robin_idx[mapped_thread_id] != recv_thread_id)
@@ -763,8 +764,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             continue;
         }
-        struct timeval st, et, tspan;
-        gettimeofday(&st, 0);
+
         char* real_sta_buf = s_ctx[recv_thread_id].buffer;
         struct Block * pb = (struct Block*)(void*)(real_sta_buf);
         int block_idx = pb->block_id ;
@@ -799,7 +799,6 @@ void rdma_recvTd(int recv_thread_id)
 
         //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
-        timestp += WORKER_NUM * QP_GROUP;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d] recv success time = %lld\n", recv_thread_id, mksp );

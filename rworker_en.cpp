@@ -1501,7 +1501,7 @@ void rdma_sendTd(int send_thread_id)
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     printf("[%d] has registered send buffer\n", send_thread_id);
-    size_t struct_sz = sizeof(Block);
+    size_t total_len = 0;
     size_t data_sz  = 0;
     while (1 == 1)
     {

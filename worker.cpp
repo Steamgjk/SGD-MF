@@ -270,6 +270,10 @@ int main(int argc, const char * argv[])
     {
         int th_id = thread_id + i * WORKER_N_1;
         printf("recv th_id=%d\n", th_id );
+#if TWO_SIDED_RDMA
+        std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
+        recv_loop_thread.detach();
+#endif
         std::thread recv_thread(rdma_recvTd, th_id);
         //std::thread recv_thread(recvTd, thread_id);
         recv_thread.detach();
@@ -283,6 +287,10 @@ int main(int argc, const char * argv[])
     for (int i = 0; i < QP_GROUP; i++)
     {
         int th_id = thread_id + i * WORKER_N_1;
+#if TWO_SIDED_RDMA
+        std::thread send_loop_thread(rdma_sendTd_loop, th_id);
+        send_loop_thread.detach();
+#endif
         std::thread send_thread(rdma_sendTd, th_id);
         //std::thread send_thread(sendTd, thread_id);
         send_thread.detach();

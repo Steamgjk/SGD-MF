@@ -353,7 +353,7 @@ int main(int argc, const char * argv[])
         }
 
         printf("here start to send\n");
-        getchar();
+        //getchar();
         printf("canSend...!\n");
         for (int i = 0; i < WORKER_NUM; i++)
         {

@@ -301,7 +301,7 @@ void * RdmaTwoSidedServerOp::server_poll_cq(void* void_ch)
     {
       if (wc.status == IBV_WC_SUCCESS)
       {
-        printf("server_on_completion SUCCESS\n");
+        //printf("server_on_completion SUCCESS\n");
         server_on_completion(&wc);
       }
       else

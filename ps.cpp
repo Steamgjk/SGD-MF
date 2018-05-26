@@ -93,7 +93,7 @@ struct client_context c_ctx[CAP];
 struct conn_context s_ctx[CAP];
 #endif
 
-#define QP_GROUP 2
+#define QP_GROUP 1
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
 
@@ -743,7 +743,7 @@ void rdma_sendTd(int send_thread_id)
     while (c_ctx[send_thread_id].buf_registered == false)
     {
         printf("[%d] has not registered buffer\n", send_thread_id);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (1 == 1)
     {
@@ -789,7 +789,7 @@ void rdma_recvTd(int recv_thread_id)
     while (s_ctx[recv_thread_id].buf_registered == false)
     {
         printf("[%d] recv has not registered buffer\n", recv_thread_id);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (1 == 1)
     {

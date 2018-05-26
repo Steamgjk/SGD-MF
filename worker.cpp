@@ -113,7 +113,7 @@ double theta = 0.05;
 #define CAP 200
 #define WORKER_NUM 1
 #define WORKER_N_1 4
-#define QP_GROUP 2
+#define QP_GROUP 1
 
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};
@@ -1166,7 +1166,7 @@ void rdma_sendTd(int send_thread_id)
     while (c_ctx[send_thread_id].buf_registered == false)
     {
         printf("[%d] has not registered buffer\n", send_thread_id);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (1 == 1)
     {
@@ -1211,7 +1211,7 @@ void rdma_recvTd(int recv_thread_id)
     while (s_ctx[recv_thread_id].buf_registered == false)
     {
         printf("[%d] recv has not registered buffer\n", recv_thread_id);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (1 == 1)
     {

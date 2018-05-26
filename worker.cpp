@@ -1139,13 +1139,11 @@ void rdma_sendTd_loop(int send_thread_id)
 {
     char* remote_ip = remote_ips[send_thread_id % WORKER_N_1];
     int remote_port = remote_ports[send_thread_id];
-    char* local_ip = local_ips[send_thread_id % WORKER_N_1];
-    printf("thread_id=%d\n", thread_id);
+    int mapped_thread_id = send_thread_id / WORKER_N_1;
     char str_port[100];
     sprintf(str_port, "%d", remote_port);
     RdmaTwoSidedClientOp ct;
-    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[send_thread_id / WORKER_N_1]));
-
+    ct.rc_client_loop(remote_ip, str_port, &(c_ctx[mapped_thread_id]));
 }
 
 void rdma_recvTd_loop(int recv_thread_id)
@@ -1153,8 +1151,9 @@ void rdma_recvTd_loop(int recv_thread_id)
     int bind_port = local_ports[recv_thread_id];
     char str_port[100];
     sprintf(str_port, "%d", bind_port);
+    int mapped_thread_id = recv_thread_id / WORKER_N_1;
     RdmaTwoSidedServerOp rtos;
-    rtos.rc_server_loop(str_port, &(s_ctx[recv_thread_id / WORKER_N_1]));
+    rtos.rc_server_loop(str_port, &(s_ctx[mapped_thread_id]));
 
 }
 
@@ -1163,7 +1162,8 @@ void rdma_sendTd(int send_thread_id)
 {
 
     size_t struct_sz = sizeof(Block);
-    while (c_ctx[send_thread_id].buf_registered == false)
+    int mapped_thread_id = send_thread_id / WORKER_N_1;
+    while (c_ctx[mapped_thread_id].buf_registered == false)
     {
         printf("[%d] has not registered buffer\n", send_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -1183,9 +1183,9 @@ void rdma_sendTd(int send_thread_id)
             size_t q_total = struct_sz + q_data_sz;
             size_t total_len = p_total + q_total;
 
-            c_ctx[send_thread_id].buf_len = total_len;
+            c_ctx[mapped_thread_id].buf_len = total_len;
 
-            char* buf = c_ctx[send_thread_id].buffer;
+            char* buf = c_ctx[mapped_thread_id].buffer;
 
             memcpy(buf, &(Pblock), struct_sz);
             memcpy(buf + struct_sz, (char*) & (Pblock.eles[0]), p_data_sz);
@@ -1193,9 +1193,9 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + p_total, &(Qblock), struct_sz);
             memcpy(buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
 
-            printf("[%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld\n", send_thread_id, p_total, p_data_sz, q_total, q_data_sz);
+            printf("[%d][%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld\n", send_thread_id, mapped_thread_id, p_total, p_data_sz, q_total, q_data_sz);
 
-            c_ctx[send_thread_id].buf_prepared = true;
+            c_ctx[mapped_thread_id].buf_prepared = true;
 
             canSend = false;
         }
@@ -1208,14 +1208,16 @@ void rdma_recvTd(int recv_thread_id)
 {
 
     size_t struct_sz = sizeof(Block);
-    while (s_ctx[recv_thread_id].buf_registered == false)
+
+    int mapped_thread_id = recv_thread_id / WORKER_N_1;
+    while (s_ctx[mapped_thread_id].buf_registered == false)
     {
         printf("[%d] recv has not registered buffer\n", recv_thread_id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     while (1 == 1)
     {
-        if (recv_thread_id / WORKER_N_1 != recv_round_robin_idx % QP_GROUP)
+        if (mapped_thread_id != recv_round_robin_idx % QP_GROUP)
         {
             continue;
         }
@@ -1223,12 +1225,12 @@ void rdma_recvTd(int recv_thread_id)
         struct timeval st, et;
         gettimeofday(&st, 0);
         */
-        if (s_ctx[recv_thread_id].buf_prepared == false)
+        if (s_ctx[mapped_thread_id].buf_prepared == false)
         {
             continue;
         }
 
-        char* real_sta_buf = s_ctx[recv_thread_id].buffer;
+        char* real_sta_buf = s_ctx[mapped_thread_id].buffer;
 
         struct Block* pb = (struct Block*)(void*)real_sta_buf;
         Pblock.block_id = pb->block_id;
@@ -1264,7 +1266,7 @@ void rdma_recvTd(int recv_thread_id)
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         **/
-        s_ctx[recv_thread_id].buf_prepared = true;
+        s_ctx[mapped_thread_id].buf_prepared = true;
         recv_round_robin_idx++;
         hasRecved = true;
     }

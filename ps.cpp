@@ -793,7 +793,7 @@ void rdma_recvTd(int recv_thread_id)
     }
     while (1 == 1)
     {
-        if (recv_round_robin_idx[mapped_thread_id] != recv_thread_id)
+        if (recv_round_robin_idx[recv_thread_id] != recv_thread_id)
         {
             continue;
         }
@@ -836,7 +836,6 @@ void rdma_recvTd(int recv_thread_id)
 
         //printf("[%d]successful recv another Block id=%d data_ele=%d\n", recv_thread_id, pb->block_id, pb->ele_num);
 
-        //getchar();
         s_ctx[recv_thread_id].buf_prepared == true;
 
         recv_round_robin_idx[mapped_thread_id] = (recv_round_robin_idx[mapped_thread_id] + WORKER_NUM) % (WORKER_NUM * QP_GROUP);

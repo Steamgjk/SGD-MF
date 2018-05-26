@@ -1708,7 +1708,7 @@ void rdma_sendTd(int send_thread_id)
     size_t offset = 0;
     size_t flag_offset = sizeof(int) + sizeof(int);
     struct timeval st, et, tspan;
-    int tmp_stp = 0;
+    int time_stp = 0;
     while (1 == 1)
     {
         if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
@@ -1858,6 +1858,7 @@ void rdma_recvTd(int recv_thread_id)
 
         *flag = -1;
         *tail_total_len_ptr = -2;
+        *total_len_ptr = -3;
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 

@@ -30,6 +30,7 @@
 #include <sys/time.h>
 #include <map>
 
+#define CAP 100
 
 #define TWO_SIDED_RDMA 1
 
@@ -54,10 +55,10 @@ char* to_send_block_mem;
 char* to_recv_block_mem;
 #endif
 
-
+#if TWO_SIDED_RDMA
 struct client_context c_ctx[CAP];
 struct conn_context s_ctx[CAP];
-
+#endif
 
 //cnt=15454227 sizeof(long)=8
 //#define FILE_NAME "./netflix_row.txt"

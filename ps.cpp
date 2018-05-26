@@ -357,7 +357,8 @@ int main(int argc, const char * argv[])
         {
             canSend[i] = true;
         }
-        printf("canSend!\n");
+        printf("canSend...!\n");
+        getchar();
         //getchar();
         while (recvCount != WORKER_NUM)
         {

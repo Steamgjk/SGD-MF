@@ -47,12 +47,13 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
 /*
 #define FILE_NAME "./mdata/traina-"
@@ -63,8 +64,10 @@ std::vector<double> oldQ ;
 **/
 
 //Jumbo
+/*
 double yita = 0.002;
 double theta = 0.05;
+**/
 
 /*
 //Movie-Len
@@ -73,17 +76,16 @@ double theta = 0.01;
 **/
 
 /**Yahoo!Music**/
-/*
 double yita = 0.001;
 double theta = 0.05;
-**/
-/*
+
+
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -473,7 +475,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 2500;
+            int times_thresh = 5000;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;

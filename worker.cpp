@@ -1278,10 +1278,13 @@ void rdma_recvTd(int recv_thread_id)
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         **/
-        printf("[%d]get pblock id=%d  ele_num=%d  qblock id=%d  ele_num=%d\n", recv_thread_id, pb->block_id, pb->ele_num, qb->block_id, qb->ele_num);
+
 
         //this buf I have read it, so please prepare new buf content
         s_ctx[mapped_thread_id].buf_prepared = false;
+
+        printf("[%d]get pblock id=%d  ele_num=%d  qblock id=%d  ele_num=%d\n", recv_thread_id, pb->block_id, pb->ele_num, qb->block_id, qb->ele_num);
+
         recv_round_robin_idx++;
         hasRecved = true;
     }

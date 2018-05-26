@@ -76,6 +76,7 @@ void RdmaTwoSidedClientOp::client_send_next_chunk(struct rdma_cm_id *id)
   //printf("buf= %s  len=%ld\n", ctx->buffer, ctx->buf_len );
 
   client_write_remote(id, ctx->buf_len);
+  printf("send chunk success\n");
   ctx->buf_prepared = false;
 }
 
@@ -306,7 +307,7 @@ void * RdmaTwoSidedClientOp::client_poll_cq(void* void_ch)
       if (wc.status == IBV_WC_SUCCESS)
         client_on_completion(&wc);
       else
-        rc_die("poll_cq: status is not IBV_WC_SUCCESS");
+        rc_die("client poll_cq: status is not IBV_WC_SUCCESS");
     }
   }
 

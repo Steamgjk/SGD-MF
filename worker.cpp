@@ -1194,7 +1194,7 @@ void rdma_sendTd(int send_thread_id)
             memcpy(buf + p_total, &(Qblock), struct_sz);
             memcpy(buf + p_total + struct_sz , (char*) & (Qblock.eles[0]), q_data_sz);
 
-            printf("[%d][%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld\n", send_thread_id, mapped_thread_id, p_total, p_data_sz, q_total, q_data_sz);
+            printf("[%d][%d] p_total = %ld p_data_sz=%ld q_total=%ld q_data_sz=%ld total_len=%ld\n", send_thread_id, mapped_thread_id, p_total, p_data_sz, q_total, q_data_sz, total_len);
 
             c_ctx[mapped_thread_id].buf_len = total_len;
             c_ctx[mapped_thread_id].buf_prepared = true;
@@ -1247,7 +1247,7 @@ void rdma_recvTd(int recv_thread_id)
         {
             Pblock.eles[i] = data_eles[i];
         }
-        printf("[%d]get pblock id=%d  ele_num=%d  isP=%d pb=%p\n", recv_thread_id,  pb->block_id, pb->ele_num, pb->isP, pb);
+
 
         size_t p_total = struct_sz + sizeof(double) * (pb->ele_num);
         struct Block* qb = (struct Block*)(void*)(real_sta_buf + p_total);
@@ -1269,6 +1269,7 @@ void rdma_recvTd(int recv_thread_id)
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
         printf("[%d]:recv two blocks time = %lld\n", recv_thread_id, mksp);
         **/
+        printf("[%d]get pblock id=%d  ele_num=%d  qblock id=%d  ele_num=%d\n", recv_thread_id, pb->block_id, pb->ele_num, qb->block_id, qb->ele_num);
 
         //this buf I have read it, so please prepare new buf content
         s_ctx[mapped_thread_id].buf_prepared = false;

@@ -100,8 +100,8 @@ double theta = 0.05;
 #define QU_LEN 10000
 
 #define WORKER_THREAD_NUM 30
-#define BLOCK_MEM_SZ (250000000)
-#define MEM_SIZE (BLOCK_MEM_SZ*8)
+#define BLOCK_MEM_SZ (25000000)
+#define MEM_SIZE (BLOCK_MEM_SZ*80)
 
 #define WORKER_N_1 4
 #define QP_GROUP 1

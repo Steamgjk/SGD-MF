@@ -1780,7 +1780,7 @@ void rdma_sendTd(int send_thread_id)
 
             ret = cro.start_remote_write(real_total, offset);
 
-            //ret = cro.start_remote_write(sizeof(int), offset);
+            ret = cro.start_remote_write(sizeof(int) + sizeof(int), offset);
 
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);

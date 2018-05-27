@@ -380,7 +380,7 @@ int main(int argc, const char * argv[])
                 {
                     printf("%lld\n", calcTimes[i] );
                 }
-                exit(0)
+                exit(0);
             }
 
             if (iter_cnt == thresh_log )

@@ -1385,17 +1385,16 @@ void rdma_sendTd(int send_thread_id)
             //printf("[%d]:writer another block success real_total=%ld\n", send_thread_id, real_total);
             canSend = false;
             int cnt = 0;
-            long time_interval = 10;
-
-
             send_round_robin_idx++;
-            /*
+
+
+            long time_interval = 10;
             while (canSend == false)
             {
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), 0);
                 cnt++;
-                int*fla = (int*)(void*)buf;
-                int*total_l = (int*)(void*)(buf + sizeof(int));
+                //int*fla = (int*)(void*)buf;
+                //int*total_l = (int*)(void*)(buf + sizeof(int));
                 //printf("[%d]:resend one fla=%d  total_l=%d\n", send_thread_id, (*fla), (*total_l));
                 if (cnt > 10)
                 {
@@ -1410,7 +1409,7 @@ void rdma_sendTd(int send_thread_id)
                 //printf("[%d] may be can jumb\n", send_thread_id );
 
             }
-            **/
+
             time_stp += WORKER_N_1 * QP_GROUP ;
 
 

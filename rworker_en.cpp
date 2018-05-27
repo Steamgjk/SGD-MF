@@ -67,13 +67,13 @@ std::vector<double> oldQ ;
 #define K  100 //主题个数
 **/
 
-
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-
+**/
 
 //Jumbo
 /*
@@ -81,25 +81,24 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 
-
+/*
 //Movie-Len
 double yita = 0.003;
 double theta = 0.01;
-
-
-/**Yahoo!Music**/
-/*
-double yita = 0.001;
-double theta = 0.05;
 **/
 
-/*
-#define FILE_NAME "./yahoo-output/train-"
+/**Yahoo!Music**/
+
+double yita = 0.001;
+double theta = 0.05;
+
+
+#define FILE_NAME "./yahoo-output64/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -350,21 +349,21 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].eles[j] = drand48() * 0.6;
+            //Pblocks[i].eles[j] = drand48() * 0.6;
 
             //0.3
             //Pblocks[i].eles[j] = drand48() * 0.3;
             //
 
-            //Pblocks[i].eles[j] = drand48() * 0.2;
+            Pblocks[i].eles[j] = drand48() * 0.2;
 
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
-            Qblocks[i].eles[j] = drand48() * 0.6;
+            //Qblocks[i].eles[j] = drand48() * 0.6;
 
             //Qblocks[i].eles[j] = drand48() * 0.3;
-            //Qblocks[i].eles[j] = drand48() * 0.2;
+            Qblocks[i].eles[j] = drand48() * 0.2;
 
         }
     }
@@ -622,7 +621,7 @@ void CalcUpdt1(int td_id)
         {
 
 
-            int times_thresh = 200;
+            int times_thresh = 2500;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;

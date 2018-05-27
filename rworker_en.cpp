@@ -966,7 +966,7 @@ void LoadData4()
 
         }
     }
-    for (int data_idx = 0; data_idx < 64; data_idx++)
+    for (int data_idx = 0; data_idx < 16; data_idx++)
     {
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;

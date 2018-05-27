@@ -115,8 +115,8 @@ double theta = 0.05;
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 

@@ -1771,7 +1771,7 @@ void rdma_sendTd(int send_thread_id)
             *total_len_ptr = total_len;
 
             ret = cro.start_remote_write(real_total, offset);
-
+            printf("send flag=%d offset=%ld\n", (*flag), offset );
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
@@ -1818,7 +1818,7 @@ void rdma_recvTd(int recv_thread_id)
         while ( (*flag) != time_stp)
         {
             printf("flag ka  %d  time_stp=%d\n", (*flag), time_stp);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         printf("flag=%d\n", (*flag) );
         while ((*total_len_ptr) <= 0 )

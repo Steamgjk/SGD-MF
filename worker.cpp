@@ -72,7 +72,7 @@ struct conn_context s_ctx[CAP];
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
 
-
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
@@ -85,14 +85,15 @@ struct conn_context s_ctx[CAP];
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
-/*
+
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 /**Movie-Len**/
 /*
@@ -101,15 +102,13 @@ double theta = 0.01;
 **/
 
 /* Jumbo **/
-
+/*
 double yita = 0.002;
 double theta = 0.05;
-
+**/
 /**Yahoo!Music**/
-/*
 double yita = 0.001;
 double theta = 0.05;
-**/
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -323,8 +322,8 @@ int main(int argc, const char * argv[])
     calc_time = 0;
     bool isstart = false;
 
-    LoadData();
-    //LoadData4();
+    //LoadData();
+    LoadData4();
     //printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;
@@ -639,7 +638,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 1000;
+            int times_thresh = 5000;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;

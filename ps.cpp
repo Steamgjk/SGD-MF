@@ -63,20 +63,20 @@ using namespace std;
 **/
 
 /*Jumbo **/
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-
+**/
 /**Yahoo!Music **/
-/*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 
 #if ONE_SIDED_RDMA
@@ -355,7 +355,7 @@ int main(int argc, const char * argv[])
 
         //printf("here start to send\n");
         //getchar();
-        printf("canSend...!\n");
+        printf("[%d]canSend...!\n", iter_t);
         for (int i = 0; i < WORKER_NUM; i++)
         {
             canSend[i] = true;

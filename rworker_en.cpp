@@ -1772,7 +1772,7 @@ void rdma_sendTd(int send_thread_id)
             *total_len_ptr = total_len;
 
             ret = cro.start_remote_write(real_total, offset);
-            printf("send flag=%d offset=%ld real_total=%ld total_len=%ld\n", (*flag), offset, real_total, total_len );
+            //printf("send flag=%d offset=%ld real_total=%ld total_len=%ld\n", (*flag), offset, real_total, total_len );
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;

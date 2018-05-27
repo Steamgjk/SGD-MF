@@ -917,8 +917,8 @@ void LoadData2()
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
         //for 4 worker
-        //row /= 2;
-        //col /= 2;
+        row /= 2;
+        col /= 2;
         sprintf(fn, "%s%d", FILE_NAME, data_idx);
         printf("fn=%s  :[%d][%d]\n", fn, row, col );
         ifstream ifs(fn);

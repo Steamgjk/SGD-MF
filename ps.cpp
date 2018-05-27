@@ -395,7 +395,7 @@ int main(int argc, const char * argv[])
         iter_t++;
         if (iter_t % 50 == 0)
         {
-            for (int i = 0; i < iter_t / 10; i++)
+            for (int i = 0; i <= iter_t / 10; i++)
             {
                 printf("%lld\n", time_span[i] );
             }

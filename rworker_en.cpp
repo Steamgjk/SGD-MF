@@ -1817,7 +1817,7 @@ void rdma_recvTd(int recv_thread_id)
         char* real_sta = buf + sizeof(int) + sizeof(int);
         while ( (*flag) != time_stp)
         {
-            printf("flag ka  %d  time_stp=%d\n", (*flag), time_stp);
+            printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         printf("flag=%d\n", (*flag) );
@@ -1831,8 +1831,8 @@ void rdma_recvTd(int recv_thread_id)
         printf("total_len=%d\n", total_len );
         while ((*tail_total_len_ptr) != time_stp)
         {
-            printf("total ka  %d  %d\n", (*tail_total_len_ptr), time_stp );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            printf("total ka  %d  %d  offset=%ld\n", (*tail_total_len_ptr), time_stp, offset );
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         printf("total out  %d  %d\n", (*tail_total_len_ptr), time_stp );
         struct Block * pb = (struct Block*)(void*)real_sta;

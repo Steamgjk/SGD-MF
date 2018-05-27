@@ -324,8 +324,8 @@ int main(int argc, const char * argv[])
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     //LoadData(CACHE_NUM);
-    //LoadData2();
-    LoadData4();
+    LoadData2();
+    //LoadData4();
     printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -908,8 +908,8 @@ void LoadData2()
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
         //for 4 worker
-        //row /= 2;
-        //col /= 2;
+        row /= 2;
+        col /= 2;
         sprintf(fn, "%s%d", FILE_NAME, data_idx);
         printf("fn=%s  :[%d][%d]\n", fn, row, col );
         ifstream ifs(fn);

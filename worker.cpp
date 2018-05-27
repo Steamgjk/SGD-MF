@@ -87,19 +87,19 @@ struct conn_context s_ctx[CAP];
 #define K  100 //主题个数
 **/
 
-
+/*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-
+**/
 
 /**Movie-Len**/
-/*
+
 double yita = 0.003;
 double theta = 0.01;
-**/
+
 
 /* Jumbo **/
 /*
@@ -107,8 +107,10 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 /**Yahoo!Music**/
+/*
 double yita = 0.001;
 double theta = 0.05;
+**/
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -638,7 +640,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 5000;
+            int times_thresh = 200;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;

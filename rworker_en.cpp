@@ -1783,7 +1783,7 @@ void rdma_sendTd(int send_thread_id)
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
         }
 

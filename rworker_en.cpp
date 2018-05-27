@@ -91,7 +91,7 @@ double yita = 0.001;
 double theta = 0.05;
 
 
-#define FILE_NAME "./yahoo-output/train-"
+#define FILE_NAME "./yahoo-output64/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
@@ -112,8 +112,8 @@ double theta = 0.05;
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-int GROUP_NUM = 1;
-int DIM_NUM = 4;
+int GROUP_NUM = 2;
+int DIM_NUM = 8;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -619,7 +619,7 @@ void CalcUpdt1(int td_id)
         {
 
 
-            int times_thresh = 5000;
+            int times_thresh = 2500;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -966,7 +966,7 @@ void LoadData4()
 
         }
     }
-    for (int data_idx = 0; data_idx < 16; data_idx++)
+    for (int data_idx = 0; data_idx < 64; data_idx++)
     {
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;

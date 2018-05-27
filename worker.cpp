@@ -80,13 +80,12 @@ struct conn_context s_ctx[CAP];
 #define K  40 //主题个数
 
 
-/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
+
 /*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
@@ -102,15 +101,15 @@ double theta = 0.01;
 **/
 
 /* Jumbo **/
-/*
+
 double yita = 0.002;
 double theta = 0.05;
-**/
-/**Yahoo!Music**/
 
+/**Yahoo!Music**/
+/*
 double yita = 0.001;
 double theta = 0.05;
-
+**/
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -640,7 +639,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id] == true)
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 200;
+            int times_thresh = 1000;
             int row_sta_idx = Pblock.sta_idx;
             int col_sta_idx = Qblock.sta_idx;
             size_t rtsz;

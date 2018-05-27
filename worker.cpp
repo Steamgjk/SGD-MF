@@ -268,37 +268,37 @@ int main(int argc, const char * argv[])
     {
         thresh_log = atoi(argv[2]);
     }
-
-    for (int i = 0; i < QP_GROUP; i++)
-    {
-        int th_id = thread_id + i * WORKER_N_1;
-        printf("recv th_id=%d\n", th_id );
-#if TWO_SIDED_RDMA
-        std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
-        recv_loop_thread.detach();
-#endif
-        std::thread recv_thread(rdma_recvTd, th_id);
-        //std::thread recv_thread(recvTd, thread_id);
-        recv_thread.detach();
-    }
-
-
-    printf("wait for you for 3s\n");
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    /**
+        for (int i = 0; i < QP_GROUP; i++)
+        {
+            int th_id = thread_id + i * WORKER_N_1;
+            printf("recv th_id=%d\n", th_id );
+    #if TWO_SIDED_RDMA
+            std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
+            recv_loop_thread.detach();
+    #endif
+            std::thread recv_thread(rdma_recvTd, th_id);
+            //std::thread recv_thread(recvTd, thread_id);
+            recv_thread.detach();
+        }
 
 
-    for (int i = 0; i < QP_GROUP; i++)
-    {
-        int th_id = thread_id + i * WORKER_N_1;
-#if TWO_SIDED_RDMA
-        std::thread send_loop_thread(rdma_sendTd_loop, th_id);
-        send_loop_thread.detach();
-#endif
-        std::thread send_thread(rdma_sendTd, th_id);
-        //std::thread send_thread(sendTd, thread_id);
-        send_thread.detach();
-    }
+        printf("wait for you for 3s\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
+
+        for (int i = 0; i < QP_GROUP; i++)
+        {
+            int th_id = thread_id + i * WORKER_N_1;
+    #if TWO_SIDED_RDMA
+            std::thread send_loop_thread(rdma_sendTd_loop, th_id);
+            send_loop_thread.detach();
+    #endif
+            std::thread send_thread(rdma_sendTd, th_id);
+            //std::thread send_thread(sendTd, thread_id);
+            send_thread.detach();
+        }
+    **/
 
 
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -311,13 +311,13 @@ int main(int argc, const char * argv[])
     memset(&stop, 0, sizeof(struct timeval));
     memset(&diff, 0, sizeof(struct timeval));
 
-    /*
-        std::thread send_thread(sendTd, thread_id);
-        send_thread.detach();
 
-        std::thread recv_thread(recvTd, thread_id);
-        recv_thread.detach();
-    **/
+    std::thread send_thread(sendTd, thread_id);
+    send_thread.detach();
+
+    std::thread recv_thread(recvTd, thread_id);
+    recv_thread.detach();
+
 
     iter_cnt = 0;
     calc_time = 0;

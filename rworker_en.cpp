@@ -303,24 +303,24 @@ int main(int argc, const char * argv[])
     {
         int th_id = thread_id + i * WORKER_N_1;
         printf(" th_id=%d\n", th_id );
-
-#if TWO_SIDED_RDMA
-        std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
-        recv_loop_thread.detach();
-        std::thread send_loop_thread(rdma_sendTd_loop, th_id);
-        send_loop_thread.detach();
-#endif
-        std::thread recv_thread(rdma_recvTd, th_id);
-        recv_thread.detach();
-        std::thread send_thread(rdma_sendTd, th_id);
-        send_thread.detach();
-
         /*
-                std::thread recv_thread(recvTd, th_id);
+        #if TWO_SIDED_RDMA
+                std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
+                recv_loop_thread.detach();
+                std::thread send_loop_thread(rdma_sendTd_loop, th_id);
+                send_loop_thread.detach();
+        #endif
+                std::thread recv_thread(rdma_recvTd, th_id);
                 recv_thread.detach();
-                std::thread send_thread(sendTd, th_id);
+                std::thread send_thread(rdma_sendTd, th_id);
                 send_thread.detach();
         **/
+
+        std::thread recv_thread(recvTd, th_id);
+        recv_thread.detach();
+        std::thread send_thread(sendTd, th_id);
+        send_thread.detach();
+
 
     }
 
@@ -1821,7 +1821,7 @@ void rdma_recvTd(int recv_thread_id)
             //printf("flag ka  %d\n", (*flag));
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        printf("flag=%d\n", (*flag) );
+        //printf("flag=%d\n", (*flag) );
         while ((*total_len_ptr) <= 0 )
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));

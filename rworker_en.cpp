@@ -109,8 +109,8 @@ double theta = 0.05;
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-int GROUP_NUM = 1;
-int DIM_NUM = 4;
+int GROUP_NUM = 2;
+int DIM_NUM = 8;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -324,8 +324,8 @@ int main(int argc, const char * argv[])
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     //LoadData(CACHE_NUM);
-    LoadData2();
-    //LoadData4();
+    //LoadData2();
+    LoadData4();
     printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -525,7 +525,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 200;
+            int times_thresh = 100;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;

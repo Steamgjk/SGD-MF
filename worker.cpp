@@ -72,14 +72,14 @@ struct conn_context s_ctx[CAP];
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
 
-/*
+
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
 
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000

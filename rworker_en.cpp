@@ -1821,11 +1821,11 @@ void rdma_recvTd(int recv_thread_id)
         {
             if ( (*flag) != time_stp)
             {
-                printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
-            printf("flag=%d\n", (*flag) );
+            //printf("flag=%d\n", (*flag) );
             if ((*total_len_ptr) <= 0 )
             {
 
@@ -1834,11 +1834,11 @@ void rdma_recvTd(int recv_thread_id)
             }
             total_len = (*total_len_ptr);
             tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
-            printf("total_len=%d\n", total_len );
+            //printf("total_len=%d\n", total_len );
             if ((*tail_total_len_ptr) != time_stp)
             {
-                printf("total ka  %d  %d  offset=%ld total_len=%ld\n", (*tail_total_len_ptr), time_stp, offset, total_len );
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //printf("total ka  %d  %d  offset=%ld total_len=%ld\n", (*tail_total_len_ptr), time_stp, offset, total_len );
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
             else
@@ -1847,7 +1847,7 @@ void rdma_recvTd(int recv_thread_id)
             }
         }
 
-        printf("total out  %d  %d\n", (*tail_total_len_ptr), time_stp );
+        //printf("total out  %d  %d\n", (*tail_total_len_ptr), time_stp );
         struct Block * pb = (struct Block*)(void*)real_sta;
         gettimeofday(&st, 0);
         size_t data_sz = sizeof(double) * (pb->ele_num);

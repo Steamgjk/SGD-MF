@@ -410,7 +410,7 @@ int main(int argc, const char * argv[])
                 time_span[iter_cnt / 10] = mksp;
                 calc_time_span[iter_cnt / 10] = calcTime;
             }
-            if (iter_cnt % 100 == 0)
+            if (iter_cnt == 1010)
             {
                 for (int i = 0; i < iter_cnt / 10; i++)
                 {
@@ -421,6 +421,7 @@ int main(int argc, const char * argv[])
                 {
                     printf("%lld\n", calc_time_span[i]);
                 }
+                exit(0);
             }
 
         }

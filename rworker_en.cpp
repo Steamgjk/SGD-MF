@@ -1771,7 +1771,7 @@ void rdma_sendTd(int send_thread_id)
             *total_len_ptr = total_len;
 
             ret = cro.start_remote_write(real_total, offset);
-            printf("send flag=%d offset=%ld\n", (*flag), offset );
+            printf("send flag=%d offset=%ld real_total=%ld total_len=%ld\n", (*flag), offset, real_total, total_len );
             offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
@@ -1815,25 +1815,36 @@ void rdma_recvTd(int recv_thread_id)
         int* flag = (int*)(void*)buf;
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         char* real_sta = buf + sizeof(int) + sizeof(int);
-        while ( (*flag) != time_stp)
+        while (1 == 1)
         {
-            printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-        printf("flag=%d\n", (*flag) );
-        while ((*total_len_ptr) <= 0 )
-        {
+            if ( (*flag) != time_stp)
+            {
+                printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                continue;
+            }
+            printf("flag=%d\n", (*flag) );
+            if ((*total_len_ptr) <= 0 )
+            {
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
+            int total_len = (*total_len_ptr);
+            int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
+            printf("total_len=%d\n", total_len );
+            if ((*tail_total_len_ptr) != time_stp)
+            {
+                printf("total ka  %d  %d  offset=%ld total_len=%ld\n", (*tail_total_len_ptr), time_stp, offset, total_len );
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                continue;
+            }
+            else
+            {
+                break;
+            }
         }
-        int total_len = (*total_len_ptr);
-        int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
-        printf("total_len=%d\n", total_len );
-        while ((*tail_total_len_ptr) != time_stp)
-        {
-            printf("total ka  %d  %d  offset=%ld\n", (*tail_total_len_ptr), time_stp, offset );
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
+
         printf("total out  %d  %d\n", (*tail_total_len_ptr), time_stp );
         struct Block * pb = (struct Block*)(void*)real_sta;
         gettimeofday(&st, 0);

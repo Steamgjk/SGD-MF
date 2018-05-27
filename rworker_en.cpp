@@ -60,7 +60,7 @@ std::vector<double> oldQ ;
 
 
 //Jumbo
-/*
+
 double yita = 0.002;
 double theta = 0.05;
 #define FILE_NAME "./data/TrainingMap-"
@@ -68,7 +68,6 @@ double theta = 0.05;
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
 
 
 /*
@@ -86,17 +85,15 @@ double theta = 0.01;
 
 
 /**Yahoo!Music**/
-
+/*
 double yita = 0.001;
 double theta = 0.05;
-
-
 #define FILE_NAME "./yahoo-output64/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-
+**/
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -619,7 +616,7 @@ void CalcUpdt1(int td_id)
         {
 
 
-            int times_thresh = 2500;
+            int times_thresh = 500;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -986,7 +983,7 @@ void LoadData4()
         {
             ifs >> hash_id >> rate;
             //min-max scaling
-            rate = rate / 100;
+            //rate = rate / 100;
             if (hash_id >= 0)
             {
                 ridx = ((hash_id) / M) % WORKER_THREAD_NUM;

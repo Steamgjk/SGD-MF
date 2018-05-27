@@ -409,7 +409,7 @@ int main(int argc, const char * argv[])
                 time_span[iter_cnt / 10] = mksp;
                 calc_time_span[iter_cnt / 10] = calcTime;
             }
-            if (iter_cnt == 1010)
+            if (iter_cnt % 100 == 0)
             {
                 for (int i = 0; i < iter_cnt / 10; i++)
                 {
@@ -1785,7 +1785,7 @@ void rdma_sendTd(int send_thread_id)
             to_send_head = (to_send_head + 1) % QU_LEN;
             if (iter_cnt % 10 == 0)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
 
 

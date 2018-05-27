@@ -1785,7 +1785,7 @@ void rdma_sendTd(int send_thread_id)
             to_send_head = (to_send_head + 1) % QU_LEN;
             //if (iter_cnt % 10 == 0)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
 

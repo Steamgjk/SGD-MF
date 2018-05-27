@@ -87,19 +87,19 @@ struct conn_context s_ctx[CAP];
 #define K  100 //主题个数
 **/
 
-/*
+
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 /**Movie-Len**/
-
+/*
 double yita = 0.003;
 double theta = 0.01;
-
+**/
 
 /* Jumbo **/
 /*
@@ -107,10 +107,10 @@ double yita = 0.002;
 double theta = 0.05;
 **/
 /**Yahoo!Music**/
-/*
+
 double yita = 0.001;
 double theta = 0.05;
-**/
+
 
 #define CAP 200
 #define WORKER_NUM 1
@@ -248,6 +248,8 @@ std::vector<double> rates_for_col_threads[10][10][WORKER_THREAD_NUM];
 int iter_cnt = 0;
 long long calcTimes[2000];
 long long calc_time;
+long long load_time;
+long long loadTimes[2000];
 int main(int argc, const char * argv[])
 {
 
@@ -324,7 +326,7 @@ int main(int argc, const char * argv[])
     calc_time = 0;
     bool isstart = false;
 
-    LoadData();
+    //LoadData();
     //LoadData4();
     //printf("Load Rating Success\n");
 
@@ -374,6 +376,7 @@ int main(int argc, const char * argv[])
             {
                 //WriteLog(Pblock, Qblock, iter_cnt);
                 calcTimes[iter_cnt / 10] = calc_time;
+                loadTimes[iter_cnt / 10] = load_time;
             }
             if (iter_cnt == 1000)
             {
@@ -822,24 +825,25 @@ void submf()
     **/
 
 
-    /*
-        int row = Pblock.block_id;
-        int col = Qblock.block_id;
-        //printf("row=%d col=%d\n", row, col );
-        for (int td = 0; td < WORKER_THREAD_NUM; td++)
-        {
-            hash_for_row_threads[row][col][td].clear();
-            rates_for_row_threads[row][col][td].clear();
-            hash_for_col_threads[row][col][td].clear();
-            rates_for_col_threads[row][col][td].clear();
-        }
-        int f1 = row * 4 + col;
-        printf("row=%d col=%d\n", row, col );
-        LoadRequiredData(row, col, f1);
-    **/
+
+    int row = Pblock.block_id;
+    int col = Qblock.block_id;
+    //printf("row=%d col=%d\n", row, col );
+    for (int td = 0; td < WORKER_THREAD_NUM; td++)
+    {
+        hash_for_row_threads[row][col][td].clear();
+        rates_for_row_threads[row][col][td].clear();
+        hash_for_col_threads[row][col][td].clear();
+        rates_for_col_threads[row][col][td].clear();
+    }
+    int f1 = row * 4 + col;
+    printf("row=%d col=%d\n", row, col );
+    LoadRequiredData(row, col, f1);
+
     gettimeofday(&ed, 0);
     mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    //printf("Load time = %lld\n", mksp);
+    load_time += mksp;
+    printf("Load time = %lld\n", mksp);
 
 
     bool canbreak = true;

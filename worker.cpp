@@ -321,6 +321,7 @@ int main(int argc, const char * argv[])
     **/
 
     iter_cnt = 0;
+    calc_time = 0;
     bool isstart = false;
 
     LoadData();
@@ -374,13 +375,13 @@ int main(int argc, const char * argv[])
                 //WriteLog(Pblock, Qblock, iter_cnt);
                 calcTimes[iter_cnt / 10] = calc_time;
             }
-            if (iter_cnt == 1010)
+            if (iter_cnt == 1000)
             {
                 for (int i = 0; i <= 100; i++)
                 {
                     printf("%lld\n", calcTimes[i] );
                 }
-                exit(0);
+                //exit(0);
             }
 
             if (iter_cnt == thresh_log )
@@ -868,8 +869,10 @@ void submf()
 
 
     gettimeofday(&ed, 0);
-    calc_time = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Calc  time = %lld\n", calc_time);
+    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+
+    calc_time += mksp;
+    printf("Calc  time = %lld\n", mksp);
 
 
 }

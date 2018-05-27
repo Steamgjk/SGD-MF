@@ -1815,6 +1815,8 @@ void rdma_recvTd(int recv_thread_id)
         int* flag = (int*)(void*)buf;
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         char* real_sta = buf + sizeof(int) + sizeof(int);
+        int total_len = -1;
+        int* tail_total_len_ptr = NULL;
         while (1 == 1)
         {
             if ( (*flag) != time_stp)
@@ -1830,8 +1832,8 @@ void rdma_recvTd(int recv_thread_id)
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
-            int total_len = (*total_len_ptr);
-            int* tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
+            total_len = (*total_len_ptr);
+            tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
             printf("total_len=%d\n", total_len );
             if ((*tail_total_len_ptr) != time_stp)
             {

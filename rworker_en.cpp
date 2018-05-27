@@ -59,21 +59,21 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
 
-/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-**/
+
 
 //Jumbo
 
@@ -303,24 +303,24 @@ int main(int argc, const char * argv[])
     {
         int th_id = thread_id + i * WORKER_N_1;
         printf(" th_id=%d\n", th_id );
-        /*
-        #if TWO_SIDED_RDMA
-                std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
-                recv_loop_thread.detach();
-                std::thread send_loop_thread(rdma_sendTd_loop, th_id);
-                send_loop_thread.detach();
-        #endif
-                std::thread recv_thread(rdma_recvTd, th_id);
-                recv_thread.detach();
-                std::thread send_thread(rdma_sendTd, th_id);
-                send_thread.detach();
-        **/
 
-        std::thread recv_thread(recvTd, th_id);
+#if TWO_SIDED_RDMA
+        std::thread recv_loop_thread(rdma_recvTd_loop, th_id);
+        recv_loop_thread.detach();
+        std::thread send_loop_thread(rdma_sendTd_loop, th_id);
+        send_loop_thread.detach();
+#endif
+        std::thread recv_thread(rdma_recvTd, th_id);
         recv_thread.detach();
-        std::thread send_thread(sendTd, th_id);
+        std::thread send_thread(rdma_sendTd, th_id);
         send_thread.detach();
 
+        /*
+                std::thread recv_thread(recvTd, th_id);
+                recv_thread.detach();
+                std::thread send_thread(sendTd, th_id);
+                send_thread.detach();
+        **/
 
     }
 
@@ -421,6 +421,10 @@ int main(int argc, const char * argv[])
                 {
                     printf("%lld\n", calc_time_span[i]);
                 }
+                //exit(0);
+            }
+            if (iter_cnt == 1100)
+            {
                 exit(0);
             }
 
@@ -528,7 +532,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 1000;
+            int times_thresh = 200;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;

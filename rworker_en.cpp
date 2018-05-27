@@ -1791,6 +1791,7 @@ void rdma_sendTd(int send_thread_id)
             int cnt = 0;
             while (to_send_head >= to_send_tail)
             {
+                printf("resend..\n");
                 ret = cro.start_remote_write(sizeof(int) + sizeof(int), offset);
                 cnt++;
                 if (cnt > 10)

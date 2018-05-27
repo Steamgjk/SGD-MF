@@ -59,15 +59,23 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-/*
+//Jumbo
+
+double yita = 0.002;
+double theta = 0.05;
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
+
+
 
 /*
+//Movie-Len
+double yita = 0.003;
+double theta = 0.01;
+
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
@@ -75,20 +83,10 @@ std::vector<double> oldQ ;
 #define K  40 //主题个数
 **/
 
-//Jumbo
-/*
-double yita = 0.002;
-double theta = 0.05;
-**/
 
-/*
-//Movie-Len
-double yita = 0.003;
-double theta = 0.01;
-**/
 
 /**Yahoo!Music**/
-
+/*
 double yita = 0.001;
 double theta = 0.05;
 
@@ -98,7 +96,7 @@ double theta = 0.05;
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-
+**/
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -329,7 +327,7 @@ int main(int argc, const char * argv[])
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     //LoadData(CACHE_NUM);
-    LoadData4();
+    LoadData2();
     //LoadData4();
     printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -352,18 +350,18 @@ int main(int argc, const char * argv[])
             //Pblocks[i].eles[j] = drand48() * 0.6;
 
             //0.3
-            //Pblocks[i].eles[j] = drand48() * 0.3;
+            Pblocks[i].eles[j] = drand48() * 0.3;
             //
 
-            Pblocks[i].eles[j] = drand48() * 0.2;
+            //Pblocks[i].eles[j] = drand48() * 0.2;
 
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
             //Qblocks[i].eles[j] = drand48() * 0.6;
 
-            //Qblocks[i].eles[j] = drand48() * 0.3;
-            Qblocks[i].eles[j] = drand48() * 0.2;
+            Qblocks[i].eles[j] = drand48() * 0.3;
+            //Qblocks[i].eles[j] = drand48() * 0.2;
 
         }
     }
@@ -621,7 +619,7 @@ void CalcUpdt1(int td_id)
         {
 
 
-            int times_thresh = 2500;
+            int times_thresh = 500;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -1785,7 +1783,7 @@ void rdma_sendTd(int send_thread_id)
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         }
 

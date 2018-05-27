@@ -123,7 +123,7 @@ int CACHE_NUM = 20;
 int process_qu[WORKER_TD][SEQ_LEN];
 int process_head[WORKER_TD];
 int process_tail[WORKER_TD];
-
+long long calcTime = 0;
 
 #if TWO_SIDED_RDMA
 struct client_context c_ctx[CAP];
@@ -271,6 +271,7 @@ void CalcUpdt(int td_id);
 
 
 long long time_span[2000];
+long long calc_time_span[2000];
 int thread_id = -1;
 int p_block_idx;
 int q_block_idx;
@@ -390,6 +391,7 @@ int main(int argc, const char * argv[])
     iter_cnt = 0;
     struct timeval st, et, tspan;
     long long mksp;
+    calcTime = 0;
     while (1 == 1)
     {
         if (iter_cnt == 0)
@@ -404,14 +406,20 @@ int main(int argc, const char * argv[])
 
                 mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
                 //if (iter_cnt % 100 == 0)
-                printf("hehere %d\t%lld\n", iter_cnt, mksp);
+                printf("iter_cnt=%d\tmksp=%lld\tcalcTime=%lld\n", iter_cnt, mksp, calcTime);
                 time_span[iter_cnt / 10] = mksp;
+                calc_time_span[iter_cnt / 10] = calcTime;
             }
             if (iter_cnt % 100 == 0)
             {
                 for (int i = 0; i < iter_cnt / 10; i++)
                 {
                     printf("%lld\n", time_span[i]);
+                }
+                printf("\n\nCalcTime\n");
+                for (int i = 0; i < iter_cnt / 10; i++)
+                {
+                    printf("%lld\n", calc_time_span[i]);
                 }
             }
 
@@ -490,11 +498,7 @@ int main(int argc, const char * argv[])
 
         //printf("iterddd %d\n", iter_cnt );
 
-        if (iter_cnt == 2000)
-        {
-            printf("iter_cnt=%d\n", iter_cnt );
-            //exit(0);
-        }
+
 
         //printf("Processing has_processed=%d\n", has_processed );
     }
@@ -1124,9 +1128,11 @@ void SGD_MF()
 
     struct timeval beg, ed;
     long long mksp;
+    gettimeofday(&beg, 0);
 
     oldP = Pblocks[p_block_idx].eles;
     oldQ = Qblocks[q_block_idx].eles;
+    /*
     for (int i = 0; i < Pblocks[p_block_idx].ele_num; i++)
     {
         if (oldP[i] > 100 || oldP[i] < -100)
@@ -1146,18 +1152,17 @@ void SGD_MF()
         }
 
     }
+    **/
 
 
 
     {
 
-        gettimeofday(&beg, 0);
+
         for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)
         {
             StartCalcUpdt[ii] = true;
         }
-
-
 
         bool canbreak = true;
         while (1 == 1)
@@ -1181,7 +1186,8 @@ void SGD_MF()
 
         gettimeofday(&ed, 0);
         mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
+        //printf(" SGD time = %lld upt p %d q %d\n", mksp, p_block_idx, q_block_idx);
+        calcTime += mksp;
 
 
     }

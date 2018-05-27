@@ -246,6 +246,8 @@ std::vector<double> rates_for_row_threads[10][10][WORKER_THREAD_NUM];
 std::vector<long> hash_for_col_threads[10][10][WORKER_THREAD_NUM];
 std::vector<double> rates_for_col_threads[10][10][WORKER_THREAD_NUM];
 int iter_cnt = 0;
+long long calcTimes[2000];
+long long calc_time;
 int main(int argc, const char * argv[])
 {
 
@@ -366,12 +368,19 @@ int main(int argc, const char * argv[])
             //printf("after submf\n");
             iter_cnt++;
 
-            /*
+
             if (iter_cnt % 10 == 0)
             {
-                WriteLog(Pblock, Qblock, iter_cnt);
+                //WriteLog(Pblock, Qblock, iter_cnt);
+                calcTimes[iter_cnt / 10] = calc_time;
             }
-            **/
+            if (iter_cnt == 1000)
+            {
+                for (int i = 0; i <= 100; i++)
+                {
+                    printf("%lld\n", calcTimes[i] );
+                }
+            }
 
             if (iter_cnt == thresh_log )
             {
@@ -383,7 +392,7 @@ int main(int argc, const char * argv[])
                 //exit(0);
             }
             canSend = true;
-            printf("canSend = true\n");
+            //printf("canSend = true\n");
             hasRecved = false;
 
         }
@@ -858,8 +867,8 @@ void submf()
 
 
     gettimeofday(&ed, 0);
-    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-    printf("Calc  time = %lld\n", mksp);
+    calc_time = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+    printf("Calc  time = %lld\n", calc_time);
 
 
 }

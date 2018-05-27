@@ -59,13 +59,13 @@ std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
 
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
+
 
 /*
 #define FILE_NAME "./mdata/traina-"

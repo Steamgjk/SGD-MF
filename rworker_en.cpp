@@ -1817,7 +1817,7 @@ void rdma_recvTd(int recv_thread_id)
         char* real_sta = buf + sizeof(int) + sizeof(int);
         while ( (*flag) != time_stp)
         {
-            //printf("flag ka  %d\n", (*flag));
+            printf("flag ka  %d  time_stp=%d\n", (*flag), time_stp);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         printf("flag=%d\n", (*flag) );

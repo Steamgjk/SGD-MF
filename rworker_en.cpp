@@ -1781,31 +1781,13 @@ void rdma_sendTd(int send_thread_id)
 
             ret = cro.start_remote_write(real_total, offset);
 
-            //offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
+            offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
 
-            long time_interval = 10;
-            int cnt = 0;
-            while (to_send_head >= to_send_tail)
-            {
-                printf("resend..\n");
-                ret = cro.start_remote_write(sizeof(int) + sizeof(int), offset);
-                cnt++;
-                if (cnt > 10)
-                {
-                    break;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(time_interval));
-                time_interval = (time_interval << 1);
-                if (time_interval >= 500)
-                {
-                    time_interval = 500;
-                }
-            }
-            offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
+
         }
 
     }

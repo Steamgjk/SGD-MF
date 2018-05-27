@@ -1826,6 +1826,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("flag=%d\n", (*flag) );
         while ((*total_len_ptr) <= 0 )
         {
+
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         int total_len = (*total_len_ptr);
@@ -1833,7 +1834,7 @@ void rdma_recvTd(int recv_thread_id)
         printf("total_len=%d\n", total_len );
         while ((*tail_total_len_ptr) != time_stp)
         {
-            //printf("total ka  %d  %d\n", (*tail_total_len_ptr), total_len );
+            printf("total ka  %d  %d\n", (*tail_total_len_ptr), time_stp );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 

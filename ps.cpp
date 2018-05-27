@@ -393,12 +393,13 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t % 50 == 0)
+        if (iter_t == 1010)
         {
             for (int i = 0; i <= iter_t / 10; i++)
             {
                 printf("%lld\n", time_span[i] );
             }
+            exit(0);
         }
     }
 

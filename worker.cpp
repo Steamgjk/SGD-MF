@@ -374,12 +374,13 @@ int main(int argc, const char * argv[])
                 //WriteLog(Pblock, Qblock, iter_cnt);
                 calcTimes[iter_cnt / 10] = calc_time;
             }
-            if (iter_cnt == 1000)
+            if (iter_cnt == 1010)
             {
                 for (int i = 0; i <= 100; i++)
                 {
                     printf("%lld\n", calcTimes[i] );
                 }
+                exit(0)
             }
 
             if (iter_cnt == thresh_log )
@@ -700,7 +701,7 @@ void CalcUpdt(int td_id)
                 j = real_hash_idx % M - col_sta_idx;
                 if (i < 0 || j < 0 || i >= Pblock.height || j >= Qblock.height)
                 {
-                    printf("[%d] continue l11 \n", td_id);
+                    //printf("[%d] continue l11 \n", td_id);
                     continue;
                 }
                 error = rates_for_col_threads[p_block_idx][q_block_idx][td_id][rand_idx];

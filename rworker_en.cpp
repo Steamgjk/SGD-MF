@@ -286,7 +286,7 @@ int main(int argc, const char * argv[])
     to_recv_block_mem = (char*)malloc(MEM_SIZE);
     int*flag = (int*)(void*) to_recv_block_mem;
     *flag = -1;
-    to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ);
+    to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ * 2);
 
     /**
         std::thread recv_thread(rdma_recvTd, thread_id);
@@ -1785,7 +1785,7 @@ void rdma_sendTd(int send_thread_id)
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
-
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         }
 

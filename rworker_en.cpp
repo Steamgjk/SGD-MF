@@ -60,7 +60,7 @@ std::vector<double> oldQ ;
 
 
 //Jumbo
-
+/*
 double yita = 0.002;
 double theta = 0.05;
 #define FILE_NAME "./data/TrainingMap-"
@@ -68,9 +68,9 @@ double theta = 0.05;
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
 
-/*
 //Movie-Len
 double yita = 0.003;
 double theta = 0.01;
@@ -80,7 +80,7 @@ double theta = 0.01;
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-**/
+
 
 
 
@@ -344,21 +344,18 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            //Pblocks[i].eles[j] = drand48() * 0.6;
+            Pblocks[i].eles[j] = drand48() * 0.6;
 
-            //0.3
             //Pblocks[i].eles[j] = drand48() * 0.3;
-            //
-
-            Pblocks[i].eles[j] = drand48() * 0.2;
+            //Pblocks[i].eles[j] = drand48() * 0.2;
 
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
-            //Qblocks[i].eles[j] = drand48() * 0.6;
+            Qblocks[i].eles[j] = drand48() * 0.6;
 
             //Qblocks[i].eles[j] = drand48() * 0.3;
-            Qblocks[i].eles[j] = drand48() * 0.2;
+            //Qblocks[i].eles[j] = drand48() * 0.2;
 
         }
     }
@@ -616,7 +613,7 @@ void CalcUpdt1(int td_id)
         {
 
 
-            int times_thresh = 500;
+            int times_thresh = 100;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -1837,7 +1834,7 @@ void rdma_recvTd(int recv_thread_id)
             printf("total ka  %d  %d\n", (*tail_total_len_ptr), time_stp );
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-
+        printf("total out  %d  %d\n", (*tail_total_len_ptr), time_stp );
         struct Block * pb = (struct Block*)(void*)real_sta;
         gettimeofday(&st, 0);
         size_t data_sz = sizeof(double) * (pb->ele_num);

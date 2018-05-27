@@ -329,7 +329,7 @@ int main(int argc, const char * argv[])
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     //LoadData(CACHE_NUM);
-    LoadData2();
+    LoadData4();
     //LoadData4();
     printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
@@ -968,7 +968,7 @@ void LoadData4()
 
         }
     }
-    for (int data_idx = 0; data_idx < 16; data_idx++)
+    for (int data_idx = 0; data_idx < 64; data_idx++)
     {
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;

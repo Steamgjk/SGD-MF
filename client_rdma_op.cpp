@@ -500,6 +500,7 @@ int client_rdma_op::start_remote_write(size_t len, size_t offset)
 		if (ret == 12)
 		{
 			debug("ret = %d\n", ret);
+			printf("ret = %d\n", ret );
 			sleep(1);
 		}
 

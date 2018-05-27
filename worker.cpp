@@ -324,8 +324,8 @@ int main(int argc, const char * argv[])
     calc_time = 0;
     bool isstart = false;
 
-    //LoadData();
-    LoadData4();
+    LoadData();
+    //LoadData4();
     //printf("Load Rating Success\n");
 
     std::vector<thread> td_vec;

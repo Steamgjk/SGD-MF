@@ -60,7 +60,7 @@ std::vector<double> oldQ ;
 
 
 //Jumbo
-
+/*
 double yita = 0.002;
 double theta = 0.05;
 #define FILE_NAME "./data/TrainingMap-"
@@ -68,7 +68,7 @@ double theta = 0.05;
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-
+**/
 
 
 /*
@@ -86,17 +86,17 @@ double theta = 0.01;
 
 
 /**Yahoo!Music**/
-/*
+
 double yita = 0.001;
 double theta = 0.05;
 
 
-#define FILE_NAME "./yahoo-output64/train-"
+#define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 #define CAP 30
 #define SEQ_LEN 2000
@@ -112,8 +112,8 @@ double theta = 0.05;
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -327,8 +327,8 @@ int main(int argc, const char * argv[])
     sprintf(state_name, "%s-%d", state_name, thread_id);
     LoadStateConfig(state_name);
     //LoadData(CACHE_NUM);
-    LoadData2();
-    //LoadData4();
+    //LoadData2();
+    LoadData4();
     printf("Load Data Ok\n");
     StartCalcUpdt.resize(WORKER_THREAD_NUM);
     for (int i = 0; i < WORKER_THREAD_NUM; i++)
@@ -350,18 +350,18 @@ int main(int argc, const char * argv[])
             //Pblocks[i].eles[j] = drand48() * 0.6;
 
             //0.3
-            Pblocks[i].eles[j] = drand48() * 0.3;
+            //Pblocks[i].eles[j] = drand48() * 0.3;
             //
 
-            //Pblocks[i].eles[j] = drand48() * 0.2;
+            Pblocks[i].eles[j] = drand48() * 0.2;
 
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
             //Qblocks[i].eles[j] = drand48() * 0.6;
 
-            Qblocks[i].eles[j] = drand48() * 0.3;
-            //Qblocks[i].eles[j] = drand48() * 0.2;
+            //Qblocks[i].eles[j] = drand48() * 0.3;
+            Qblocks[i].eles[j] = drand48() * 0.2;
 
         }
     }
@@ -619,7 +619,7 @@ void CalcUpdt1(int td_id)
         {
 
 
-            int times_thresh = 500;
+            int times_thresh = 5000;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -1785,7 +1785,7 @@ void rdma_sendTd(int send_thread_id)
             to_send_head = (to_send_head + 1) % QU_LEN;
             //if (iter_cnt % 10 == 0)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
 

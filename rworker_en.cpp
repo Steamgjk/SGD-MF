@@ -113,7 +113,9 @@ int recv_round_robin_idx = 0;
 size_t send_offset = 0;
 size_t recv_offset = 0;
 
+#define MEMCAP 40
 char* to_send_block_mem;
+char* to_send_block_mems[MEMCAP];
 char* to_recv_block_mem;
 
 int GROUP_NUM = 1;
@@ -301,6 +303,11 @@ int main(int argc, const char * argv[])
     int*flag = (int*)(void*) to_recv_block_mem;
     *flag = -1;
     to_send_block_mem = (char*)malloc(BLOCK_MEM_SZ * 2);
+
+    for (int i = 0; i < MEMCAP; i++)
+    {
+        to_send_block_mems[i] = (char*)malloc(BLOCK_MEM_SZ);
+    }
 
     /**
         std::thread recv_thread(rdma_recvTd, thread_id);
@@ -1706,6 +1713,7 @@ void rdma_sendTd(int send_thread_id)
     }
     int remote_port = local_ports[port_idx];
 
+    int mapped_thread_id = send_thread_id / WORKER_NUM;
     struct sockaddr_in server_sockaddr;
     int ret, option;
     bzero(&server_sockaddr, sizeof server_sockaddr);
@@ -1735,7 +1743,8 @@ void rdma_sendTd(int send_thread_id)
         return ret;
     }
 
-    ret = cro.client_send_metadata_to_server1(to_send_block_mem, BLOCK_MEM_SZ);
+    //ret = cro.client_send_metadata_to_server1(to_send_block_mem, BLOCK_MEM_SZ);
+    ret = cro.client_send_metadata_to_server1(to_send_block_mems[mapped_thread_id], BLOCK_MEM_SZ);
     if (ret)
     {
         rdma_error("Failed to setup client connection , ret = %d \n", ret);
@@ -1765,7 +1774,9 @@ void rdma_sendTd(int send_thread_id)
             //0 is to right trans Q, 1 is up, trans p
             size_t struct_sz = sizeof(Block);
             size_t data_sz = 0;
-            buf = to_send_block_mem;
+            //buf = to_send_block_mem;
+            buf = to_send_block_mems[mapped_thread_id];
+
             int*flag = (int*)(void*)buf;
             int*total_len_ptr = (int*)(void*)(buf + sizeof(int));
             //*flag = time_stp;

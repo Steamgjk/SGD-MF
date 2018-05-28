@@ -107,7 +107,7 @@ long BLOCK_MEM_SZ = (250000000);
 long MEM_SIZE = (BLOCK_MEM_SZ * 8);
 
 #define WORKER_N_1 4
-#define QP_GROUP 2
+#define QP_GROUP 1
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
 size_t send_offset = 0;
@@ -1865,7 +1865,7 @@ void rdma_recvTd(int recv_thread_id)
             //if ( (*flag) != time_stp)
             if ( (*flag) != recv_round_robin_idx)
             {
-                printf("[%d]flag ka  %d  recv_round_robin_idx=%d recv_offset=%ld\n", recv_thread_id, (*flag), recv_round_robin_idx, recv_offset);
+                //printf("[%d]flag ka  %d  recv_round_robin_idx=%d recv_offset=%ld\n", recv_thread_id, (*flag), recv_round_robin_idx, recv_offset);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 continue;
             }

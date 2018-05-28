@@ -93,7 +93,7 @@ double theta = 0.01;
 
 double yita = 0.001;
 double theta = 0.05;
-#define FILE_NAME "./yahoo-output64/train-"
+#define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961

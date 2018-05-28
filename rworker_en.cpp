@@ -1826,7 +1826,7 @@ void rdma_sendTd(int send_thread_id)
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
             send_round_robin_idx++;
 

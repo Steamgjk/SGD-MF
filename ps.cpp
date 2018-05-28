@@ -63,21 +63,21 @@ using namespace std;
 **/
 
 /*Jumbo **/
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
-/**Yahoo!Music **/
 
+/**Yahoo!Music **/
+/*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-
+**/
 
 
 #if ONE_SIDED_RDMA
@@ -94,7 +94,7 @@ struct client_context c_ctx[CAP];
 struct conn_context s_ctx[CAP];
 #endif
 
-#define QP_GROUP 25
+#define QP_GROUP 1
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
 
@@ -394,7 +394,7 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t == 100 || iter_t == 200)
+        if (iter_t % 100 == 0)
         {
             for (int i = 0; i <= iter_t / 10; i++)
             {
@@ -402,7 +402,7 @@ int main(int argc, const char * argv[])
             }
 
         }
-        if (iter_t == 201)
+        if (iter_t == 1200)
         {
             exit(0);
         }

@@ -79,21 +79,21 @@ struct conn_context s_ctx[CAP];
 #define M 65133
 #define K  40 //主题个数
 **/
-/*
+
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-**/
 
 
+/*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-
+**/
 
 /**Movie-Len**/
 /*
@@ -102,20 +102,20 @@ double theta = 0.01;
 **/
 
 /* Jumbo **/
-/*
+
 double yita = 0.002;
 double theta = 0.05;
-**/
-/**Yahoo!Music**/
 
+/**Yahoo!Music**/
+/*
 double yita = 0.001;
 double theta = 0.05;
-
+**/
 
 #define CAP 500
 #define WORKER_NUM 1
 #define WORKER_N_1 4
-#define QP_GROUP 25
+#define QP_GROUP 1
 
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};
@@ -258,7 +258,7 @@ int main(int argc, const char * argv[])
         local_ports[i] = 20000 + i;
         remote_ports[i] = 10000 + i;
     }
-    int thresh_log = 2000;
+    int thresh_log = 1200;
     thread_id = atoi(argv[1]);
 #if ONE_SIDED_RDMA
     to_send_block_mem = (void*)malloc(MEM_SIZE);
@@ -378,7 +378,7 @@ int main(int argc, const char * argv[])
                 calcTimes[iter_cnt / 10] = calc_time;
                 loadTimes[iter_cnt / 10] = load_time;
             }
-            if (iter_cnt == 100 || iter_cnt == 200)
+            if (iter_cnt % 100 == 0)
             {
                 for (int i = 0; i <= 100; i++)
                 {
@@ -594,7 +594,7 @@ void LoadRequiredData(int row, int col, int data_idx)
     {
         ifs >> hash_id >> rate;
         //min-max scaling for Yahoo!Music
-        rate = rate / 100;
+        //rate = rate / 100;
         if (hash_id >= 0)
         {
             ridx = ((hash_id) / M) % WORKER_THREAD_NUM;
@@ -795,30 +795,30 @@ void submf()
     struct timeval beg, ed;
     long long mksp;
     gettimeofday(&beg, 0);
-    /*
 
-            int r1 = Pblock.block_id * 2;
-            int c1 = Qblock.block_id * 2;
-            int f1 = r1 * 8 + c1;
-            int f2 = r1 * 8 + c1 + 1;
-            int f3 = (r1 + 1) * 8 + c1;
-            int f4 = (r1 + 1) * 8 + c1 + 1;
 
-            int row = Pblock.block_id;
-            int col = Qblock.block_id;
-            //printf("row=%d col=%d\n", row, col );
-            for (int td = 0; td < WORKER_THREAD_NUM; td++)
-            {
-                hash_for_row_threads[row][col][td].clear();
-                rates_for_row_threads[row][col][td].clear();
-                hash_for_col_threads[row][col][td].clear();
-                rates_for_col_threads[row][col][td].clear();
-            }
-            LoadRequiredData(row, col, f1);
-            LoadRequiredData(row, col, f2);
-            LoadRequiredData(row, col, f3);
-            LoadRequiredData(row, col, f4);
-        **/
+    int r1 = Pblock.block_id * 2;
+    int c1 = Qblock.block_id * 2;
+    int f1 = r1 * 8 + c1;
+    int f2 = r1 * 8 + c1 + 1;
+    int f3 = (r1 + 1) * 8 + c1;
+    int f4 = (r1 + 1) * 8 + c1 + 1;
+
+    int row = Pblock.block_id;
+    int col = Qblock.block_id;
+    //printf("row=%d col=%d\n", row, col );
+    for (int td = 0; td < WORKER_THREAD_NUM; td++)
+    {
+        hash_for_row_threads[row][col][td].clear();
+        rates_for_row_threads[row][col][td].clear();
+        hash_for_col_threads[row][col][td].clear();
+        rates_for_col_threads[row][col][td].clear();
+    }
+    LoadRequiredData(row, col, f1);
+    LoadRequiredData(row, col, f2);
+    LoadRequiredData(row, col, f3);
+    LoadRequiredData(row, col, f4);
+
     /*
     for (int td = 0; td < WORKER_THREAD_NUM; td++)
     {
@@ -827,7 +827,6 @@ void submf()
         }
     }
     **/
-
 
     /*
         int row = Pblock.block_id;
@@ -843,12 +842,12 @@ void submf()
         int f1 = row * 4 + col;
         printf("row=%d col=%d\n", row, col );
         LoadRequiredData(row, col, f1);
-
-        gettimeofday(&ed, 0);
-        mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
-        load_time += mksp;
-        printf("Load time = %lld\n", mksp);
     **/
+    gettimeofday(&ed, 0);
+    mksp = (ed.tv_sec - beg.tv_sec) * 1000000 + ed.tv_usec - beg.tv_usec;
+    load_time += mksp;
+    printf("Load time = %lld\n", mksp);
+
 
     bool canbreak = true;
     for (int ii = 0; ii < WORKER_THREAD_NUM; ii++)

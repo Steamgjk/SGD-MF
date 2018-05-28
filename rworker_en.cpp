@@ -283,7 +283,7 @@ int main(int argc, const char * argv[])
 {
     for (int i = 0; i < CAP; i++)
     {
-        local_ports[i] = 10000 + i;
+        local_ports[i] = 20000 + i;
     }
     send_round_robin_idx = 0;
     recv_round_robin_idx = 0;

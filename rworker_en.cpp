@@ -32,8 +32,8 @@
 #include <sys/time.h>
 #include <queue>
 
-#define TWO_SIDED_RDMA 1
-#define ONE_SIDED_RDMA 0
+#define TWO_SIDED_RDMA 0
+#define ONE_SIDED_RDMA 1
 
 #if TWO_SIDED_RDMA
 #include "rdma_two_sided_client_op.h"
@@ -53,8 +53,13 @@ using namespace std;
 #define STATE_NAME "./state"
 
 
-char* local_ips[10] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
-int local_ports[10] = {5511, 5512, 5513, 5514};
+
+#define CAP 400
+#define SEQ_LEN 2000
+#define QU_LEN 10000
+
+char* local_ips[CAP] = {"12.12.10.12", "12.12.10.15", "12.12.10.16", "12.12.10.17"};
+int local_ports[CAP] = {5511, 5512, 5513, 5514};
 std::vector<double> oldP ;
 std::vector<double> oldQ ;
 
@@ -72,6 +77,7 @@ double theta = 0.05;
 
 
 //Movie-Len
+/*
 double yita = 0.003;
 double theta = 0.01;
 
@@ -80,12 +86,11 @@ double theta = 0.01;
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-
-
+**/
 
 
 /**Yahoo!Music**/
-/*
+
 double yita = 0.001;
 double theta = 0.05;
 #define FILE_NAME "./yahoo-output64/train-"
@@ -93,11 +98,8 @@ double theta = 0.05;
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
 
-#define CAP 30
-#define SEQ_LEN 2000
-#define QU_LEN 10000
+
 
 #define WORKER_THREAD_NUM 30
 long BLOCK_MEM_SZ = (250000000);
@@ -106,12 +108,15 @@ long MEM_SIZE = (BLOCK_MEM_SZ * 8);
 
 #define WORKER_N_1 4
 #define QP_GROUP 1
+int send_round_robin_idx = 0;
+int recv_round_robin_idx = 0;
+
 
 char* to_send_block_mem;
 char* to_recv_block_mem;
 
-int GROUP_NUM = 2;
-int DIM_NUM = 8;
+int GROUP_NUM = 1;
+int DIM_NUM = 4;
 int WORKER_NUM = 4;
 int CACHE_NUM = 20;
 
@@ -271,6 +276,8 @@ int thread_id = -1;
 int p_block_idx;
 int q_block_idx;
 int iter_cnt = 0;
+
+
 int main(int argc, const char * argv[])
 {
     srand(time(0));
@@ -345,18 +352,18 @@ int main(int argc, const char * argv[])
     {
         for (int j = 0; j < Pblocks[i].ele_num; j++)
         {
-            Pblocks[i].eles[j] = drand48() * 0.6;
+            //Pblocks[i].eles[j] = drand48() * 0.6;
 
             //Pblocks[i].eles[j] = drand48() * 0.3;
-            //Pblocks[i].eles[j] = drand48() * 0.2;
+            Pblocks[i].eles[j] = drand48() * 0.2;
 
         }
         for (int j = 0; j < Qblocks[i].ele_num; j++)
         {
-            Qblocks[i].eles[j] = drand48() * 0.6;
+            //Qblocks[i].eles[j] = drand48() * 0.6;
 
             //Qblocks[i].eles[j] = drand48() * 0.3;
-            //Qblocks[i].eles[j] = drand48() * 0.2;
+            Qblocks[i].eles[j] = drand48() * 0.2;
 
         }
     }
@@ -526,7 +533,7 @@ void CalcUpdt(int td_id)
         if (StartCalcUpdt[td_id])
         {
             //printf("enter CalcUpdt\n");
-            int times_thresh = 100;
+            int times_thresh = 5000;
             int row_sta_idx = Pblocks[p_block_idx].sta_idx;
             int col_sta_idx = Qblocks[q_block_idx].sta_idx;
             size_t rtsz;
@@ -961,7 +968,7 @@ void LoadData4()
 
         }
     }
-    for (int data_idx = 0; data_idx < 64; data_idx++)
+    for (int data_idx = 0; data_idx < 16; data_idx++)
     {
         int row = data_idx / DIM_NUM;
         int col = data_idx % DIM_NUM;
@@ -981,7 +988,7 @@ void LoadData4()
         {
             ifs >> hash_id >> rate;
             //min-max scaling
-            //rate = rate / 100;
+            rate = rate / 100;
             if (hash_id >= 0)
             {
                 ridx = ((hash_id) / M) % WORKER_THREAD_NUM;

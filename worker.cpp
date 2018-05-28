@@ -112,10 +112,10 @@ double yita = 0.001;
 double theta = 0.05;
 
 
-#define CAP 200
+#define CAP 500
 #define WORKER_NUM 1
 #define WORKER_N_1 4
-#define QP_GROUP 5
+#define QP_GROUP 25
 
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};
@@ -255,8 +255,8 @@ int main(int argc, const char * argv[])
 
     for (int i = 0; i < CAP; i++)
     {
-        local_ports[i] = 55511 + i;
-        remote_ports[i] = 44411 + i;
+        local_ports[i] = 10000 + i;
+        remote_ports[i] = 20000 + i;
     }
     int thresh_log = 2000;
     thread_id = atoi(argv[1]);

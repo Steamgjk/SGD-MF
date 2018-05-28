@@ -94,7 +94,7 @@ struct client_context c_ctx[CAP];
 struct conn_context s_ctx[CAP];
 #endif
 
-#define QP_GROUP 5
+#define QP_GROUP 25
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
 
@@ -213,8 +213,8 @@ int main(int argc, const char * argv[])
 
     for (int i = 0; i < CAP; i++)
     {
-        local_ports[i] = 44411 + i;
-        remote_ports[i] = 55511 + i;
+        local_ports[i] = 10000 + i;
+        remote_ports[i] = 20000 + i;
     }
 #if ONE_SIDED_RDMA
     //to_send_block_mem = (void*)malloc(MEM_SIZE);

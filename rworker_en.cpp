@@ -1898,7 +1898,7 @@ void rdma_recvTd(int recv_thread_id)
         size_t data_sz = sizeof(double) * (pb->ele_num);
         //double* data_eles  = (double*) (void*)(buf + struct_sz);
         double* data_eles  = (double*) (void*)(real_sta + struct_sz);
-        printf("[%d] recv  blockid=%d  ele=%d isP=%d\n", recv_thread_id, pb->block_id, pb->ele_num, pb->isP );
+        printf("[%d] recv  blockid=%d  ele=%d isP=%d recv_offset=%ld\n", recv_thread_id, pb->block_id, pb->ele_num, pb->isP, recv_offset );
         if (block_p_or_q == 0)
         {
             //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);

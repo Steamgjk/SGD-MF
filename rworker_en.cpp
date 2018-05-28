@@ -1747,7 +1747,7 @@ void rdma_sendTd(int send_thread_id)
     size_t flag_offset = sizeof(int) + sizeof(int);
     struct timeval st, et, tspan;
     int time_stp = 0;
-
+    printf("[%d] rdma_sendTd:...  %d %d \n", send_thread_id, send_thread_id / WORKER_N_1, send_round_robin_idx % QP_GROUP);
     while (1 == 1)
     {
         if (send_thread_id / WORKER_N_1 != send_round_robin_idx % QP_GROUP)
@@ -1833,7 +1833,7 @@ void rdma_recvTd(int recv_thread_id)
     server_rdma_op sro;
     int ret = sro.rdma_server_init(local_ips[mapped_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
 
-    printf("rdma_recvTd:rdma_server_init...\n");
+    printf("[%d] rdma_recvTd:rdma_server_init...  %d %d \n", recv_thread_id, recv_thread_id / WORKER_N_1, recv_round_robin_idx % QP_GROUP);
     size_t struct_sz = sizeof(Block);
     size_t offset = 0;
     int total_len = -1;

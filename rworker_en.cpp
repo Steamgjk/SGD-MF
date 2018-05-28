@@ -110,7 +110,8 @@ long MEM_SIZE = (BLOCK_MEM_SZ * 8);
 #define QP_GROUP 1
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
-
+size_t send_offset = 0;
+size_t recv_offset = 0;
 
 char* to_send_block_mem;
 char* to_recv_block_mem;
@@ -286,6 +287,10 @@ int main(int argc, const char * argv[])
     }
     send_round_robin_idx = 0;
     recv_round_robin_idx = 0;
+    send_offset = 0;
+    recv_offset = 0;
+
+
     srand(time(0));
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
@@ -1681,8 +1686,7 @@ void rdma_recvTd_loop(int recv_thread_id)
 
 
 #if ONE_SIDED_RDMA
-size_t send_offset = 0;
-size_t recv_offset = 0;
+
 void rdma_sendTd(int send_thread_id)
 {
     printf("worker send_thread_id=%d\n", send_thread_id);

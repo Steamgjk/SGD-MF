@@ -1861,8 +1861,8 @@ void rdma_recvTd(int recv_thread_id)
             //if ( (*flag) != time_stp)
             if ( (*flag) != recv_round_robin_idx)
             {
-                //printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 continue;
             }
             //printf("flag=%d\n", (*flag) );

@@ -1805,7 +1805,7 @@ void rdma_sendTd(int send_thread_id)
 
             //ret = cro.start_remote_write(real_total, offset);
             ret = cro.start_remote_write(real_total, send_offset);
-            printf("send flag=%d offset=%ld real_total=%ld total_len=%ld\n", (*flag), offset, real_total, total_len );
+            printf("send flag=%d send_offset=%ld real_total=%ld total_len=%ld\n", (*flag), send_offset, real_total, total_len );
             //offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             send_offset = (send_offset + BLOCK_MEM_SZ) % MEM_SIZE;
 
@@ -1850,7 +1850,7 @@ void rdma_recvTd(int recv_thread_id)
         time_stp++;
         //0 is to right trans/recv Q, 1 is up, trans p
         struct timeval st, et, tspan;
-        char* buf = to_recv_block_mem + offset;
+        char* buf = to_recv_block_mem + recv_offset;
         int* flag = (int*)(void*)buf;
         int* total_len_ptr = (int*)(void*)(buf + sizeof(int));
         char* real_sta = buf + sizeof(int) + sizeof(int);
@@ -1861,7 +1861,7 @@ void rdma_recvTd(int recv_thread_id)
             //if ( (*flag) != time_stp)
             if ( (*flag) != recv_round_robin_idx)
             {
-                printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
+                printf("flag ka  %d  recv_round_robin_idx=%d recv_offset=%ld\n", (*flag), recv_round_robin_idx, recv_offset);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 continue;
             }

@@ -442,7 +442,7 @@ int main(int argc, const char * argv[])
                 }
                 //exit(0);
             }
-            if (iter_cnt == 1100)
+            if (iter_cnt == 210)
             {
                 exit(0);
             }
@@ -1818,7 +1818,7 @@ void rdma_sendTd(int send_thread_id)
 
             //ret = cro.start_remote_write(real_total, offset);
             ret = cro.start_remote_write(real_total, send_offset);
-            printf("[%d]send flag=%d send_offset=%ld real_total=%ld total_len=%ld\n", send_thread_id, (*flag), send_offset, real_total, total_len );
+            //printf("[%d]send flag=%d send_offset=%ld real_total=%ld total_len=%ld\n", send_thread_id, (*flag), send_offset, real_total, total_len );
             //offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
             send_offset = (send_offset + BLOCK_MEM_SZ) % MEM_SIZE;
 
@@ -1910,7 +1910,7 @@ void rdma_recvTd(int recv_thread_id)
         size_t data_sz = sizeof(double) * (pb->ele_num);
         //double* data_eles  = (double*) (void*)(buf + struct_sz);
         double* data_eles  = (double*) (void*)(real_sta + struct_sz);
-        printf("[%d]recv flag=%d  blockid=%d  ele=%d isP=%d recv_offset=%ld\n", recv_thread_id, (*flag), pb->block_id, pb->ele_num, pb->isP, recv_offset );
+        //printf("[%d]recv flag=%d  blockid=%d  ele=%d isP=%d recv_offset=%ld\n", recv_thread_id, (*flag), pb->block_id, pb->ele_num, pb->isP, recv_offset );
         if (block_p_or_q == 0)
         {
             //printf("recvQ pb->ele_num=%ld\n", pb->ele_num);

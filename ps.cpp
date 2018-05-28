@@ -237,42 +237,42 @@ int main(int argc, const char * argv[])
         WORKER_NUM = atoi(argv[1]) ;
     }
 
-    /*
-        for (int gp = 0; gp < QP_GROUP; gp++)
+
+    for (int gp = 0; gp < QP_GROUP; gp++)
+    {
+        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
         {
-            for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
-            {
-                int thid = recv_thread_id + gp * WORKER_NUM;
-                printf("thid=%d\n", thid );
-                //std::thread recv_thread(recvTd, thid);
-    #if TWO_SIDED_RDMA
-                std::thread recv_loop_thread(rdma_recvTd_loop, thid);
-                recv_loop_thread.detach();
-    #endif
-                std::thread recv_thread(rdma_recvTd, thid);
-                recv_thread.detach();
-            }
+            int thid = recv_thread_id + gp * WORKER_NUM;
+            printf("thid=%d\n", thid );
+            //std::thread recv_thread(recvTd, thid);
+#if TWO_SIDED_RDMA
+            std::thread recv_loop_thread(rdma_recvTd_loop, thid);
+            recv_loop_thread.detach();
+#endif
+            std::thread recv_thread(rdma_recvTd, thid);
+            recv_thread.detach();
         }
+    }
 
 
 
-        printf("wait for you for 3s\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        for (int gp = 0; gp < QP_GROUP; gp++)
+    printf("wait for you for 3s\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    for (int gp = 0; gp < QP_GROUP; gp++)
+    {
+        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
         {
-            for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
-            {
-                int thid = send_thread_id + gp * WORKER_NUM;
-                //std::thread send_thread(sendTd, thid);
-    #if TWO_SIDED_RDMA
-                std::thread send_loop_thread(rdma_sendTd_loop, thid);
-                send_loop_thread.detach();
-    #endif
-                std::thread send_thread(rdma_sendTd, thid);
-                send_thread.detach();
-            }
+            int thid = send_thread_id + gp * WORKER_NUM;
+            //std::thread send_thread(sendTd, thid);
+#if TWO_SIDED_RDMA
+            std::thread send_loop_thread(rdma_sendTd_loop, thid);
+            send_loop_thread.detach();
+#endif
+            std::thread send_thread(rdma_sendTd, thid);
+            send_thread.detach();
         }
-    **/
+    }
+
     printf("wait for 5s\n");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
@@ -309,18 +309,18 @@ int main(int argc, const char * argv[])
         worker_pidx[i] = worker_qidx[i] = i;
     }
 
-
-    for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
-    {
-        std::thread send_thread(sendTd, send_thread_id);
-        send_thread.detach();
-    }
-    for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
-    {
-        std::thread recv_thread(recvTd, recv_thread_id);
-        recv_thread.detach();
-    }
-
+    /*
+        for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
+        {
+            std::thread send_thread(sendTd, send_thread_id);
+            send_thread.detach();
+        }
+        for (int recv_thread_id = 0; recv_thread_id < WORKER_NUM; recv_thread_id++)
+        {
+            std::thread recv_thread(recvTd, recv_thread_id);
+            recv_thread.detach();
+        }
+    **/
 
     /*
         std::thread send_thread(rdma_sendTd, 2);
@@ -394,14 +394,19 @@ int main(int argc, const char * argv[])
             recvCount = 0;
         }
         iter_t++;
-        if (iter_t == 1010)
+        if (iter_t == 100 || iter_t == 200)
         {
             for (int i = 0; i <= iter_t / 10; i++)
             {
                 printf("%lld\n", time_span[i] );
             }
+
+        }
+        if (iter_t == 201)
+        {
             exit(0);
         }
+
     }
 
     return 0;

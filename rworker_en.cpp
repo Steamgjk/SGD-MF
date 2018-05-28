@@ -107,7 +107,7 @@ long BLOCK_MEM_SZ = (250000000);
 long MEM_SIZE = (BLOCK_MEM_SZ * 8);
 
 #define WORKER_N_1 4
-#define QP_GROUP 1
+#define QP_GROUP 10
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
 size_t send_offset = 0;

@@ -256,8 +256,8 @@ int main(int argc, const char * argv[])
 
 
 
-    printf("wait for you for 3s\n");
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    printf("wait for you for 10s\n");
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     for (int gp = 0; gp < QP_GROUP; gp++)
     {
         for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
@@ -273,9 +273,9 @@ int main(int argc, const char * argv[])
         }
     }
 
-    printf("wait for 5s\n");
+    printf("wait for 3s\n");
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     srand(1);
     //LoadTestRating();
     //printf("Load Complete\n");

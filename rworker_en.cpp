@@ -280,6 +280,12 @@ int iter_cnt = 0;
 
 int main(int argc, const char * argv[])
 {
+    for (int i = 0; i < CAP; i++)
+    {
+        local_ports[i] = 10000 + i;
+    }
+    send_round_robin_idx = 0;
+    recv_round_robin_idx = 0;
     srand(time(0));
     thread_id = atoi(argv[1]);
     WORKER_NUM = atoi(argv[2]);
@@ -1675,6 +1681,8 @@ void rdma_recvTd_loop(int recv_thread_id)
 
 
 #if ONE_SIDED_RDMA
+size_t send_offset = 0;
+size_t recv_offset = 0;
 void rdma_sendTd(int send_thread_id)
 {
     printf("worker send_thread_id=%d\n", send_thread_id);
@@ -1682,7 +1690,17 @@ void rdma_sendTd(int send_thread_id)
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     int right_idx = (send_thread_id + 1) % WORKER_NUM;
     char* remote_ip = local_ips[right_idx];
-    int remote_port = local_ports[right_idx];
+    int port_idx = -1;
+    if (send_thread_id % WORKER_NUM == WORKER_NUM - 1)
+    {
+        port_idx = send_thread_id - (WORKER_NUM - 1);
+
+    }
+    else
+    {
+        port_idx = send_thread_id + 1;
+    }
+    int remote_port = local_ports[port_idx];
 
     struct sockaddr_in server_sockaddr;
     int ret, option;
@@ -1728,7 +1746,7 @@ void rdma_sendTd(int send_thread_id)
 
     while (1 == 1)
     {
-        if (send_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        if (send_thread_id / WORKER_N_1 != send_round_robin_idx % QP_GROUP)
         {
             continue;
         }
@@ -1744,7 +1762,8 @@ void rdma_sendTd(int send_thread_id)
             buf = to_send_block_mem;
             int*flag = (int*)(void*)buf;
             int*total_len_ptr = (int*)(void*)(buf + sizeof(int));
-            *flag = time_stp;
+            //*flag = time_stp;
+            *flag = send_round_robin_idx;
 
             int real_total = 0;
             int total_len = 0;
@@ -1760,7 +1779,8 @@ void rdma_sendTd(int send_thread_id)
 
                 memcpy(real_sta, &(Qblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Qblocks[block_idx].eles[0]), data_sz);
-                memcpy(real_sta + total_len, &time_stp, sizeof(int));
+                //memcpy(real_sta + total_len, &time_stp, sizeof(int));
+                memcpy(real_sta + total_len, &send_round_robin_idx, sizeof(int));
                 //ret = cro.start_remote_write(real_total, offset);
 
             }
@@ -1771,18 +1791,24 @@ void rdma_sendTd(int send_thread_id)
                 real_total = total_len + sizeof(int) + sizeof(int) + sizeof(int);
                 memcpy(real_sta, &(Pblocks[block_idx]), struct_sz);
                 memcpy(real_sta + struct_sz, (char*) & (Pblocks[block_idx].eles[0]), data_sz);
-                memcpy(real_sta + total_len, &time_stp, sizeof(int));
+                //memcpy(real_sta + total_len, &time_stp, sizeof(int));
+                memcpy(real_sta + total_len, &send_round_robin_idx, sizeof(int));
                 //ret = cro.start_remote_write(real_total, offset);
 
             }
             //*flag = total_len;
             *total_len_ptr = total_len;
 
-            ret = cro.start_remote_write(real_total, offset);
+            //ret = cro.start_remote_write(real_total, offset);
+            ret = cro.start_remote_write(real_total, send_offset);
             //printf("send flag=%d offset=%ld real_total=%ld total_len=%ld\n", (*flag), offset, real_total, total_len );
-            offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
+            //offset = (offset + BLOCK_MEM_SZ) % MEM_SIZE;
+            send_offset = (send_offset + BLOCK_MEM_SZ) % MEM_SIZE;
+
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
+
+            send_round_robin_idx++;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
             //if (iter_cnt % 10 == 0)
@@ -1799,8 +1825,9 @@ void rdma_sendTd(int send_thread_id)
 void rdma_recvTd(int recv_thread_id)
 {
     printf("rdma_recv thread_id = %d\n local_ip=%s  local_port=%d\n", recv_thread_id, local_ips[recv_thread_id], local_ports[recv_thread_id]);
+    int mapped_thread_id = recv_thread_id % WORKER_NUM;
     server_rdma_op sro;
-    int ret = sro.rdma_server_init(local_ips[recv_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
+    int ret = sro.rdma_server_init(local_ips[mapped_thread_id], local_ports[recv_thread_id], to_recv_block_mem, MEM_SIZE);
 
     printf("rdma_recvTd:rdma_server_init...\n");
     size_t struct_sz = sizeof(Block);
@@ -1810,7 +1837,7 @@ void rdma_recvTd(int recv_thread_id)
     while (1 == 1)
     {
 
-        if (recv_thread_id / WORKER_N_1 != iter_cnt % QP_GROUP)
+        if (recv_thread_id / WORKER_N_1 != recv_round_robin_idx % QP_GROUP)
         {
             continue;
         }
@@ -1827,7 +1854,8 @@ void rdma_recvTd(int recv_thread_id)
         int* tail_total_len_ptr = NULL;
         while (1 == 1)
         {
-            if ( (*flag) != time_stp)
+            //if ( (*flag) != time_stp)
+            if ( (*flag) != recv_round_robin_idx)
             {
                 //printf("flag ka  %d  time_stp=%d offset=%ld\n", (*flag), time_stp, offset);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -1843,7 +1871,8 @@ void rdma_recvTd(int recv_thread_id)
             total_len = (*total_len_ptr);
             tail_total_len_ptr = (int*)(void*)(real_sta + total_len);
             //printf("total_len=%d\n", total_len );
-            if ((*tail_total_len_ptr) != time_stp)
+            //if ((*tail_total_len_ptr) != time_stp)
+            if ((*tail_total_len_ptr) != recv_round_robin_idx)
             {
                 //printf("total ka  %d  %d  offset=%ld total_len=%ld\n", (*tail_total_len_ptr), time_stp, offset, total_len );
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -1899,7 +1928,10 @@ void rdma_recvTd(int recv_thread_id)
         gettimeofday(&et, 0);
         long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
-        offset = (offset + BLOCK_MEM_SZ) % (MEM_SIZE);
+        //offset = (offset + BLOCK_MEM_SZ) % (MEM_SIZE);
+        recv_offset = (recv_offset + BLOCK_MEM_SZ) % (MEM_SIZE);
+
+        recv_round_robin_idx++;
         recved_head = (recved_head + 1) % QU_LEN;
 
     }

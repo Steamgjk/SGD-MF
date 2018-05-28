@@ -44,7 +44,7 @@
 #endif
 
 using namespace std;
-#define CAP 200
+#define CAP 2000
 //#define FILE_NAME "./netflix_row.txt"
 //#define TEST_NAME "./test_out.txt"
 //#define N  17770 // row number
@@ -94,7 +94,7 @@ struct client_context c_ctx[CAP];
 struct conn_context s_ctx[CAP];
 #endif
 
-#define QP_GROUP 10
+#define QP_GROUP 20
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
 

@@ -115,7 +115,7 @@ double theta = 0.05;
 #define CAP 200
 #define WORKER_NUM 1
 #define WORKER_N_1 4
-#define QP_GROUP 30
+#define QP_GROUP 40
 
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};

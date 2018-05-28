@@ -94,7 +94,7 @@ struct client_context c_ctx[CAP];
 struct conn_context s_ctx[CAP];
 #endif
 
-#define QP_GROUP 30
+#define QP_GROUP 40
 int send_round_robin_idx[CAP];
 int recv_round_robin_idx[CAP];
 

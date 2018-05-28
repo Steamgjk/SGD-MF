@@ -107,7 +107,7 @@ long BLOCK_MEM_SZ = (250000000);
 long MEM_SIZE = (BLOCK_MEM_SZ * 8);
 
 #define WORKER_N_1 4
-#define QP_GROUP 1
+#define QP_GROUP 2
 int send_round_robin_idx = 0;
 int recv_round_robin_idx = 0;
 size_t send_offset = 0;
@@ -1814,13 +1814,14 @@ void rdma_sendTd(int send_thread_id)
             gettimeofday(&et, 0);
             long long mksp = (et.tv_sec - st.tv_sec) * 1000000 + et.tv_usec - st.tv_usec;
 
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
             send_round_robin_idx++;
 
             to_send_head = (to_send_head + 1) % QU_LEN;
             //if (iter_cnt % 10 == 0)
-            {
-                //std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
+
 
 
         }

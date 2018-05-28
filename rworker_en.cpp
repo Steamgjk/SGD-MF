@@ -1754,10 +1754,11 @@ void rdma_sendTd(int send_thread_id)
         {
             continue;
         }
-        printf("it is time for [%d] to send\n", send_thread_id );
+
         if (to_send_head < to_send_tail)
         {
 
+            printf("it is time for [%d] to send\n", send_thread_id );
             time_stp++;
             int block_idx = to_send[to_send_head];
             int block_p_or_q = actions[to_send_head];

@@ -72,13 +72,13 @@ struct conn_context s_ctx[CAP];
 //#define FILE_NAME "./movielen10M_train.txt"
 //#define TEST_NAME "./movielen10M_test.txt"
 
-
+/*
 #define FILE_NAME "./mdata/traina-"
 #define TEST_NAME "./mdata/testa-"
 #define N 71567
 #define M 65133
 #define K  40 //主题个数
-
+**/
 /*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
@@ -115,7 +115,7 @@ double theta = 0.05;
 #define CAP 200
 #define WORKER_NUM 1
 #define WORKER_N_1 4
-#define QP_GROUP 20
+#define QP_GROUP 30
 
 char* remote_ips[CAP] = {"12.12.10.18", "12.12.10.18", "12.12.10.18", "12.12.10.18"};
 int remote_ports[CAP] = {4411, 4412, 4413, 4414};

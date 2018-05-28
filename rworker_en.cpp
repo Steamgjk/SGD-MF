@@ -1761,6 +1761,7 @@ void rdma_sendTd(int send_thread_id)
     {
         if (send_thread_id / WORKER_N_1 != send_round_robin_idx % QP_GROUP)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
 
@@ -1878,7 +1879,7 @@ void rdma_recvTd(int recv_thread_id)
             if ( (*flag) != recv_round_robin_idx)
             {
                 //printf("[%d]flag ka  %d  recv_round_robin_idx=%d recv_offset=%ld\n", recv_thread_id, (*flag), recv_round_robin_idx, recv_offset);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
             //printf("flag=%d\n", (*flag) );

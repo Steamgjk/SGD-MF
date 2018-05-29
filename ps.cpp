@@ -245,6 +245,7 @@ int main(int argc, const char * argv[])
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
             std::thread recv_thread(recvTd, thid);
+            recv_thread.detach();
             /*
             #if TWO_SIDED_RDMA
             std::thread recv_loop_thread(rdma_recvTd_loop, thid);
@@ -266,6 +267,8 @@ int main(int argc, const char * argv[])
         {
             int thid = send_thread_id + gp * WORKER_NUM;
             std::thread send_thread(sendTd, thid);
+            send_thread.detach();
+
             /*
             #if TWO_SIDED_RDMA
             std::thread send_loop_thread(rdma_sendTd_loop, thid);

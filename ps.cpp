@@ -63,21 +63,21 @@ using namespace std;
 **/
 
 /*Jumbo **/
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
-
+**/
 /**Yahoo!Music **/
-/*
+
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
+
 
 
 #if ONE_SIDED_RDMA
@@ -244,16 +244,16 @@ int main(int argc, const char * argv[])
         {
             int thid = recv_thread_id + gp * WORKER_NUM;
             printf("thid=%d\n", thid );
-            std::thread recv_thread(recvTd, thid);
-            recv_thread.detach();
-            /*
-            #if TWO_SIDED_RDMA
+            //std::thread recv_thread(recvTd, thid);
+            //recv_thread.detach();
+
+#if TWO_SIDED_RDMA
             std::thread recv_loop_thread(rdma_recvTd_loop, thid);
             recv_loop_thread.detach();
-            #endif
+#endif
             std::thread recv_thread(rdma_recvTd, thid);
             recv_thread.detach();
-            **/
+
         }
     }
 
@@ -266,17 +266,16 @@ int main(int argc, const char * argv[])
         for (int send_thread_id = 0; send_thread_id < WORKER_NUM; send_thread_id++)
         {
             int thid = send_thread_id + gp * WORKER_NUM;
-            std::thread send_thread(sendTd, thid);
-            send_thread.detach();
+            //std::thread send_thread(sendTd, thid);
+            //send_thread.detach();
 
-            /*
-            #if TWO_SIDED_RDMA
+#if TWO_SIDED_RDMA
             std::thread send_loop_thread(rdma_sendTd_loop, thid);
             send_loop_thread.detach();
-            #endif
+#endif
             std::thread send_thread(rdma_sendTd, thid);
             send_thread.detach();
-            **/
+
         }
     }
 

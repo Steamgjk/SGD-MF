@@ -79,21 +79,20 @@ struct conn_context s_ctx[CAP];
 #define M 65133
 #define K  40 //主题个数
 **/
-
+/*
 #define FILE_NAME "./data/TrainingMap-"
 #define TEST_NAME "./data/TestMap-"
 #define N 1000000
 #define M 1000000
 #define K  100 //主题个数
+**/
 
 
-/*
 #define FILE_NAME "./yahoo-output/train-"
 #define TEST_NAME "./yahoo-output/test"
 #define N 1000990
 #define M 624961
 #define K  100 //主题个数
-**/
 
 /**Movie-Len**/
 /*

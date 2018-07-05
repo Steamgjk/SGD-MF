@@ -34,15 +34,17 @@
 #include "server_rdma_op.h"
 #include "client_rdma_op.h"
 using namespace std;
+#define CAP 20
 #define MEM_SIZE 1000000000
 char* to_recv_block_mem = NULL;
 char* sendBuf = NULL;
 size_t sendLen = 10;
 
-char local_ip = "12.12.10.17";
+char* ips[CAP] = {"12.12.10.17", "12.12.10.18"， "12.12.10.19"};
+char local_ip = NULL;
 int local_port = 9999;
 
-char* remote_ip = "12.12.10.16";
+char* remote_ip = NULL;
 int remote_port = 9999;
 
 void rdma_sendTd(int send_thread_id)
@@ -81,9 +83,11 @@ void rdma_sendTd(int send_thread_id)
 		return ret;
 	}
 
+	printf("client Init OK\n");
 	while (1 == 1)
 	{
 		ret = cro.start_remote_write(MEM_SIZE, 0);
+		getchar();
 	}
 
 }
@@ -91,6 +95,7 @@ void rdma_recvTd(int recv_thread_id)
 {
 	server_rdma_op sro;
 	int ret = sro.rdma_server_init(local_ip, local_port, to_recv_block_mem, MEM_SIZE);
+	printf("server Init OK\n");
 	while (1 == 1)
 	{
 
@@ -103,5 +108,47 @@ void rdma_recvTd(int recv_thread_id)
 int main(int argc, const char * argv[])
 {
 	printf("Hello\n");
+	bool isSta = false;
+	bool isEnd = false;
+	int rank = atoi(argv[1]);
+	if (rank == 0)
+	{
+		isSta = true;
+		remote_ip = "12.12.10.18";
+	}
+	else if (rank == -1)
+	{
+		isEnd = true;
+		local_ip = "12.12.10.19";
+	}
+	else
+	{
+		local_ip = ips[rank];
+		remote_ip = ips[rank + 1];
+	}
+	to_recv_block_mem = (char*)malloc(MEM_SIZE);
+	sendBuf = to_recv_block_mem;
+	for (int i = 0; i < MEM_SIZE; i++)
+	{
+		to_recv_block_mem[i] = 's';
+	}
+	to_recv_block_mem[MEM_SIZE - 1] = 'a';
+	sendLen = MEM_SIZE;
+	if (!isSta)
+	{
+		std::thread recv_thread(rdma_recvTd, th_id);
+		recv_thread.detach();
+	}
+	if (!isEnd)
+	{
+		std::thread send_thread(rdma_sendTd, th_id);
+		send_thread.detach();
+	}
+
+
+	while (1 == 1)
+	{
+
+	}
 
 }

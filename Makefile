@@ -3,11 +3,13 @@ CC=g++
 TARGET = ps
 TARGET1 = worker
 TARGET2 = rworker_en
+TARGET3 = testMultiHop
 LIBS=-libverbs -lrdmacm -pthread -libverbs -lrdmacm
 CFLAGS=-Wall -g -fpermissive -std=c++11
 OBJS=ps.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
 OBJS1=worker.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
 OBJS2=rworker_en.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
+OBJS3=testMultiHop.o server_rdma_op.o client_rdma_op.o rdma_common.o rdma_two_sided_client_op.o rdma_two_sided_server_op.o common.o
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
@@ -15,6 +17,11 @@ $(TARGET1): $(OBJS1)
 	$(CC) $(CFLAGS) -o $(TARGET1) $(OBJS1) $(LIBS)
 $(TARGET2): $(OBJS2)
 	$(CC) $(CFLAGS) -o $(TARGET2) $(OBJS2) $(LIBS)
+$(TARGET3): $(OBJS3)
+	$(CC) $(CFLAGS) -o $(TARGET3) $(OBJS3) $(LIBS)
+
+testMultiHop.o: testMultiHop.cpp
+	$(CC) $(CFLAGS) -c testMultiHop.cpp
 worker.o: worker.cpp
 	$(CC) $(CFLAGS) -c worker.cpp
 ps.o: ps.cpp

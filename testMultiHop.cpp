@@ -133,6 +133,7 @@ int main(int argc, const char * argv[])
 	bool isSta = false;
 	bool isEnd = false;
 	myrank = atoi(argv[1]);
+	printf("myrank=%d\n", myrank );
 	if (myrank == 0)
 	{
 		isSta = true;

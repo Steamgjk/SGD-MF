@@ -105,6 +105,7 @@ void rdma_sendTd(int send_thread_id)
 void rdma_recvTd(int recv_thread_id)
 {
 	server_rdma_op sro;
+	printf("server lip=%s port=%d\n", local_ip, local_port );
 	int ret = sro.rdma_server_init(local_ip, local_port, to_recv_block_mem, MEM_SIZE);
 	printf("server Init OK %s  %d\n", local_ip, local_port);
 	to_recv_block_mem[MEM_SIZE - 1] = '#';

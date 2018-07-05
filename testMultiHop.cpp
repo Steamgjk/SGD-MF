@@ -69,13 +69,14 @@ void rdma_sendTd(int send_thread_id)
 		rdma_error("Failed to setup client connection , ret = %d \n", ret);
 		return ret;
 	}
+	printf("to connect ....\n");
 	ret = cro.client_connect_to_server();
 	if (ret)
 	{
 		rdma_error("Failed to setup client connection , ret = %d \n", ret);
 		return ret;
 	}
-
+	printf("to send meta data...\n");
 	ret = cro.client_send_metadata_to_server1(sendBuf, sendLen);
 	if (ret)
 	{

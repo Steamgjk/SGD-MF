@@ -137,12 +137,12 @@ int main(int argc, const char * argv[])
 	if (myrank == 0)
 	{
 		isSta = true;
-		remote_ip = "12.12.10.18";
+		remote_ip = ips[1];
 	}
 	else if (myrank == -1)
 	{
 		isEnd = true;
-		local_ip = "12.12.10.19";
+		local_ip = ips[2];
 		printf("local_ip=%s\n", local_ip );
 	}
 	else

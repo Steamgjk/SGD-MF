@@ -1,4 +1,4 @@
-all: ps worker rworker_en
+all: ps worker rworker_en testMultiHop
 CC=g++
 TARGET = ps
 TARGET1 = worker

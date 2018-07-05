@@ -31,10 +31,8 @@
 #include <fstream>
 #include <sys/time.h>
 #include <queue>
-
 #include "server_rdma_op.h"
 #include "client_rdma_op.h"
-
 using namespace std;
 #define MEM_SIZE 1000000000
 char* to_recv_block_mem = NULL;
@@ -44,8 +42,8 @@ size_t sendLen = 10;
 char local_ip = "12.12.10.17";
 int local_port = 9999;
 
-int remote_port = 9999;
 char* remote_ip = "12.12.10.16";
+int remote_port = 9999;
 
 void rdma_sendTd(int send_thread_id)
 {
@@ -56,6 +54,7 @@ void rdma_sendTd(int send_thread_id)
 	get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
 	server_sockaddr.sin_port = htons(remote_port);
 	client_rdma_op cro;
+	int ret = 0;
 	ret = cro.client_prepare_connection(&server_sockaddr);
 	if (ret)
 	{

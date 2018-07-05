@@ -98,6 +98,7 @@ void rdma_recvTd(int recv_thread_id)
 	server_rdma_op sro;
 	int ret = sro.rdma_server_init(local_ip, local_port, to_recv_block_mem, MEM_SIZE);
 	printf("server Init OK\n");
+	to_recv_block_mem[MEM_SIZE - 1] = '#';
 	while (1 == 1)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));

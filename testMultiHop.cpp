@@ -96,6 +96,7 @@ void rdma_sendTd(int send_thread_id)
 			ret = cro.start_remote_write(MEM_SIZE, 0);
 			should_forward = false;
 		}
+		break;
 	}
 
 }

@@ -91,7 +91,7 @@ void rdma_sendTd(int send_thread_id)
 	{
 		printf("start write to remote\n");
 
-		if (rank == 0 || should_forward)
+		if (myrank == 0 || should_forward)
 		{
 			ret = cro.start_remote_write(MEM_SIZE, 0);
 			should_forward = false;

@@ -87,8 +87,9 @@ void rdma_sendTd(int send_thread_id)
 	printf("client Init OK\n");
 	while (1 == 1)
 	{
-		ret = cro.start_remote_write(MEM_SIZE, 0);
+		printf("start write to remote\n");
 		getchar();
+		ret = cro.start_remote_write(MEM_SIZE, 0);
 	}
 
 }
@@ -99,7 +100,8 @@ void rdma_recvTd(int recv_thread_id)
 	printf("server Init OK\n");
 	while (1 == 1)
 	{
-
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		printf("to_recv_block_mem %c\n", to_recv_block_mem[MEM_SIZE - 1] );
 
 	}
 

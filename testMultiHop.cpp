@@ -94,6 +94,7 @@ void rdma_sendTd(int send_thread_id)
 		//if (myrank == 0 || should_forward)
 		{
 			printf("ok write to remote\n");
+			getchar();
 			ret = cro.start_remote_write(MEM_SIZE, 0);
 			should_forward = false;
 			break;
@@ -137,12 +138,12 @@ int main(int argc, const char * argv[])
 	if (myrank == 0)
 	{
 		isSta = true;
-		remote_ip = ips[1];
+		remote_ip = "12.12.10.18";
 	}
 	else if (myrank == -1)
 	{
 		isEnd = true;
-		local_ip = ips[2];
+		local_ip = "12.12.10.19";
 		printf("local_ip=%s\n", local_ip );
 	}
 	else

@@ -160,14 +160,12 @@ int main(int argc, const char * argv[])
 	sendLen = MEM_SIZE;
 	if (!isSta)
 	{
-
 		std::thread recv_thread(rdma_recvTd, 0);
 		recv_thread.detach();
 	}
-
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	if (!isEnd)
 	{
-		getchar();
 		std::thread send_thread(rdma_sendTd, 0);
 		send_thread.detach();
 	}

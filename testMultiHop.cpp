@@ -36,8 +36,73 @@
 #include "client_rdma_op.h"
 
 using namespace std;
+#define MEM_SIZE 1000000000
+char* to_recv_block_mem = NULL;
+char* sendBuf = NULL;
+size_t sendLen = 10;
+
+char local_ip = "12.12.10.17";
+int local_port = 9999;
+
+int remote_port = 9999;
+char* remote_ip = "12.12.10.16";
+
+void rdma_sendTd(int send_thread_id)
+{
+	struct sockaddr_in server_sockaddr;
+	bzero(&server_sockaddr, sizeof server_sockaddr);
+	server_sockaddr.sin_family = AF_INET;
+	server_sockaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	get_addr(remote_ip, (struct sockaddr*) &server_sockaddr);
+	server_sockaddr.sin_port = htons(remote_port);
+	client_rdma_op cro;
+	ret = cro.client_prepare_connection(&server_sockaddr);
+	if (ret)
+	{
+		rdma_error("Failed to setup client connection , ret = %d \n", ret);
+		return ret;
+	}
+	ret = cro.client_pre_post_recv_buffer();
+	if (ret)
+	{
+		rdma_error("Failed to setup client connection , ret = %d \n", ret);
+		return ret;
+	}
+	ret = cro.client_connect_to_server();
+	if (ret)
+	{
+		rdma_error("Failed to setup client connection , ret = %d \n", ret);
+		return ret;
+	}
+
+	ret = cro.client_send_metadata_to_server1(sendBuf, sendLen);
+	if (ret)
+	{
+		rdma_error("Failed to setup client connection , ret = %d \n", ret);
+		return ret;
+	}
+
+	while (1 == 1)
+	{
+		ret = cro.start_remote_write(real_total, send_offset);
+	}
+
+}
+void rdma_recvTd(int recv_thread_id)
+{
+	server_rdma_op sro;
+	int ret = sro.rdma_server_init(local_ip, local_port, to_recv_block_mem, MEM_SIZE);
+	while (1 == 1)
+	{
+
+
+	}
+
+}
+
 
 int main(int argc, const char * argv[])
 {
 	printf("Hello\n");
+
 }

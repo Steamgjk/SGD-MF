@@ -157,7 +157,7 @@ int main(int argc, const char * argv[])
 	}
 	to_recv_block_mem[MEM_SIZE - 1] = 'a';
 	sendLen = MEM_SIZE;
-	printf("hhhh\n");
+	printf("hhhh local_ip=%s\n", local_ip);
 	if (!isSta)
 	{
 		std::thread recv_thread(rdma_recvTd, 0);

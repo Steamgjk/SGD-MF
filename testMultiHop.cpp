@@ -40,7 +40,7 @@ char* to_recv_block_mem = NULL;
 char* sendBuf = NULL;
 size_t sendLen = 10;
 
-char* ips[CAP] = {"12.12.10.17", "12.12.10.18"， "12.12.10.19"};
+char* ips[CAP] = {"12.12.10.17", "12.12.10.18", "12.12.10.19"};
 char local_ip = NULL;
 int local_port = 9999;
 

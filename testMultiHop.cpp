@@ -143,6 +143,7 @@ int main(int argc, const char * argv[])
 	{
 		isEnd = true;
 		local_ip = "12.12.10.19";
+		printf("local_ip=%s\n", local_ip );
 	}
 	else
 	{

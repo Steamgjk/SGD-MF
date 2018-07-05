@@ -47,7 +47,7 @@ int local_port = 9999;
 char* remote_ip = NULL;
 int remote_port = 9999;
 
-int rank = -2;
+int myrank = -2;
 bool forward = false;
 void rdma_sendTd(int send_thread_id)
 {
@@ -126,21 +126,21 @@ int main(int argc, const char * argv[])
 	printf("Hello\n");
 	bool isSta = false;
 	bool isEnd = false;
-	rank = atoi(argv[1]);
-	if (rank == 0)
+	myrank = atoi(argv[1]);
+	if (myrank == 0)
 	{
 		isSta = true;
 		remote_ip = "12.12.10.18";
 	}
-	else if (rank == -1)
+	else if (myrank == -1)
 	{
 		isEnd = true;
 		local_ip = "12.12.10.19";
 	}
 	else
 	{
-		local_ip = ips[rank];
-		remote_ip = ips[rank + 1];
+		local_ip = ips[myrank];
+		remote_ip = ips[myrank + 1];
 	}
 	to_recv_block_mem = (char*)malloc(MEM_SIZE);
 	sendBuf = to_recv_block_mem;

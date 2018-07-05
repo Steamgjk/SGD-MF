@@ -48,7 +48,7 @@ char* remote_ip = NULL;
 int remote_port = 9999;
 
 int myrank = -2;
-bool forward = false;
+bool should_forward = false;
 void rdma_sendTd(int send_thread_id)
 {
 	struct sockaddr_in server_sockaddr;
@@ -91,10 +91,10 @@ void rdma_sendTd(int send_thread_id)
 	{
 		printf("start write to remote\n");
 
-		if (forward)
+		if (should_forward)
 		{
 			ret = cro.start_remote_write(MEM_SIZE, 0);
-			forward = false;
+			should_forward = false;
 		}
 	}
 
@@ -112,7 +112,7 @@ void rdma_recvTd(int recv_thread_id)
 		if (to_recv_block_mem[MEM_SIZE - 1] == 'a')
 		{
 			printf("forward ok\n");
-			forward = true;
+			should_forward = true;
 			to_recv_block_mem[MEM_SIZE - 1] == '#';
 		}
 

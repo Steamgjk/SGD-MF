@@ -47,6 +47,8 @@ int local_port = 9999;
 char* remote_ip = NULL;
 int remote_port = 9999;
 
+int rank = -2;
+bool forward = false;
 void rdma_sendTd(int send_thread_id)
 {
 	struct sockaddr_in server_sockaddr;
@@ -88,8 +90,12 @@ void rdma_sendTd(int send_thread_id)
 	while (1 == 1)
 	{
 		printf("start write to remote\n");
-		getchar();
-		ret = cro.start_remote_write(MEM_SIZE, 0);
+
+		if (forward)
+		{
+			ret = cro.start_remote_write(MEM_SIZE, 0);
+			forward = false;
+		}
 	}
 
 }
@@ -101,8 +107,14 @@ void rdma_recvTd(int recv_thread_id)
 	to_recv_block_mem[MEM_SIZE - 1] = '#';
 	while (1 == 1)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		printf("to_recv_block_mem %c\n", to_recv_block_mem[MEM_SIZE - 1] );
+		if (to_recv_block_mem[MEM_SIZE - 1] == 'a')
+		{
+			printf("forward ok\n");
+			forward = true;
+			to_recv_block_mem[MEM_SIZE - 1] == '#';
+		}
 
 	}
 
@@ -114,7 +126,7 @@ int main(int argc, const char * argv[])
 	printf("Hello\n");
 	bool isSta = false;
 	bool isEnd = false;
-	int rank = atoi(argv[1]);
+	rank = atoi(argv[1]);
 	if (rank == 0)
 	{
 		isSta = true;

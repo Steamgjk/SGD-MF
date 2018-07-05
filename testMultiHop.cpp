@@ -84,7 +84,7 @@ void rdma_sendTd(int send_thread_id)
 
 	while (1 == 1)
 	{
-		ret = cro.start_remote_write(real_total, send_offset);
+		ret = cro.start_remote_write(MEM_SIZE, 0);
 	}
 
 }

@@ -158,12 +158,13 @@ int main(int argc, const char * argv[])
 	}
 	to_recv_block_mem[MEM_SIZE - 1] = 'a';
 	sendLen = MEM_SIZE;
-	printf("hhhh local_ip=%s\n", local_ip);
 	if (!isSta)
 	{
+		getchar();
 		std::thread recv_thread(rdma_recvTd, 0);
 		recv_thread.detach();
 	}
+
 	if (!isEnd)
 	{
 		std::thread send_thread(rdma_sendTd, 0);

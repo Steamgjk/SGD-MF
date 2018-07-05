@@ -95,8 +95,9 @@ void rdma_sendTd(int send_thread_id)
 		{
 			ret = cro.start_remote_write(MEM_SIZE, 0);
 			should_forward = false;
+			break;
 		}
-		break;
+
 	}
 
 }
@@ -109,7 +110,7 @@ void rdma_recvTd(int recv_thread_id)
 	while (1 == 1)
 	{
 		//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		printf("to_recv_block_mem %c\n", to_recv_block_mem[MEM_SIZE - 1] );
+		//printf("to_recv_block_mem %c\n", to_recv_block_mem[MEM_SIZE - 1] );
 		if (to_recv_block_mem[MEM_SIZE - 1] == 'a')
 		{
 			printf("forward ok\n");
